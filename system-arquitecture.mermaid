@@ -1,41 +1,63 @@
-%% System Architecture %%
 graph LR
-    A[Tenant Portal] --> B[Authentication & Authorization]
-    B --> C[Core ERP Services]
-    C --> D1[Accounting]
-    C --> D2[Inventory Management]
-    C --> D3[Sales Management]
-    C --> D4[Human Resources]
-    C --> D5[Procurement]
+    %% Color Definitions
+    classDef portal fill:#4CAF50,stroke:#388E3C,color:white;
+    classDef auth fill:#7E57C2,stroke:#512DA8,color:white;
+    classDef core fill:#2196F3,stroke:#1976D2,color:white;
+    classDef accounting fill:#1E88E5,stroke:#1565C0,color:white;
+    classDef inventory fill:#43A047,stroke:#2E7D32,color:white;
+    classDef sales fill:#FB8C00,stroke:#EF6C00,color:white;
+    classDef hr fill:#D81B60,stroke:#AD1457,color:white;
+    classDef procurement fill:#8E24AA,stroke:#6A1B9A,color:white;
+    classDef database fill:#757575,stroke:#424242,color:white;
+    classDef reporting fill:#00897B,stroke:#00695C,color:white;
+    classDef config fill:#FFD54F,stroke:#FBC02D,color:black;
+
+    %% Nodes
+    A[Tenant Portal]:::portal --> B[Authentication & Authorization]:::auth
+    B --> C[Core ERP Services]:::core
+    C --> D1[Accounting]:::accounting
+    C --> D2[Inventory Management]:::inventory
+    C --> D3[Sales Management]:::sales
+    C --> D4[Human Resources]:::hr
+    C --> D5[Procurement]:::procurement
     
-    D1 --> E1[General Ledger]
-    D1 --> E2[Accounts Receivable]
-    D1 --> E3[Accounts Payable]
-    D1 --> E4[Financial Reporting]
+    %% Accounting Submodules
+    D1 --> E1[General Ledger]:::accounting
+    D1 --> E2[Accounts Receivable]:::accounting
+    D1 --> E3[Accounts Payable]:::accounting
+    D1 --> E4[Financial Reporting]:::accounting
     
-    D2 --> F1[Stock Control]
-    D2 --> F2[Inventory Tracking]
-    D2 --> F3[Warehouse Management]
+    %% Inventory Submodules
+    D2 --> F1[Stock Control]:::inventory
+    D2 --> F2[Inventory Tracking]:::inventory
+    D2 --> F3[Warehouse Management]:::inventory
     
-    D3 --> G1[Invoicing]
-    D3 --> G2[Quotation]
-    D3 --> G3[Point of Sale]
+    %% Sales Submodules
+    D3 --> G1[Invoicing]:::sales
+    D3 --> G2[Quotation]:::sales
+    D3 --> G3[Point of Sale]:::sales
     
-    D4 --> H1[Payroll]
-    D4 --> H2[HR Management]
-    H2 --> H3[Employee Records]
-    H2 --> H4[Leave Management]
-    H2 --> H5[Performance Management]
+    %% HR Submodules
+    D4 --> H1[Payroll]:::hr
+    D4 --> H2[HR Management]:::hr
+    H2 --> H3[Employee Records]:::hr
+    H2 --> H4[Leave Management]:::hr
+    H2 --> H5[Performance Management]:::hr
     
-    D5 --> I1[Request for Buy]
-    D5 --> I2[Purchase Orders]
-    D5 --> I3[Vendor Management]
+    %% Procurement Submodules
+    D5 --> I1[Request for Buy]:::procurement
+    D5 --> I2[Purchase Orders]:::procurement
+    D5 --> I3[Vendor Management]:::procurement
     
-    J[Shared Database] --> D1
+    %% Database & Other Services
+    J[(Shared Database)]:::database --> D1
     J --> D2
     J --> D3
     J --> D4
     J --> D5
     
-    K[Reporting & Analytics] --> J
-    L[Tenant Configuration] --> C
+    K[Reporting & Analytics]:::reporting --> J
+    L[Tenant Configuration]:::config --> C
+
+    %% Styling Links
+    linkStyle default stroke:#616161,stroke-width:2px
