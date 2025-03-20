@@ -1,2 +1,1 @@
 # erp-system-diagrams
-ERP

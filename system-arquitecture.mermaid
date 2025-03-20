@@ -1,0 +1,41 @@
+%% System Architecture %%
+graph TD
+    A[Tenant Portal] --> B[Authentication & Authorization]
+    B --> C[Core ERP Services]
+    C --> D1[Accounting]
+    C --> D2[Inventory Management]
+    C --> D3[Sales Management]
+    C --> D4[Human Resources]
+    C --> D5[Procurement]
+    
+    D1 --> E1[General Ledger]
+    D1 --> E2[Accounts Receivable]
+    D1 --> E3[Accounts Payable]
+    D1 --> E4[Financial Reporting]
+    
+    D2 --> F1[Stock Control]
+    D2 --> F2[Inventory Tracking]
+    D2 --> F3[Warehouse Management]
+    
+    D3 --> G1[Invoicing]
+    D3 --> G2[Quotation]
+    D3 --> G3[Point of Sale]
+    
+    D4 --> H1[Payroll]
+    D4 --> H2[HR Management]
+    H2 --> H3[Employee Records]
+    H2 --> H4[Leave Management]
+    H2 --> H5[Performance Management]
+    
+    D5 --> I1[Request for Buy]
+    D5 --> I2[Purchase Orders]
+    D5 --> I3[Vendor Management]
+    
+    J[Shared Database] --> D1
+    J --> D2
+    J --> D3
+    J --> D4
+    J --> D5
+    
+    K[Reporting & Analytics] --> J
+    L[Tenant Configuration] --> C
