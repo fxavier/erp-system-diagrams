@@ -1,0 +1,56 @@
+graph LR
+    %% ======================
+    %% Color Definitions
+    %% ======================
+    classDef external fill:#81D4FA,stroke:#039BE5,color:#000000
+    classDef sales fill:#FFA726,stroke:#FB8C00,color:#000000
+    classDef inventory fill:#66BB6A,stroke:#43A047,color:#000000
+    classDef accounting fill:#42A5F5,stroke:#1E88E5,color:#000000
+    classDef procurement fill:#AB47BC,stroke:#8E24AA,color:#ffffff
+    classDef payroll fill:#EC407A,stroke:#D81B60,color:#ffffff
+    classDef hr fill:#EF5350,stroke:#D32F2F,color:#ffffff
+    classDef reports fill:#26A69A,stroke:#00897B,color:#ffffff
+    classDef action fill:#BDBDBD,stroke:#757575,color:#000000
+    linkStyle default stroke:#616161,stroke-width:2px
+
+    %% ======================
+    %% Nodes
+    %% ======================
+    A[Customer]:::external -->|Places Order| B[Sales Module]:::sales
+    B -->|Creates| C[Invoice]:::sales
+    C -->|Updates| D[Inventory Module]:::inventory
+    D -->|Decreases| E[Stock Levels]:::inventory
+    C -->|Creates| F[Accounting Entries]:::accounting
+    F -->|Updates| G[General Ledger]:::accounting
+    F -->|Creates| H[Accounts Receivable]:::accounting
+    
+    I[Supplier]:::external -->|Receives| J[Purchase Order]:::procurement
+    K[Procurement Module]:::procurement -->|Generates| J
+    K -->|Processes| L[Request for Buy]:::procurement
+    L -->|Initiates| K
+    J -->|Received Items| D
+    D -->|Increases| E
+    J -->|Creates| M[Accounts Payable]:::accounting
+    M -->|Updates| G
+    
+    N[Employee]:::external -->|Time Entry| O[Payroll Module]:::payroll
+    O -->|Calculates| P[Salary]:::payroll
+    P -->|Creates| Q[Expense]:::accounting
+    Q -->|Updates| G
+    O -->|Updates| R[HR Module]:::hr
+    R -->|Maintains| S[Employee Records]:::hr
+    
+    T[Management]:::external -->|Views| U[Reports]:::reports
+    U -->|Extracts from| G
+    U -->|Extracts from| E
+    U -->|Extracts from| S
+    U -->|Extracts from| V[Sales Records]:::sales
+    B -->|Maintains| V
+
+    %% ======================
+    %% Process Groups
+    %% ======================
+    style A fill:#81D4FA,stroke:#039BE5
+    style I fill:#81D4FA,stroke:#039BE5
+    style N fill:#81D4FA,stroke:#039BE5
+    style T fill:#81D4FA,stroke:#039BE5

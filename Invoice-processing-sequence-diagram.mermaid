@@ -1,0 +1,40 @@
+sequenceDiagram
+    actor SA as Sales Agent #FF9800
+    participant IP as Invoice Processing #2196F3
+    participant IC as Inventory Control #4CAF50
+    participant GL as General Ledger #1E88E5
+    participant AR as Accounts Receivable #64B5F6
+    participant DB as Database #757575
+    
+    Note over SA,DB: Sales Workflow
+    rect rgb(255,248,220)
+    SA->>IP: Create Invoice
+    IP->>DB: Validate Customer
+    DB-->>IP: Customer Valid
+    IP->>DB: Check Stock Availability
+    DB-->>IP: Stock Available
+    end
+    
+    Note over IC,DB: Inventory Update
+    rect rgb(232,245,233)
+    IP->>IC: Update Inventory
+    IC->>DB: Reduce Stock Levels
+    DB-->>IC: Confirm Stock Update
+    IC-->>IP: Inventory Updated
+    end
+    
+    Note over GL,AR: Accounting Flow
+    rect rgb(227,242,253)
+    IP->>DB: Save Invoice
+    DB-->>IP: Invoice Saved
+    IP->>GL: Create Journal Entry
+    GL->>DB: Record Debit/Credit
+    DB-->>GL: Journal Entry Recorded
+    GL-->>IP: Accounting Updated
+    IP->>AR: Add to Receivables
+    AR->>DB: Record Receivable
+    DB-->>AR: Receivable Recorded
+    AR-->>IP: Receivable Added
+    end
+    
+    IP-->>SA: Invoice Completed #00C853

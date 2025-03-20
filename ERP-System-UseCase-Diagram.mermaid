@@ -1,0 +1,83 @@
+graph LR
+    %% Color Definitions
+    classDef actor fill:#607D8B,stroke:#455A64,color:white,stroke-width:1.5px;
+    classDef accounting fill:#2196F3,stroke:#1976D2,color:white;
+    classDef inventory fill#4CAF50,stroke:#388E3C,color:white;
+    classDef sales fill:#FF9800,stroke:#F57C00,color:white;
+    classDef hr fill:#E91E63,stroke:#C2185B,color:white;
+    classDef procurement fill:#9C27B0,stroke:#7B1FA2,color:white;
+    classDef linkDefault stroke:#616161,stroke-width:1.5px;
+
+    subgraph Actors
+        A1[Admin]:::actor
+        A2[Accountant]:::actor
+        A3[Sales Agent]:::actor
+        A4[Inventory Manager]:::actor
+        A5[HR Manager]:::actor
+        A6[Procurement Officer]:::actor
+    end
+    
+    subgraph Accounting
+        UC1[Manage Chart of Accounts]:::accounting
+        UC2[Create Journal Entries]:::accounting
+        UC3[Generate Financial Reports]:::accounting
+        UC4[Manage Accounts Receivable]:::accounting
+        UC5[Manage Accounts Payable]:::accounting
+    end
+    
+    subgraph Inventory
+        UC6[Manage Stock Items]:::inventory
+        UC7[Process Stock Movements]:::inventory
+        UC8[Generate Inventory Reports]:::inventory
+        UC9[Manage Warehouses]:::inventory
+    end
+    
+    subgraph Sales
+        UC10[Create Invoices]:::sales
+        UC11[Generate Quotations]:::sales
+        UC12[Process POS Transactions]:::sales
+        UC13[Manage Customers]:::sales
+    end
+    
+    subgraph HR
+        UC14[Manage Employee Records]:::hr
+        UC15[Process Payroll]:::hr
+        UC16[Manage Leave Requests]:::hr
+        UC17[Track Performance]:::hr
+    end
+    
+    subgraph Procurement
+        UC18[Create Purchase Requests]:::procurement
+        UC19[Generate Purchase Orders]:::procurement
+        UC20[Manage Vendors]:::procurement
+    end
+    
+    %% Connections
+    A1 -->|Configures| UC1
+    A2 -->|Operates| UC1
+    A2 -->|Operates| UC2
+    A2 -->|Operates| UC3
+    A2 -->|Operates| UC4
+    A2 -->|Operates| UC5
+    
+    A4 -->|Operates| UC6
+    A4 -->|Operates| UC7
+    A4 -->|Operates| UC8
+    A4 -->|Operates| UC9
+    
+    A3 -->|Operates| UC10
+    A3 -->|Operates| UC11
+    A3 -->|Operates| UC12
+    A3 -->|Operates| UC13
+    
+    A5 -->|Operates| UC14
+    A5 -->|Operates| UC15
+    A5 -->|Operates| UC16
+    A5 -->|Operates| UC17
+    
+    A6 -->|Operates| UC18
+    A6 -->|Operates| UC19
+    A6 -->|Operates| UC20
+
+    %% Styling
+    linkStyle default stroke:#616161,stroke-width:1.5px
