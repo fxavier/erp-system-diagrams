@@ -1,0 +1,260 @@
+erDiagram
+    %% ======================
+    %% Core System
+    %% ======================
+    TENANT ||--|| TENANT_SUBSCRIPTION : subscribes
+    TENANT ||--o{ USER : has
+    
+    TENANT {
+        int tenant_id PK
+        string name
+        string domain
+        boolean is_active
+    }
+    
+    TENANT_SUBSCRIPTION {
+        int subscription_id PK
+        int tenant_id FK
+        int subscription_plan_id
+        string status
+        datetime start_date
+        datetime end_date
+    }
+    
+    USER {
+        int user_id PK
+        int tenant_id FK
+        string username
+        string email
+        boolean is_active
+    }
+    
+    %% ======================
+    %% Accounting Module
+    %% ======================
+    TENANT ||--o{ ACCOUNT : defines
+    TENANT ||--o{ JOURNAL_ENTRY : records
+    TENANT ||--o{ FISCAL_YEAR : establishes
+    SALES_INVOICE }o--|| ACCOUNT : receivable
+    SALES_INVOICE ||--|| JOURNAL_ENTRY : creates
+    INVENTORY_ITEM }o--|| ACCOUNT : asset
+    PURCHASE_ORDER ||--|| JOURNAL_ENTRY : creates
+    PURCHASE_ORDER }o--|| ACCOUNT : payable
+    PAYROLL_RUN ||--|| JOURNAL_ENTRY : creates
+    ACCOUNT ||--o{ PRODUCT : tracks_costs
+    ACCOUNT ||--o{ DEPARTMENT : allocates_expenses
+    ACCOUNT ||--o{ PAYROLL_ENTRY : expenses
+    SALES_INVOICE }o--|| ACCOUNT : posts_to
+    PAYROLL_RUN }o--|| ACCOUNT : posts_to
+    
+    ACCOUNT {
+        int account_id PK
+        int tenant_id FK
+        string code
+        string name
+        string type
+    }
+    
+    JOURNAL_ENTRY {
+        int journal_entry_id PK
+        int tenant_id FK
+        string entry_number
+        string type
+        datetime entry_date
+    }
+    
+    FISCAL_YEAR {
+        int fiscal_year_id PK
+        int tenant_id FK
+        date start_date
+        date end_date
+        string status
+    }
+    
+    %% ======================
+    %% Inventory Module
+    %% ======================
+    TENANT ||--o{ PRODUCT : catalogs
+    TENANT ||--o{ WAREHOUSE : maintains
+    WAREHOUSE ||--o{ INVENTORY_ITEM : stores
+    PRODUCT ||--o{ INVENTORY_ITEM : tracked_as
+    SALES_ORDER }o--o{ PRODUCT : includes
+    SALES_ORDER }o--o{ INVENTORY_ITEM : reserves
+    PURCHASE_ORDER }o--o{ PRODUCT : orders
+    RFQ }o--o{ PRODUCT : requests
+    INVENTORY_ITEM }o--|| SALES_ORDER : fulfills
+    PURCHASE_ORDER }o--|| INVENTORY_ITEM : updates
+    
+    PRODUCT {
+        int product_id PK
+        int tenant_id FK
+        int account_id FK
+        string sku
+        string name
+        boolean is_inventory_item
+    }
+    
+    WAREHOUSE {
+        int warehouse_id PK
+        int tenant_id FK
+        string code
+        string name
+        boolean is_active
+    }
+    
+    INVENTORY_ITEM {
+        int inventory_item_id PK
+        int product_id FK
+        int warehouse_id FK
+        int account_id FK
+        double quantity
+        string status
+    }
+    
+    %% ======================
+    %% Sales Module
+    %% ======================
+    TENANT ||--o{ CUSTOMER : manages
+    CUSTOMER ||--o{ SALES_ORDER : places
+    SALES_ORDER ||--o{ SALES_INVOICE : generates
+    SALES_ORDER }o--|| SALES_INVOICE : bills
+    
+    CUSTOMER {
+        int customer_id PK
+        int tenant_id FK
+        string code
+        string name
+        string type
+    }
+    
+    SALES_ORDER {
+        int order_id PK
+        int tenant_id FK
+        int customer_id FK
+        string order_number
+        string status
+    }
+    
+    SALES_INVOICE {
+        int invoice_id PK
+        int tenant_id FK
+        int customer_id FK
+        int order_id FK
+        int account_id FK
+        int journal_entry_id FK
+        string invoice_number
+    }
+    
+    %% ======================
+    %% Procurement Module
+    %% ======================
+    TENANT ||--o{ VENDOR : contracts
+    TENANT ||--o{ REQUEST_FOR_BUY : initiates
+    VENDOR ||--o{ PURCHASE_ORDER : receives
+    REQUEST_FOR_BUY }o--|| DEPARTMENT : requests
+    REQUEST_FOR_BUY }o--|| RFQ : creates
+    REQUEST_FOR_BUY }o--|| PURCHASE_ORDER : workflow
+    
+    VENDOR {
+        int vendor_id PK
+        int tenant_id FK
+        string code
+        string name
+        boolean is_approved
+    }
+    
+    REQUEST_FOR_BUY {
+        int rfb_id PK
+        int tenant_id FK
+        int department_id FK
+        string rfb_number
+        string status
+    }
+    
+    PURCHASE_ORDER {
+        int po_id PK
+        int tenant_id FK
+        int vendor_id FK
+        int account_id FK
+        int journal_entry_id FK
+        string po_number
+        string status
+    }
+    
+    %% ======================
+    %% RFQ Module
+    %% ======================
+    RFQ }o--o{ VENDOR : sent_to
+    VENDOR ||--o{ VENDOR_QUOTATION : submits
+    VENDOR_QUOTATION ||--|| PURCHASE_ORDER : converts_to
+    
+    RFQ {
+        int rfq_id PK
+        int tenant_id FK
+        int rfb_id FK
+        string rfq_number
+        string status
+    }
+    
+    VENDOR_QUOTATION {
+        int quotation_id PK
+        int vendor_rfq_id FK
+        string quotation_number
+        string status
+    }
+    
+    %% ======================
+    %% HR Module
+    %% ======================
+    TENANT ||--o{ EMPLOYEE : employs
+    TENANT ||--o{ DEPARTMENT : organizes
+    EMPLOYEE }o--|| DEPARTMENT : works_in
+    EMPLOYEE ||--o{ USER : associated_with
+    
+    EMPLOYEE {
+        int employee_id PK
+        int tenant_id FK
+        int department_id FK
+        string employee_code
+        string first_name
+        string last_name
+        string status
+    }
+    
+    DEPARTMENT {
+        int department_id PK
+        int tenant_id FK
+        int account_id FK
+        int manager_id FK
+        string code
+        string name
+    }
+    
+    %% ======================
+    %% Payroll Module
+    %% ======================
+    TENANT ||--o{ PAYROLL_RUN : processes
+    PAYROLL_RUN ||--o{ PAYROLL_ENTRY : contains
+    PAYROLL_ENTRY }o--|| EMPLOYEE : compensates
+    
+    PAYROLL_RUN {
+        int payroll_run_id PK
+        int tenant_id FK
+        int period_id
+        int journal_entry_id FK
+        string reference
+        string status
+    }
+    
+    PAYROLL_ENTRY {
+        int payroll_entry_id PK
+        int payroll_run_id FK
+        int employee_id FK
+        int account_id FK
+        decimal gross_pay
+        decimal net_pay
+    }
+
+%% Note: Unfortunately, the Mermaid ER diagram syntax doesn't support entity styling directly
+%% The color-coding would need to be implemented when rendering this diagram outside of Mermaid
+%% or using a different Mermaid diagram type like class diagrams
