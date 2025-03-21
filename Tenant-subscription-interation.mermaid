@@ -1,0 +1,119 @@
+graph TB
+    %% ======================
+    %% Color Definitions
+    %% ======================
+    classDef tenant fill:#78909C,stroke:#546E7A,color:#ffffff
+    classDef subscription fill:#00ACC1,stroke:#0097A7,color:#ffffff
+    classDef billing fill:#26A69A,stroke:#00897B,color:#ffffff
+    classDef feature fill:#66BB6A,stroke:#43A047,color:#ffffff
+    classDef external fill:#81D4FA,stroke:#039BE5,color:#000000
+    classDef access fill:#EF5350,stroke:#D32F2F,color:#ffffff
+    linkStyle default stroke:#616161,stroke-width:2px
+
+    %% ======================
+    %% External Actors
+    %% ======================
+    SysA[System Admin]:::external
+    TenA[Tenant Admin]:::external
+    EndU[End User]:::external
+    
+    %% ======================
+    %% Core Tenant System
+    %% ======================
+    subgraph TenantManagement["Tenant Management"]
+        T1[Tenant Registry]:::tenant
+        T2[Tenant Configuration]:::tenant
+        T3[Schema Management]:::tenant
+        T4[Domain Management]:::tenant
+    end
+    
+    %% ======================
+    %% Subscription System
+    %% ======================
+    subgraph SubscriptionManagement["Subscription Management"]
+        S1[Subscription Plans]:::subscription
+        S2[Tenant Subscriptions]:::subscription
+        S3[Plan Features]:::subscription
+        S4[Subscription Lifecycle]:::subscription
+    end
+    
+    %% ======================
+    %% Billing System
+    %% ======================
+    subgraph BillingManagement["Billing Management"]
+        B1[Payment Methods]:::billing
+        B2[Invoice Generation]:::billing
+        B3[Payment Processing]:::billing
+        B4[Billing History]:::billing
+    end
+    
+    %% ======================
+    %% Feature Management
+    %% ======================
+    subgraph FeatureManagement["Feature Management"]
+        F1[Feature Registry]:::feature
+        F2[Feature Limits]:::feature
+        F3[Usage Tracking]:::feature
+        F4[Feature Enforcement]:::feature
+    end
+    
+    %% ======================
+    %% Access Control
+    %% ======================
+    subgraph AccessControl["Access Control"]
+        A1[User Management]:::access
+        A2[Role Management]:::access
+        A3[Permission Management]:::access
+        A4[Module Access]:::access
+    end
+    
+    %% ======================
+    %% Actor Interactions
+    %% ======================
+    SysA --> T1
+    SysA --> S1
+    SysA --> F1
+    
+    TenA --> T2
+    TenA --> S2
+    TenA --> B1
+    TenA --> A1
+    TenA --> A2
+    
+    EndU --> A1
+    EndU --> F3
+    
+    %% ======================
+    %% System Interactions
+    %% ======================
+    T1 --> T3
+    T1 --> T4
+    T1 <--> S2
+    
+    S1 --> S3
+    S2 --> S4
+    S2 --> B2
+    S2 --> A4
+    
+    B1 --> B3
+    B2 --> B3
+    B3 --> B4
+    
+    S3 --> F2
+    F1 --> F2
+    F2 --> F4
+    F3 --> F4
+    
+    S4 --> A4
+    A1 --> A3
+    A2 --> A3
+    A3 --> A4
+    A4 --> F4
+    
+    %% ======================
+    %% Cross-System Flows
+    %% ======================
+    T1 -.-> A1
+    S2 -.-> F3
+    B3 -.-> S4
+    F4 -.-> T2

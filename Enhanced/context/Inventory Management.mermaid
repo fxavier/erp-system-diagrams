@@ -1,0 +1,67 @@
+flowchart LR
+    %% Main system
+    IM[Inventory Management System]:::inventory
+    
+    %% External entities
+    IMA([Inventory Manager]):::external
+    WS([Warehouse Staff]):::external
+    QC([Quality Control]):::external
+    
+    %% Other systems
+    PROC[Procurement System]:::procurement
+    SALES[Sales Management]:::sales
+    ACC[Accounting System]:::accounting
+    BOM[Bill of Materials]:::inventory
+    BARCODE[Barcode System]:::external_system
+    WMS[Warehouse Management]:::inventory
+    ALERT[Alert System]:::external_system
+    REPORT[Reporting System]:::reporting
+    
+    %% Connections with data flows
+    %% Inventory Manager interactions
+    IMA -->|Configure Products\n& Settings| IM
+    IMA -->|Monitor\nInventory Levels| IM
+    IM -->|Inventory\nDashboard| IMA
+    IM -->|Alerts &\nExceptions| IMA
+    
+    %% Warehouse Staff interactions
+    WS -->|Stock Movements\n& Adjustments| IM
+    WS -->|Scan Items| IM
+    IM -->|Pick Lists| WS
+    IM -->|Stock Count\nInstructions| WS
+    
+    %% Quality Control interactions
+    QC -->|Quality\nInspection Results| IM
+    IM -->|Items for\nInspection| QC
+    
+    %% System interactions
+    PROC -->|Purchase Orders\n& Receipts| IM
+    IM -->|Stock\nAvailability| PROC
+    
+    SALES -->|Sales Orders| IM
+    IM -->|Available\nInventory| SALES
+    IM -->|Fulfilled\nOrders| SALES
+    
+    IM -->|Inventory\nValuations| ACC
+    IM -->|Stock\nAdjustments| ACC
+    ACC -->|Cost\nUpdates| IM
+    
+    BOM <-->|Component\nRequirements| IM
+    
+    IM <-->|Barcode\nScan Data| BARCODE
+    
+    IM <-->|Location\nManagement| WMS
+    
+    IM -->|Low Stock\nNotifications| ALERT
+    
+    IM -->|Inventory\nMetrics| REPORT
+    REPORT -->|Analysis &\nForecasts| IM
+    
+    %% Styles
+    classDef inventory fill:#66BB6A,stroke:#43A047,color:white,rx:10,ry:10
+    classDef procurement fill:#BA68C8,stroke:#9C27B0,color:white,rx:10,ry:10
+    classDef sales fill:#FF9800,stroke:#F57C00,color:black,rx:10,ry:10
+    classDef accounting fill:#42A5F5,stroke:#1E88E5,color:white,rx:10,ry:10
+    classDef external fill:#FFD700,stroke:#DAA520,color:black,rx:5,ry:5,shape:stadium
+    classDef external_system fill:#B0C4DE,stroke:#778899,color:black,rx:5,ry:5
+    classDef reporting fill:#9370DB,stroke:#7B68EE,color:white,rx:10,ry:10

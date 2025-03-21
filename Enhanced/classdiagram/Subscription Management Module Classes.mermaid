@@ -1,0 +1,292 @@
+classDiagram
+    %% ======================
+    %% Color Definitions
+    %% ======================
+    classDef core fill:#607D8B,stroke:#455A64,color:white
+    classDef subscription fill:#00BCD4,stroke:#0097A7,color:white
+    classDef billing fill:#009688,stroke:#00796B,color:white
+    
+    %% ======================
+    %% Parent Class
+    %% ======================
+    class BaseEntity {
+        +Long id
+        +Integer version
+        +LocalDateTime createdDate
+        +String createdBy
+        +LocalDateTime lastModifiedDate
+        +String lastModifiedBy
+        +Boolean isActive
+    }
+    
+    %% ======================
+    %% Subscription Classes
+    %% ======================
+    class SubscriptionPlan {
+        +String name
+        +String description
+        +BigDecimal monthlyPrice
+        +BigDecimal annualPrice
+        +String currency
+        +Integer maxUsers
+        +Long maxStorageMb
+        +Boolean isTrial
+        +Integer trialDays
+        +Boolean isActive
+        +String features
+        +createPlan()
+        +updatePlan()
+        +activatePlan()
+        +deactivatePlan()
+        +calculatePrice()
+    }
+    
+    class TenantSubscription {
+        +Long tenantId
+        +Long subscriptionPlanId
+        +SubscriptionStatus status
+        +LocalDateTime startDate
+        +LocalDateTime endDate
+        +String billingCycle
+        +Boolean autoRenew
+        +String paymentMethodId
+        +LocalDateTime lastBillingDate
+        +LocalDateTime nextBillingDate
+        +String cancelReason
+        +createSubscription()
+        +renewSubscription()
+        +cancelSubscription()
+        +upgradeSubscription()
+        +downgradeSubscription()
+        +calculateProration()
+    }
+    
+    class SubscriptionFeature {
+        +String featureCode
+        +String featureName
+        +String description
+        +String category
+        +Boolean isActive
+        +String moduleCode
+        +Boolean isPremium
+        +createFeature()
+        +updateFeature()
+        +activateFeature()
+        +deactivateFeature()
+    }
+    
+    class PlanFeature {
+        +Long subscriptionPlanId
+        +Long subscriptionFeatureId
+        +Boolean isEnabled
+        +Integer usageLimit
+        +String limitPeriod
+        +String limitType
+        +associateFeature()
+        +removeFeature()
+        +updateLimit()
+        +checkAccess()
+    }
+    
+    class SubscriptionDiscount {
+        +String code
+        +String name
+        +DiscountType type
+        +BigDecimal amount
+        +BigDecimal percentOff
+        +LocalDateTime validFrom
+        +LocalDateTime validTo
+        +Integer maxRedemptions
+        +Integer currentRedemptions
+        +Boolean isActive
+        +createDiscount()
+        +validateDiscount()
+        +applyDiscount()
+        +calculateAmount()
+    }
+    
+    class FeatureUsage {
+        +Long tenantId
+        +Long featureId
+        +Integer currentUsage
+        +Integer allocatedLimit
+        +LocalDateTime resetDate
+        +String usagePeriod
+        +recordUsage()
+        +resetUsage()
+        +checkLimit()
+        +getUsagePercent()
+    }
+    
+    %% ======================
+    %% Billing Classes
+    %% ======================
+    class Invoice {
+        +Long tenantId
+        +Long subscriptionId
+        +String invoiceNumber
+        +LocalDateTime issueDate
+        +LocalDateTime dueDate
+        +BigDecimal amount
+        +BigDecimal discount
+        +BigDecimal tax
+        +BigDecimal total
+        +String currency
+        +InvoiceStatus status
+        +LocalDateTime paidDate
+        +createInvoice()
+        +updateInvoice()
+        +markAsPaid()
+        +cancelInvoice()
+        +generatePdf()
+    }
+    
+    class InvoiceItem {
+        +Long invoiceId
+        +String description
+        +BigDecimal quantity
+        +BigDecimal unitPrice
+        +BigDecimal amount
+        +String taxCode
+        +BigDecimal taxRate
+        +BigDecimal taxAmount
+        +String featureCode
+        +addItem()
+        +updateItem()
+        +removeItem()
+        +calculateAmount()
+    }
+    
+    class PaymentMethod {
+        +Long tenantId
+        +PaymentType type
+        +String provider
+        +String accountName
+        +String token
+        +String last4
+        +String expiryMonth
+        +String expiryYear
+        +Boolean isDefault
+        +addPaymentMethod()
+        +updatePaymentMethod()
+        +removePaymentMethod()
+        +setAsDefault()
+        +isExpired()
+    }
+    
+    class Payment {
+        +Long invoiceId
+        +Long paymentMethodId
+        +String transactionId
+        +LocalDateTime date
+        +BigDecimal amount
+        +String currency
+        +PaymentStatus status
+        +String gatewayResponse
+        +processPayment()
+        +refundPayment()
+        +recordManualPayment()
+        +updateStatus()
+    }
+    
+    %% ======================
+    %% Enums
+    %% ======================
+    class SubscriptionStatus {
+        <<enumeration>>
+        TRIAL_CREATED
+        TRIAL_ACTIVE
+        TRIAL_EXPIRED
+        ACTIVE
+        PAST_DUE
+        UNPAID
+        CANCELED
+        EXPIRED
+    }
+    
+    class DiscountType {
+        <<enumeration>>
+        PERCENTAGE
+        AMOUNT
+        FREE_MONTHS
+    }
+    
+    class InvoiceStatus {
+        <<enumeration>>
+        DRAFT
+        ISSUED
+        PAID
+        PARTIALLY_PAID
+        OVERDUE
+        CANCELED
+    }
+    
+    class PaymentStatus {
+        <<enumeration>>
+        PENDING
+        COMPLETED
+        FAILED
+        REFUNDED
+        PARTIALLY_REFUNDED
+    }
+    
+    class PaymentType {
+        <<enumeration>>
+        CREDIT_CARD
+        DEBIT_CARD
+        BANK_TRANSFER
+        PAYPAL
+        MANUAL
+    }
+    
+    %% ======================
+    %% Class Relationships
+    %% ======================
+    BaseEntity <|-- SubscriptionPlan
+    BaseEntity <|-- TenantSubscription
+    BaseEntity <|-- SubscriptionFeature
+    BaseEntity <|-- PlanFeature
+    BaseEntity <|-- SubscriptionDiscount
+    BaseEntity <|-- FeatureUsage
+    BaseEntity <|-- Invoice
+    BaseEntity <|-- InvoiceItem
+    BaseEntity <|-- PaymentMethod
+    BaseEntity <|-- Payment
+    
+    TenantSubscription -- SubscriptionStatus : has
+    SubscriptionDiscount -- DiscountType : has
+    Invoice -- InvoiceStatus : has
+    Payment -- PaymentStatus : has
+    PaymentMethod -- PaymentType : has
+    
+    SubscriptionPlan "1" -- "many" PlanFeature : includes
+    SubscriptionFeature "1" -- "many" PlanFeature : enabledIn
+    
+    TenantSubscription "1" -- "1" SubscriptionPlan : subscribes to
+    TenantSubscription "1" -- "many" Invoice : generates
+    
+    Invoice "1" -- "many" InvoiceItem : contains
+    Invoice "1" -- "many" Payment : receives
+    
+    PaymentMethod "1" -- "many" Payment : usedFor
+    
+    TenantSubscription "1" -- "many" FeatureUsage : tracks
+    SubscriptionFeature "1" -- "many" FeatureUsage : measures
+    
+    %% Apply styling
+    class BaseEntity core
+    class SubscriptionPlan subscription
+    class TenantSubscription subscription
+    class SubscriptionFeature subscription
+    class PlanFeature subscription
+    class SubscriptionDiscount subscription
+    class FeatureUsage subscription
+    class SubscriptionStatus subscription
+    class DiscountType subscription
+    class Invoice billing
+    class InvoiceItem billing
+    class PaymentMethod billing
+    class Payment billing
+    class InvoiceStatus billing
+    class PaymentStatus billing
+    class PaymentType billing

@@ -1,0 +1,128 @@
+graph TB
+    %% Actor definitions
+    subgraph Actors
+        PO([Procurement Officer])
+        DM([Department Manager])
+        VE([Vendor])
+        AP([Accounts Payable])
+    end
+    
+    %% Use cases
+    subgraph VendorManagementUseCases["Vendor Management Use Cases"]
+        UC1[Register Vendor]:::procurement
+        UC2[Update Vendor Information]:::procurement
+        UC3[Evaluate Vendor Performance]:::procurement
+        UC4[Approve/Reject Vendor]:::procurement
+        UC5[Manage Vendor Categories]:::procurement
+    end
+    
+    subgraph RequestForBuyUseCases["Request For Buy Use Cases"]
+        UC6[Create Request For Buy]:::procurement
+        UC7[Add Items to RFB]:::procurement
+        UC8[Submit RFB for Approval]:::procurement
+        UC9[Approve/Reject RFB]:::procurement
+        UC10[Cancel RFB]:::procurement
+        UC11[Track RFB Status]:::procurement
+    end
+    
+    subgraph RFQUseCases["RFQ Use Cases"]
+        UC12[Generate RFQ from RFB]:::rfq
+        UC13[Select Vendors for RFQ]:::rfq
+        UC14[Issue RFQ to Vendors]:::rfq
+        UC15[View RFQ]:::rfq
+        UC16[Submit Quotation]:::rfq
+        UC17[Track RFQ Status]:::rfq
+    end
+    
+    subgraph QuotationManagementUseCases["Quotation Management Use Cases"]
+        UC18[Receive Vendor Quotations]:::rfq
+        UC19[Create Comparison Matrix]:::rfq
+        UC20[Evaluate Quotations]:::rfq
+        UC21[Select Winning Quotation]:::rfq
+        UC22[Request Quotation Clarification]:::rfq
+    end
+    
+    subgraph PurchaseOrderUseCases["Purchase Order Use Cases"]
+        UC23[Generate Purchase Order]:::procurement
+        UC24[Approve Purchase Order]:::procurement
+        UC25[Send Purchase Order to Vendor]:::procurement
+        UC26[Confirm PO Receipt]:::procurement
+        UC27[Update PO Status]:::procurement
+        UC28[Cancel Purchase Order]:::procurement
+    end
+    
+    subgraph GoodsReceiptUseCases["Goods Receipt Use Cases"]
+        UC29[Receive Goods]:::procurement
+        UC30[Inspect Received Items]:::procurement
+        UC31[Process Returns]:::procurement
+        UC32[Update Inventory]:::procurement
+    end
+    
+    %% Actor to Use Case connections
+    PO --> UC1
+    PO --> UC2
+    PO --> UC3
+    PO --> UC4
+    PO --> UC5
+    PO --> UC6
+    PO --> UC7
+    PO --> UC8
+    PO --> UC10
+    PO --> UC11
+    PO --> UC12
+    PO --> UC13
+    PO --> UC14
+    PO --> UC17
+    PO --> UC18
+    PO --> UC19
+    PO --> UC20
+    PO --> UC21
+    PO --> UC22
+    PO --> UC23
+    PO --> UC25
+    PO --> UC27
+    PO --> UC28
+    PO --> UC29
+    PO --> UC30
+    PO --> UC31
+    PO --> UC32
+    
+    DM --> UC9
+    DM --> UC24
+    
+    VE --> UC15
+    VE --> UC16
+    VE --> UC26
+    
+    AP --> UC27
+    
+    %% Use Case relationships
+    UC6 --> UC7
+    UC7 --> UC8
+    UC8 --> UC9
+    UC9 --> UC12
+    UC12 --> UC13
+    UC13 --> UC14
+    UC14 --> UC15
+    UC15 --> UC16
+    UC16 --> UC18
+    UC18 --> UC19
+    UC19 --> UC20
+    UC20 --> UC21
+    UC20 --> UC22
+    UC21 --> UC23
+    UC23 --> UC24
+    UC24 --> UC25
+    UC25 --> UC26
+    UC26 --> UC27
+    UC27 --> UC29
+    UC29 --> UC30
+    UC30 --> UC31
+    UC30 --> UC32
+    
+    %% Styling
+    classDef procurement fill:#9C27B0,stroke:#7B1FA2,color:white
+    classDef rfq fill:#AB47BC,stroke:#8E24AA,color:white
+    classDef actor fill:#81D4FA,stroke:#039BE5,color:black
+    
+    class PO,DM,VE,AP actor

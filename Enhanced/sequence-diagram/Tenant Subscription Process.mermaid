@@ -1,0 +1,66 @@
+sequenceDiagram
+    %% Participants with Emojis
+    actor CA as 👤 Customer Admin
+    actor SA as 👨💻 System Admin
+    participant TS as 🏢 Tenant Service
+    participant SS as 📅 Subscription Service
+    participant BS as 💰 Billing Service
+    participant PG as 💳 Payment Gateway
+    participant MS as 🧩 Module Service
+    participant FS as ⚙️ Feature Service
+    participant NS as 📧 Notification Service
+    
+    autonumber
+
+    %% Trial Setup
+    CA->>+TS: 📝 Request Trial
+    TS->>SS: 🆕 Create Trial
+    SS-->>TS: ✔️ Trial Ready
+    TS->>FS: ⚙️ Set Features
+    TS->>MS: 🧩 Enable Modules
+    TS-->>-CA: 🎉 Trial Active
+
+    %% Trial Monitoring
+    Note over CA,NS: Trial Period
+    FS->>NS: 📊 Send Usage
+    NS-->>CA: 📋 Usage Report
+    SS->>NS: ⏳ Expiry Warning
+    NS-->>CA: ⚠️ Trial Ending
+
+    %% Subscription Flow
+    CA->>+SS: 💳 Choose Plan
+    SS-->>-CA: ✔️ Plan Confirmed
+    
+    CA->>+BS: 💳 Enter Payment
+    BS->>PG: 💸 Process Payment
+    PG-->>BS: ✅ Success
+    BS-->>-CA: 🎉 Payment Verified
+
+    %% Provisioning
+    CA->>+SS: 🚀 Confirm Sub
+    SS->>TS: 📈 Upgrade Status
+    SS->>MS: 🧩 Add Modules
+    SS->>FS: ⚙️ Raise Limits
+    SS->>BS: 🔄 Schedule Billing
+    SS->>NS: 📧 Send Confirm
+    NS-->>CA: 🎉 Welcome Email
+    SS-->>-CA: 🎉 Sub Active
+
+    %% Management
+    alt ⬆️ Plan Upgrade
+        CA->>+SS: ⬆️ Upgrade Plan
+        SS->>BS: 🧮 Calc Cost
+        SS-->>CA: 💵 Show Pricing
+        CA->>SS: ✅ Confirm
+        SS->>BS: 💸 Charge Fee
+        SS->>MS: 🧩 New Modules
+        SS->>FS: ⚙️ New Limits
+        SS-->>-CA: 🎉 Upgrade Done
+    end
+    
+    alt ⚙️ Feature Changes
+        SA->>+FS: 🛠️ Update Config
+        FS->>NS: 📢 Notify Users
+        NS-->>CA: 📧 Feature Update
+        FS-->>-SA: ✅ Config Saved
+    end

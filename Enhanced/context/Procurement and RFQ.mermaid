@@ -1,0 +1,71 @@
+flowchart LR
+    %% Main systems
+    PM[Procurement Management System]:::procurement
+    RFQ[RFQ Management System]:::rfq
+    
+    %% External entities
+    PO([Procurement Officer]):::external
+    VE([Vendor]):::external
+    DM([Department Manager]):::external
+    FM([Finance Manager]):::external
+    
+    %% Other systems
+    INV[Inventory Management]:::inventory
+    ACC[Accounting System]:::accounting
+    DOC[Document Management]:::external_system
+    REP[Reporting System]:::reporting
+    WF[Workflow System]:::system
+    MAIL[Notification Service]:::external_system
+    
+    %% Connections with data flows
+    %% Procurement Officer interactions
+    PO -->|Create Purchase\nRequests| PM
+    PO -->|Generate & Manage\nRFQs| RFQ
+    PM -->|Purchase\nRequest Status| PO
+    RFQ -->|RFQ Status\n& Responses| PO
+    
+    %% Department Manager interactions
+    DM -->|Submit Purchase\nNeeds| PM
+    DM -->|Approve\nRequests| PM
+    PM -->|Request\nStatus| DM
+    
+    %% Vendor interactions
+    RFQ -->|RFQ\nDocuments| VE
+    VE -->|Quotation\nSubmission| RFQ
+    PM -->|Purchase\nOrders| VE
+    VE -->|Order\nConfirmation| PM
+    
+    %% Finance Manager interactions
+    FM -->|Approve\nPurchase Orders| PM
+    PM -->|Budget\nImpact| FM
+    
+    %% System interactions
+    PM <-->|Inventory\nChecks & Updates| INV
+    PM -->|Invoice\nVerification| ACC
+    ACC -->|Payment\nStatus| PM
+    
+    PM -->|Store\nDocuments| DOC
+    RFQ -->|Store\nQuotations| DOC
+    
+    PM -->|Procurement\nData| REP
+    RFQ -->|RFQ\nMetrics| REP
+    
+    PM <-->|Approval\nWorkflows| WF
+    RFQ <-->|RFQ Process\nWorkflows| WF
+    
+    PM -->|Notifications| MAIL
+    RFQ -->|RFQ\nNotifications| MAIL
+    
+    %% RFQ to Procurement connection
+    RFQ -->|Selected Vendor\n& Quotation| PM
+    PM -->|Request for\nQuotations| RFQ
+    
+    %% Styles
+    classDef system fill:#6495ED,stroke:#4169E1,color:white,rx:10,ry:10
+    classDef procurement fill:#BA68C8,stroke:#9C27B0,color:white,rx:10,ry:10
+    classDef rfq fill:#9575CD,stroke:#673AB7,color:white,rx:10,ry:10
+    classDef inventory fill:#66BB6A,stroke:#43A047,color:white,rx:10,ry:10
+    classDef accounting fill:#42A5F5,stroke:#1E88E5,color:white,rx:10,ry:10
+    classDef external fill:#FFD700,stroke:#DAA520,color:black,rx:5,ry:5,shape:stadium
+    classDef external_system fill:#B0C4DE,stroke:#778899,color:black,rx:5,ry:5
+    classDef reporting fill:#9370DB,stroke:#7B68EE,color:white,rx:10,ry:10

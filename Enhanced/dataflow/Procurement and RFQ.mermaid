@@ -1,0 +1,100 @@
+flowchart TD
+    %% External entities
+    DM[Department Manager]:::external
+    PO[Procurement Officer]:::external
+    VE[Vendor]:::external
+    FM[Finance Manager]:::external
+    
+    %% Processes
+    P1[1.0\nPurchase Request]:::process_proc
+    P2[2.0\nRequest Approval]:::process_proc
+    P3[3.0\nRFQ Creation]:::process_rfq
+    P4[4.0\nVendor Selection]:::process_rfq
+    P5[5.0\nQuotation Management]:::process_rfq
+    P6[6.0\nQuotation Comparison]:::process_rfq
+    P7[7.0\nVendor Selection]:::process_rfq
+    P8[8.0\nPurchase Order]:::process_proc
+    P9[9.0\nOrder Tracking]:::process_proc
+    
+    %% Data stores
+    DS1[(Purchase Requests)]:::datastore
+    DS2[(Approved Requests)]:::datastore
+    DS3[(RFQ Repository)]:::datastore
+    DS4[(Vendor Database)]:::datastore
+    DS5[(Quotations)]:::datastore
+    DS6[(Comparison Data)]:::datastore
+    DS7[(Purchase Orders)]:::datastore
+    DS8[(Product Catalog)]:::datastore
+    DS9[(Department Budget)]:::datastore
+    
+    %% Data flows
+    %% Purchase request flow
+    DM -->|Create request| P1
+    P1 -->|Check budget| DS9
+    P1 -->|Get product details| DS8
+    P1 -->|Store request| DS1
+    P1 -->|Request for approval| P2
+    
+    %% Approval flow
+    P2 -->|Review request| DS1
+    P2 -->|Verify budget| DS9
+    P2 -->|Approval decision| DS2
+    P2 -->|Approval notification| DM
+    P2 -->|Approved request| P3
+    
+    %% RFQ creation flow
+    PO -->|Initiate RFQ| P3
+    P3 -->|Get request details| DS2
+    P3 -->|Get product specifications| DS8
+    P3 -->|Create RFQ| DS3
+    P3 -->|RFQ created| P4
+    
+    %% Vendor selection flow
+    P4 -->|Get potential vendors| DS4
+    P4 -->|Selected vendors| DS3
+    P4 -->|RFQ details| P5
+    
+    %% Quotation management flow
+    P5 -->|Send RFQ| VE
+    VE -->|Submit quotation| P5
+    P5 -->|Store quotation| DS5
+    P5 -->|Quotation received| P6
+    
+    %% Comparison flow
+    PO -->|Request comparison| P6
+    P6 -->|Get quotations| DS5
+    P6 -->|Store comparison| DS6
+    P6 -->|Comparison results| P7
+    
+    %% Vendor selection flow
+    PO -->|Select vendor| P7
+    P7 -->|Update RFQ| DS3
+    P7 -->|Selected vendor| DS4
+    P7 -->|Selection details| P8
+    
+    %% Purchase order flow
+    P8 -->|Get selection details| DS6
+    P8 -->|Get vendor info| DS4
+    P8 -->|Create PO| DS7
+    FM -->|Approve PO| P8
+    P8 -->|Send PO| VE
+    P8 -->|PO details| P9
+    
+    %% Order tracking flow
+    VE -->|Order confirmation| P9
+    P9 -->|Update PO status| DS7
+    P9 -->|Status updates| PO
+    P9 -->|Delivery details| DM
+    
+    %% Optional connections
+    P1 -.->|Urgent requests| P3
+    P2 -.->|Rejected requests| DM
+    P5 -.->|Request clarification| VE
+    P7 -.->|Update vendor rating| DS4
+    P9 -.->|Update budget| DS9
+    
+    %% Styles
+    classDef external fill:#FFD700,stroke:#E6C300,color:black
+    classDef process_proc fill:#BA68C8,stroke:#A44CAA,color:white
+    classDef process_rfq fill:#9575CD,stroke:#7958B3,color:white
+    classDef datastore fill:#90EE90,stroke:#7BC96F,color:black

@@ -1,0 +1,238 @@
+erDiagram
+    %% Entity Definitions
+    PRODUCT {
+        int id PK
+        int tenant_id FK
+        string sku
+        string name
+        string description
+        string category_id FK
+        string brand
+        string model
+        string barcode
+        decimal purchase_price
+        decimal sale_price
+        decimal tax_rate
+        string uom
+        decimal weight
+        string dimensions
+        boolean is_inventory_item
+        boolean is_active
+        boolean is_sellable
+        boolean is_purchasable
+        string image_url
+        decimal min_stock_level
+        decimal reorder_quantity
+        int lead_time_days
+        string created_by
+        datetime created_date
+    }
+    
+    PRODUCT_CATEGORY {
+        int id PK
+        int tenant_id FK
+        int parent_category_id FK
+        string name
+        string description
+        string code
+        boolean is_active
+        int sort_order
+    }
+    
+    PRODUCT_ATTRIBUTE {
+        int id PK
+        int product_id FK
+        string name
+        string value
+        string unit
+        string type
+    }
+    
+    PRODUCT_VARIANT {
+        int id PK
+        int product_id FK
+        string sku
+        string name
+        string attributes
+        decimal price_adjustment
+        boolean is_active
+        string image_url
+    }
+    
+    PRODUCT_UOM {
+        int id PK
+        int product_id FK
+        string code
+        string name
+        decimal conversion_factor
+        boolean is_base_unit
+    }
+    
+    WAREHOUSE {
+        int id PK
+        int tenant_id FK
+        string code
+        string name
+        string address
+        string contact_person
+        string contact_phone
+        string email
+        boolean is_active
+        boolean is_default
+    }
+    
+    LOCATION {
+        int id PK
+        int warehouse_id FK
+        string code
+        string name
+        string description
+        string zone
+        string aisle
+        string rack
+        string bin
+        boolean is_active
+        boolean is_default
+        int capacity
+    }
+    
+    INVENTORY_ITEM {
+        int id PK
+        int product_id FK
+        int variant_id FK
+        int warehouse_id FK
+        int location_id FK
+        string lot_number
+        string serial_number
+        date expiry_date
+        string status
+        decimal quantity
+        string uom
+        decimal reserved_quantity
+        decimal available_quantity
+        datetime last_count_date
+    }
+    
+    STOCK_MOVEMENT {
+        int id PK
+        int source_warehouse_id FK
+        int source_location_id FK
+        int destination_warehouse_id FK
+        int destination_location_id FK
+        int product_id FK
+        int variant_id FK
+        string reference
+        string type
+        decimal quantity
+        string uom
+        string lot_number
+        string serial_number
+        datetime movement_date
+        string reason
+        string notes
+        string performed_by
+    }
+    
+    STOCKTAKE {
+        int id PK
+        int tenant_id FK
+        int warehouse_id FK
+        string reference
+        string status
+        datetime start_date
+        datetime completion_date
+        string initiated_by
+        string approved_by
+        string notes
+        boolean include_zero_stock
+    }
+    
+    STOCKTAKE_ITEM {
+        int id PK
+        int stocktake_id FK
+        int product_id FK
+        int variant_id FK
+        int location_id FK
+        string lot_number
+        string serial_number
+        decimal system_quantity
+        decimal counted_quantity
+        decimal discrepancy
+        string uom
+        boolean is_counted
+        string counted_by
+        datetime count_date
+        string notes
+    }
+    
+    STOCK_ADJUSTMENT {
+        int id PK
+        int tenant_id FK
+        int warehouse_id FK
+        string reference
+        string type
+        string reason
+        datetime adjustment_date
+        string approved_by
+        string notes
+    }
+    
+    STOCK_ADJUSTMENT_ITEM {
+        int id PK
+        int stock_adjustment_id FK
+        int product_id FK
+        int variant_id FK
+        int location_id FK
+        string lot_number
+        string serial_number
+        decimal quantity_before
+        decimal quantity_after
+        decimal adjustment_quantity
+        string uom
+        decimal value_before
+        decimal value_after
+        string reason
+        string notes
+    }
+    
+    %% Relationships
+    PRODUCT ||--o{ PRODUCT_ATTRIBUTE : "has"
+    PRODUCT ||--o{ PRODUCT_VARIANT : "has"
+    PRODUCT ||--o{ PRODUCT_UOM : "measured in"
+    PRODUCT }o--|| PRODUCT_CATEGORY : "categorized as"
+    
+    WAREHOUSE ||--o{ LOCATION : "contains"
+    
+    PRODUCT ||--o{ INVENTORY_ITEM : "stocked as"
+    PRODUCT_VARIANT ||--o{ INVENTORY_ITEM : "stocked as"
+    WAREHOUSE ||--o{ INVENTORY_ITEM : "stores"
+    LOCATION ||--o{ INVENTORY_ITEM : "holds"
+    
+    PRODUCT ||--o{ STOCK_MOVEMENT : "involved in"
+    WAREHOUSE ||--o{ STOCK_MOVEMENT : "source of"
+    WAREHOUSE ||--o{ STOCK_MOVEMENT : "destination of"
+    LOCATION ||--o{ STOCK_MOVEMENT : "source of"
+    LOCATION ||--o{ STOCK_MOVEMENT : "destination of"
+    
+    WAREHOUSE ||--o{ STOCKTAKE : "conducted in"
+    STOCKTAKE ||--o{ STOCKTAKE_ITEM : "includes"
+    PRODUCT ||--o{ STOCKTAKE_ITEM : "counted in"
+    LOCATION ||--o{ STOCKTAKE_ITEM : "counted in"
+    
+    WAREHOUSE ||--o{ STOCK_ADJUSTMENT : "adjusted in"
+    STOCK_ADJUSTMENT ||--o{ STOCK_ADJUSTMENT_ITEM : "includes"
+    PRODUCT ||--o{ STOCK_ADJUSTMENT_ITEM : "adjusted"
+    LOCATION ||--o{ STOCK_ADJUSTMENT_ITEM : "adjusted in"
+    
+    %% Styling with class definitions
+    classDef product_entities fill:#66BB6A,stroke:#43A047,color:white
+    classDef warehouse_entities fill:#81C784,stroke:#66BB6A,color:white
+    classDef inventory_entities fill:#A5D6A7,stroke:#81C784,color:black
+    classDef movement_entities fill:#C8E6C9,stroke:#A5D6A7,color:black
+    classDef stocktake_entities fill:#E8F5E9,stroke:#C8E6C9,color:black
+    
+    class PRODUCT,PRODUCT_CATEGORY,PRODUCT_ATTRIBUTE,PRODUCT_VARIANT,PRODUCT_UOM product_entities
+    class WAREHOUSE,LOCATION warehouse_entities
+    class INVENTORY_ITEM inventory_entities
+    class STOCK_MOVEMENT,STOCK_ADJUSTMENT,STOCK_ADJUSTMENT_ITEM movement_entities
+    class STOCKTAKE,STOCKTAKE_ITEM stocktake_entities

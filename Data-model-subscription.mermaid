@@ -1,0 +1,169 @@
+erDiagram
+    %% ==============================
+    %%           Core Tenant Entities
+    %% ==============================
+    TENANT {
+        int id PK
+        string name
+        string domain
+        datetime creationDate
+        boolean isActive
+        boolean isTrialAccount
+        datetime trialExpiryDate
+        int maxUsers
+    }
+    
+    USER {
+        int id PK
+        int tenantId FK
+        string username
+        string email
+        string passwordHash
+        string role
+        boolean isActive
+        datetime lastLogin
+    }
+    
+    ROLE {
+        int id PK
+        int tenantId FK
+        string name
+        string description
+    }
+    
+    PERMISSION {
+        int id PK
+        string resource
+        string action
+    }
+    
+    ROLE_PERMISSION {
+        int id PK
+        int roleId FK
+        int permissionId FK
+    }
+    
+    %% ==============================
+    %%        Subscription Entities
+    %% ==============================
+    SUBSCRIPTION_PLAN {
+        int id PK
+        string name
+        string description
+        decimal monthlyPrice
+        decimal annualPrice
+        string currency
+        int maxUsers
+        int maxStorage
+        boolean isActive
+    }
+    
+    TENANT_SUBSCRIPTION {
+        int id PK
+        int tenantId FK
+        int subscriptionPlanId FK
+        string subscriptionStatus
+        datetime startDate
+        datetime endDate
+        string billingCycle
+        boolean autoRenew
+    }
+    
+    SUBSCRIPTION_FEATURE {
+        int id PK
+        string featureCode
+        string featureName
+        string description
+        string category
+        boolean isActive
+    }
+    
+    PLAN_FEATURE {
+        int id PK
+        int subscriptionPlanId FK
+        int subscriptionFeatureId FK
+        boolean isEnabled
+        int usageLimit
+        string limitPeriod
+    }
+    
+    MODULE_ACCESS {
+        int id PK
+        int subscriptionPlanId FK
+        string moduleName
+        boolean isEnabled
+    }
+    
+    %% ==============================
+    %%         Billing Entities
+    %% ==============================
+    INVOICE {
+        int id PK
+        int tenantId FK
+        int subscriptionId FK
+        string invoiceNumber
+        datetime issueDate
+        datetime dueDate
+        decimal amount
+        decimal tax
+        decimal total
+        string paymentStatus
+    }
+    
+    PAYMENT_METHOD {
+        int id PK
+        int tenantId FK
+        string methodType
+        string paymentToken
+        string cardLast4
+        boolean isDefault
+    }
+    
+    FEATURE_USAGE {
+        int id PK
+        int tenantId FK
+        int featureId FK
+        int currentUsage
+        int allocatedLimit
+        datetime resetDate
+    }
+    
+    %% ==============================
+    %%         Relationships
+    %% ==============================
+    TENANT ||--o{ USER : "has"
+    TENANT ||--o{ ROLE : "defines"
+    ROLE ||--o{ ROLE_PERMISSION : "has"
+    PERMISSION ||--o{ ROLE_PERMISSION : "assigned to"
+    
+    TENANT ||--|| TENANT_SUBSCRIPTION : "subscribes with"
+    TENANT_SUBSCRIPTION ||--|| SUBSCRIPTION_PLAN : "uses"
+    SUBSCRIPTION_PLAN ||--o{ PLAN_FEATURE : "includes"
+    SUBSCRIPTION_PLAN ||--o{ MODULE_ACCESS : "provides access to"
+    PLAN_FEATURE }o--|| SUBSCRIPTION_FEATURE : "enables"
+    
+    TENANT ||--o{ INVOICE : "billed to"
+    TENANT_SUBSCRIPTION ||--o{ INVOICE : "generates"
+    TENANT ||--o{ PAYMENT_METHOD : "has"
+    
+    TENANT ||--o{ FEATURE_USAGE : "tracks"
+    FEATURE_USAGE }o--|| SUBSCRIPTION_FEATURE : "measures"
+
+%% ==============================
+%%        Custom Styles
+%% ==============================
+    style TENANT fill:#4CAF50,stroke:#2E7D32,stroke-width:2px
+    style USER fill:#2196F3,stroke:#1565C0,stroke-width:2px
+    style ROLE fill:#9C27B0,stroke:#7B1FA2,stroke-width:2px
+    style PERMISSION fill:#FF9800,stroke:#EF6C00,stroke-width:2px
+    style ROLE_PERMISSION fill:#E91E63,stroke:#AD1457,stroke-width:2px
+    
+    style SUBSCRIPTION_PLAN fill:#673AB7,stroke:#4527A0,stroke-width:2px
+    style TENANT_SUBSCRIPTION fill:#3F51B5,stroke:#283593,stroke-width:2px
+    style SUBSCRIPTION_FEATURE fill:#009688,stroke:#00695C,stroke-width:2px
+    style PLAN_FEATURE fill:#00BCD4,stroke:#00838F,stroke-width:2px
+    style MODULE_ACCESS fill:#8BC34A,stroke:#558B2F,stroke-width:2px
+
+    style INVOICE fill:#FFEB3B,stroke:#FBC02D,stroke-width:2px
+    style PAYMENT_METHOD fill:#FF5722,stroke:#D84315,stroke-width:2px
+    style FEATURE_USAGE fill:#607D8B,stroke:#455A64,stroke-width:2px

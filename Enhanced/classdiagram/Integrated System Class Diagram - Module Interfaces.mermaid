@@ -1,0 +1,285 @@
+classDiagram
+    %% ======================
+    %% Color Definitions
+    %% ======================
+    classDef core fill:#607D8B,stroke:#455A64,color:white
+    classDef subscription fill:#00BCD4,stroke:#0097A7,color:white
+    classDef accounting fill:#2196F3,stroke:#1976D2,color:white
+    classDef sales fill:#FF9800,stroke:#F57C00,color:black
+    classDef inventory fill:#4CAF50,stroke:#388E3C,color:white
+    classDef hr fill:#E91E63,stroke:#C2185B,color:white
+    classDef payroll fill:#EC407A,stroke:#D81B60,color:white
+    classDef procurement fill:#9C27B0,stroke:#7B1FA2,color:white
+    classDef rfq fill:#AB47BC,stroke:#8E24AA,color:white
+
+    %% ======================
+    %% Core System
+    %% ======================
+    class Tenant {
+        <<core>>
+        +String name
+        +String domain
+        +Boolean isActive
+        +tenantId: Long
+    }
+
+    class TenantSubscription {
+        <<subscription>>
+        +subscriptionPlanId: Long
+        +SubscriptionStatus status
+        +LocalDateTime startDate
+        +LocalDateTime endDate
+    }
+
+    class User {
+        <<core>>
+        +tenantId: Long
+        +String username
+        +String email
+        +isActive: Boolean
+    }
+
+    %% ======================
+    %% Key Entity Interfaces
+    %% ======================
+    
+    %% Accounting Module
+    class Account {
+        <<accounting>>
+        +tenantId: Long
+        +String code
+        +String name
+        +AccountType type
+    }
+
+    class JournalEntry {
+        <<accounting>>
+        +tenantId: Long
+        +String entryNumber
+        +JournalEntryType type
+        +LocalDateTime entryDate
+    }
+
+    class FiscalYear {
+        <<accounting>>
+        +tenantId: Long
+        +LocalDate startDate
+        +LocalDate endDate
+        +FiscalYearStatus status
+    }
+
+    %% Inventory Module
+    class Product {
+        <<inventory>>
+        +tenantId: Long
+        +String sku
+        +String name
+        +Boolean isInventoryItem
+    }
+
+    class Warehouse {
+        <<inventory>>
+        +tenantId: Long
+        +String code
+        +String name
+        +Boolean isActive
+    }
+
+    class InventoryItem {
+        <<inventory>>
+        +productId: Long
+        +warehouseId: Long
+        +Double quantity
+        +String status
+    }
+
+    %% Sales Module
+    class Customer {
+        <<sales>>
+        +tenantId: Long
+        +String code
+        +String name
+        +CustomerType type
+    }
+
+    class SalesOrder {
+        <<sales>>
+        +tenantId: Long
+        +customerId: Long
+        +String orderNumber
+        +OrderStatus status
+    }
+
+    class SalesInvoice {
+        <<sales>>
+        +tenantId: Long
+        +customerId: Long
+        +orderId: Long
+        +String invoiceNumber
+    }
+
+    %% Procurement Module
+    class Vendor {
+        <<procurement>>
+        +tenantId: Long
+        +String code
+        +String name
+        +Boolean isApproved
+    }
+
+    class RequestForBuy {
+        <<procurement>>
+        +tenantId: Long
+        +String rfbNumber
+        +RequestForBuyStatus status
+    }
+
+    class PurchaseOrder {
+        <<procurement>>
+        +tenantId: Long
+        +vendorId: Long
+        +String poNumber
+        +PurchaseOrderStatus status
+    }
+
+    %% RFQ Module
+    class RFQ {
+        <<rfq>>
+        +tenantId: Long
+        +rfbId: Long
+        +String rfqNumber
+        +RFQStatus status
+    }
+
+    class VendorQuotation {
+        <<rfq>>
+        +vendorRFQId: Long
+        +String quotationNumber
+        +QuotationStatus status
+    }
+
+    %% HR Module
+    class Employee {
+        <<hr>>
+        +tenantId: Long
+        +String employeeCode
+        +String firstName
+        +String lastName
+        +EmploymentStatus status
+    }
+
+    class Department {
+        <<hr>>
+        +tenantId: Long
+        +String code
+        +String name
+        +managerId: Long
+    }
+
+    %% Payroll Module
+    class PayrollRun {
+        <<payroll>>
+        +tenantId: Long
+        +periodId: Long
+        +String reference
+        +RunStatus status
+    }
+
+    class PayrollEntry {
+        <<payroll>>
+        +payrollRunId: Long
+        +employeeId: Long
+        +BigDecimal grossPay
+        +BigDecimal netPay
+    }
+
+    %% ======================
+    %% Module Interface Relationships
+    %% ======================
+    
+    %% Core Relationships
+    Tenant "1" -- "1" TenantSubscription : subscribes
+    Tenant "1" -- "many" User : has
+
+    %% Accounting Relationships
+    Tenant "1" -- "many" Account : defines
+    Tenant "1" -- "many" JournalEntry : records
+    Tenant "1" -- "many" FiscalYear : establishes
+    
+    %% Sales Relationships and Integrations
+    Tenant "1" -- "many" Customer : manages
+    Customer "1" -- "many" SalesOrder : places
+    SalesOrder "1" -- "many" SalesInvoice : generates
+    SalesInvoice "many" -- "1" Account : receivable
+    SalesInvoice "1" -- "1" JournalEntry : creates
+    SalesOrder "many" -- "many" Product : includes
+    SalesOrder "many" -- "many" InventoryItem : reserves
+
+    %% Inventory Relationships and Integrations
+    Tenant "1" -- "many" Product : catalogs
+    Tenant "1" -- "many" Warehouse : maintains
+    Warehouse "1" -- "many" InventoryItem : stores
+    Product "1" -- "many" InventoryItem : tracked as
+    InventoryItem "many" -- "1" Account : asset
+
+    %% Procurement Relationships and Integrations
+    Tenant "1" -- "many" Vendor : contracts
+    Tenant "1" -- "many" RequestForBuy : initiates
+    RequestForBuy "1" -- "1" RFQ : creates
+    RequestForBuy "many" -- "1" Department : requests
+    Vendor "1" -- "many" PurchaseOrder : receives
+    PurchaseOrder "many" -- "many" Product : orders
+    PurchaseOrder "1" -- "1" JournalEntry : creates
+    PurchaseOrder "many" -- "1" Account : payable
+
+    %% RFQ Relationships
+    RFQ "many" -- "many" Vendor : sent to
+    Vendor "1" -- "many" VendorQuotation : submits
+    VendorQuotation "1" -- "1" PurchaseOrder : converts to
+    RFQ "many" -- "many" Product : requests
+
+    %% HR and Payroll Relationships and Integrations
+    Tenant "1" -- "many" Employee : employs
+    Tenant "1" -- "many" Department : organizes
+    Employee "many" -- "1" Department : works in
+    Employee "1" -- "many" User : associated with
+    Tenant "1" -- "many" PayrollRun : processes
+    PayrollRun "1" -- "many" PayrollEntry : contains
+    PayrollEntry "many" -- "1" Employee : compensates
+    PayrollRun "1" -- "1" JournalEntry : creates
+
+    %% Account Integration Points
+    Account "1" -- "many" Product : tracks costs
+    Account "1" -- "many" Department : allocates expenses
+    Account "1" -- "many" PayrollEntry : expenses
+
+    %% Cross-Module Workflows
+    RequestForBuy --|> PurchaseOrder : workflow
+    PurchaseOrder --|> InventoryItem : updates
+    InventoryItem --|> SalesOrder : fulfills
+    SalesOrder --|> SalesInvoice : bills
+    SalesInvoice --|> Account : posts to
+    PayrollRun --|> Account : posts to
+
+    %% Apply styling
+    class Tenant core
+    class TenantSubscription subscription
+    class User core
+    class Account accounting
+    class JournalEntry accounting
+    class FiscalYear accounting
+    class Product inventory
+    class Warehouse inventory
+    class InventoryItem inventory
+    class Customer sales
+    class SalesOrder sales
+    class SalesInvoice sales
+    class Vendor procurement
+    class RequestForBuy procurement
+    class PurchaseOrder procurement
+    class RFQ rfq
+    class VendorQuotation rfq
+    class Employee hr
+    class Department hr
+    class PayrollRun payroll
+    class PayrollEntry payroll

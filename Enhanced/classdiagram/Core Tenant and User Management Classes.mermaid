@@ -1,0 +1,177 @@
+classDiagram
+    %% ======================
+    %% Color Definitions
+    %% ======================
+    classDef core fill:#607D8B,stroke:#455A64,color:white
+    classDef tenant fill:#4CAF50,stroke:#2E7D32,color:white
+    classDef user fill:#2196F3,stroke:#1565C0,color:white
+    classDef role fill:#9C27B0,stroke:#7B1FA2,color:white
+    classDef permission fill:#FF9800,stroke:#EF6C00,color:white
+    classDef config fill:#673AB7,stroke:#4527A0,color:white
+    classDef audit fill:#FF5722,stroke:#D84315,color:white
+    classDef data fill:#607D8B,stroke:#455A64,color:white
+
+    %% ======================
+    %% Core System Classes
+    %% ======================
+    class BaseEntity {
+        +Long id
+        +Integer version
+        +LocalDateTime createdDate
+        +String createdBy
+        +LocalDateTime lastModifiedDate
+        +String lastModifiedBy
+        +Boolean isActive
+    }
+    
+    class Tenant {
+        +String name
+        +String domain
+        +String contactEmail
+        +String contactPhone
+        +String address
+        +LocalDateTime creationDate
+        +Boolean isActive
+        +Boolean isTrialAccount
+        +LocalDateTime trialExpiryDate
+        +Integer maxUsers
+        +String timezone
+        +String locale
+        +String currencyCode
+        +createTenant()
+        +activateTenant()
+        +deactivateTenant()
+        +extendTrial()
+    }
+    
+    class TenantConfiguration {
+        +Long tenantId
+        +String configKey
+        +String configValue
+        +String dataType
+        +String description
+        +Boolean systemConfig
+        +LocalDateTime modifiedDate
+        +getValue()
+        +setValue()
+    }
+    
+    class User {
+        +Long tenantId
+        +String username
+        +String email
+        +String firstName
+        +String lastName
+        +String passwordHash
+        +Boolean isActive
+        +Boolean emailVerified
+        +LocalDateTime lastLogin
+        +String phoneNumber
+        +String profileImageUrl
+        +createUser()
+        +updateUser()
+        +changePassword()
+        +deactivateUser()
+        +reactivateUser()
+    }
+    
+    class Role {
+        +Long tenantId
+        +String name
+        +String description
+        +Boolean isSystemRole
+        +createRole()
+        +updateRole()
+        +deleteRole()
+    }
+    
+    class Permission {
+        +String resource
+        +String action
+        +String description
+        +Boolean isSystemPermission
+        +createPermission()
+        +updatePermission()
+        +deletePermission()
+    }
+    
+    class UserRole {
+        +Long userId
+        +Long roleId
+        +LocalDateTime assignedDate
+        +assignRole()
+        +removeRole()
+    }
+    
+    class RolePermission {
+        +Long roleId
+        +Long permissionId
+        +assignPermission()
+        +revokePermission()
+    }
+    
+    class TenantDataSource {
+        +Long tenantId
+        +String schemaName
+        +String jdbcUrl
+        +String username
+        +String passwordEncrypted
+        +Boolean active
+        +createSchema()
+        +migrateSchema()
+        +dropSchema()
+    }
+    
+    class AuditLog {
+        +Long tenantId
+        +Long userId
+        +String entityType
+        +Long entityId
+        +String action
+        +LocalDateTime timestamp
+        +String oldValues
+        +String newValues
+        +String ipAddress
+        +String userAgent
+        +logActivity()
+        +findByEntity()
+        +findByUser()
+    }
+    
+    %% ======================
+    %% Class Relationships
+    %% ======================
+    BaseEntity <|-- Tenant
+    BaseEntity <|-- User
+    BaseEntity <|-- Role
+    BaseEntity <|-- Permission
+    BaseEntity <|-- TenantConfiguration
+    BaseEntity <|-- TenantDataSource
+    BaseEntity <|-- AuditLog
+    
+    Tenant "1" -- "many" User : has
+    Tenant "1" -- "many" TenantConfiguration : configures
+    Tenant "1" -- "1" TenantDataSource : uses
+    
+    User "many" -- "many" Role : has
+    Role "many" -- "many" Permission : has
+    
+    User "1" -- "many" UserRole : assigned
+    Role "1" -- "many" UserRole : assigned to
+    
+    Role "1" -- "many" RolePermission : contains
+    Permission "1" -- "many" RolePermission : included in
+
+    %% ======================
+    %% Apply styling
+    %% ======================
+    class BaseEntity core
+    class Tenant tenant
+    class TenantConfiguration config
+    class User user
+    class Role role
+    class Permission permission
+    class UserRole role
+    class RolePermission role
+    class TenantDataSource data
+    class AuditLog audit

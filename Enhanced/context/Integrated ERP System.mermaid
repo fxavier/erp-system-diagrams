@@ -1,0 +1,87 @@
+flowchart TD
+    %% Main ERP System
+    ERP[Enterprise Resource\nPlanning System]:::system
+    
+    %% External entities
+    SA([System\nAdministrator]):::external
+    TA([Tenant\nAdministrator]):::external
+    CU([Customer]):::external
+    VE([Vendor]):::external
+    EM([Employee]):::external
+    MG([Management]):::external
+    TX([Tax & Regulatory\nAuthorities]):::external
+    
+    %% External systems
+    BANK[Banking\nSystem]:::external_system
+    PAY[Payment\nGateways]:::external_system
+    SHIP[Shipping\nProviders]:::external_system
+    EMAIL[Email\nService]:::external_system
+    CLOUD[Cloud Storage\nServices]:::external_system
+    AUTH[Authentication\nProviders]:::external_system
+    INTG[Third-Party\nIntegrations]:::external_system
+    
+    %% Core modules within ERP
+    subgraph CoreModules[Core ERP Modules]
+        TM[Tenant\nManagement]:::core
+        SM[Subscription\nManagement]:::subscription
+        IM[Inventory\nManagement]:::inventory
+        SL[Sales\nManagement]:::sales
+        PC[Procurement\n& RFQ]:::procurement
+        AC[Accounting\n& Finance]:::accounting
+        HR[HR &\nPayroll]:::hr
+        RP[Reporting &\nAnalytics]:::reporting
+    end
+    
+    %% External entity connections to ERP
+    SA -->|System configuration\n& maintenance| ERP
+    TA -->|Tenant configuration\n& administration| ERP
+    CU -->|Orders, payments\n& inquiries| ERP
+    VE -->|Quotes, invoices\n& deliveries| ERP
+    EM -->|Time entry, requests\n& self-service| ERP
+    MG -->|Approvals &\nreporting requests| ERP
+    TX -->|Regulatory requirements\n& tax updates| ERP
+    
+    ERP -->|System access\n& reports| SA
+    ERP -->|Tenant dashboard\n& controls| TA
+    ERP -->|Order confirmations\n& invoices| CU
+    ERP -->|Purchase orders\n& payments| VE
+    ERP -->|Pay statements\n& company info| EM
+    ERP -->|Business intelligence\n& KPIs| MG
+    ERP -->|Compliance reports\n& tax filings| TX
+    
+    %% External system connections
+    ERP <-->|Transactions &\nreconciliation| BANK
+    ERP <-->|Payment processing\n& authorization| PAY
+    ERP <-->|Shipping requests\n& tracking| SHIP
+    ERP <-->|Notifications &\ncommunications| EMAIL
+    ERP <-->|Document storage\n& retrieval| CLOUD
+    ERP <-->|Identity verification\n& SSO| AUTH
+    ERP <-->|Data exchange\n& API calls| INTG
+    
+    %% Module interconnections (simplified for clarity)
+    TM --- SM
+    IM --- SL
+    IM --- PC
+    SL --- AC
+    PC --- AC
+    HR --- AC
+    TM --- RP
+    SM --- RP
+    IM --- RP
+    SL --- RP
+    PC --- RP
+    AC --- RP
+    HR --- RP
+    
+    %% Styles
+    classDef system fill:#6495ED,stroke:#4169E1,color:white,rx:10,ry:10
+    classDef core fill:#607D8B,stroke:#455A64,color:white,rx:5,ry:5
+    classDef subscription fill:#00CED1,stroke:#008B8B,color:white,rx:5,ry:5
+    classDef inventory fill:#66BB6A,stroke:#43A047,color:white,rx:5,ry:5
+    classDef sales fill:#FF9800,stroke:#F57C00,color:black,rx:5,ry:5
+    classDef procurement fill:#BA68C8,stroke:#9C27B0,color:white,rx:5,ry:5
+    classDef accounting fill:#42A5F5,stroke:#1E88E5,color:white,rx:5,ry:5
+    classDef hr fill:#EC407A,stroke:#D81B60,color:white,rx:5,ry:5
+    classDef reporting fill:#9370DB,stroke:#7B68EE,color:white,rx:5,ry:5
+    classDef external fill:#FFD700,stroke:#DAA520,color:black,rx:5,ry:5,shape:stadium
+    classDef external_system fill:#B0C4DE,stroke:#778899,color:black,rx:5,ry:5

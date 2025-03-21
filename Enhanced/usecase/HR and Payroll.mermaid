@@ -1,0 +1,181 @@
+graph TB
+    %% Actor definitions
+    subgraph Actors
+        HR([HR Manager])
+        PM([Payroll Manager])
+        EM([Employee])
+        DM([Department Manager])
+        FN([Finance])
+    end
+    
+    %% Use cases
+    subgraph EmployeeManagementUseCases["Employee Management Use Cases"]
+        UC1[Create Employee Record]:::hr
+        UC2[Update Employee Information]:::hr
+        UC3[Terminate Employee]:::hr
+        UC4[Rehire Employee]:::hr
+        UC5[Transfer Employee]:::hr
+        UC6[Promote Employee]:::hr
+        UC7[Manage Employee Documents]:::hr
+    end
+    
+    subgraph OrganizationUseCases["Organization Use Cases"]
+        UC8[Create Department]:::hr
+        UC9[Update Department]:::hr
+        UC10[Create Position]:::hr
+        UC11[Define Reporting Structure]:::hr
+        UC12[View Organization Chart]:::hr
+    end
+    
+    subgraph TimeAttendanceUseCases["Time & Attendance Use Cases"]
+        UC13[Record Attendance]:::hr
+        UC14[Apply for Leave]:::hr
+        UC15[Approve Leave Request]:::hr
+        UC16[Set Work Schedule]:::hr
+        UC17[View Time Sheet]:::hr
+        UC18[Generate Attendance Report]:::hr
+    end
+    
+    subgraph PerformanceUseCases["Performance Management Use Cases"]
+        UC19[Create Performance Review]:::hr
+        UC20[Complete Self-Assessment]:::hr
+        UC21[Conduct Review Meeting]:::hr
+        UC22[Set Performance Goals]:::hr
+        UC23[Track Goal Progress]:::hr
+    end
+    
+    subgraph PayrollSetupUseCases["Payroll Setup Use Cases"]
+        UC24[Define Pay Structure]:::payroll
+        UC25[Configure Pay Components]:::payroll
+        UC26[Set Up Deductions]:::payroll
+        UC27[Configure Tax Settings]:::payroll
+        UC28[Define Pay Periods]:::payroll
+        UC29[Configure Overtime Rules]:::payroll
+    end
+    
+    subgraph PayrollProcessingUseCases["Payroll Processing Use Cases"]
+        UC30[Calculate Payroll]:::payroll
+        UC31[Review Payroll]:::payroll
+        UC32[Approve Payroll]:::payroll
+        UC33[Generate Payslips]:::payroll
+        UC34[Process Payroll Payments]:::payroll
+        UC35[Generate Payroll Reports]:::payroll
+    end
+    
+    subgraph BenefitsManagementUseCases["Benefits Management Use Cases"]
+        UC36[Manage Employee Benefits]:::payroll
+        UC37[Process Benefits Enrollment]:::payroll
+        UC38[Calculate Benefit Costs]:::payroll
+        UC39[Track Benefits Usage]:::payroll
+    end
+    
+    subgraph TaxComplianceUseCases["Tax Compliance Use Cases"]
+        UC40[Calculate Tax Withholdings]:::payroll
+        UC41[Generate Tax Forms]:::payroll
+        UC42[File Tax Returns]:::payroll
+        UC43[Process Year-End Taxes]:::payroll
+    end
+    
+    %% Actor to Use Case connections
+    HR --> UC1
+    HR --> UC2
+    HR --> UC3
+    HR --> UC4
+    HR --> UC5
+    HR --> UC6
+    HR --> UC7
+    HR --> UC8
+    HR --> UC9
+    HR --> UC10
+    HR --> UC11
+    HR --> UC12
+    HR --> UC15
+    HR --> UC16
+    HR --> UC18
+    HR --> UC19
+    HR --> UC21
+    HR --> UC22
+    
+    PM --> UC24
+    PM --> UC25
+    PM --> UC26
+    PM --> UC27
+    PM --> UC28
+    PM --> UC29
+    PM --> UC30
+    PM --> UC31
+    PM --> UC32
+    PM --> UC33
+    PM --> UC34
+    PM --> UC35
+    PM --> UC36
+    PM --> UC38
+    PM --> UC40
+    PM --> UC41
+    PM --> UC42
+    PM --> UC43
+    
+    EM --> UC13
+    EM --> UC14
+    EM --> UC17
+    EM --> UC20
+    EM --> UC23
+    EM --> UC37
+    EM --> UC39
+    
+    DM --> UC15
+    DM --> UC16
+    DM --> UC19
+    DM --> UC21
+    DM --> UC22
+    DM --> UC23
+    
+    FN --> UC32
+    FN --> UC34
+    FN --> UC35
+    FN --> UC43
+    
+    %% Use Case relationships
+    UC1 --> UC16
+    UC1 --> UC24
+    UC3 --> UC30
+    UC5 --> UC2
+    UC6 --> UC2
+    UC6 --> UC24
+    UC14 --> UC15
+    UC13 --> UC17
+    UC13 --> UC30
+    UC15 --> UC17
+    UC17 --> UC18
+    UC17 --> UC30
+    UC19 --> UC20
+    UC20 --> UC21
+    UC21 --> UC22
+    UC22 --> UC23
+    UC24 --> UC25
+    UC24 --> UC26
+    UC26 --> UC27
+    UC28 --> UC30
+    UC29 --> UC30
+    UC13 --> UC30
+    UC30 --> UC31
+    UC31 --> UC32
+    UC32 --> UC33
+    UC32 --> UC34
+    UC34 --> UC35
+    UC32 --> UC40
+    UC1 --> UC36
+    UC36 --> UC37
+    UC36 --> UC38
+    UC37 --> UC39
+    UC30 --> UC40
+    UC40 --> UC41
+    UC41 --> UC42
+    UC42 --> UC43
+    
+    %% Styling
+    classDef hr fill:#E91E63,stroke:#C2185B,color:white
+    classDef payroll fill:#EC407A,stroke:#D81B60,color:white
+    classDef actor fill:#81D4FA,stroke:#039BE5,color:black
+    
+    class HR,PM,EM,DM,FN actor

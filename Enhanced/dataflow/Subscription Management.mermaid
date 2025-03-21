@@ -1,0 +1,83 @@
+flowchart TD
+    %% External entities
+    SA[System Administrator]:::external
+    TA[Tenant Administrator]:::external
+    BL[Billing System]:::external
+    PS[Payment Service]:::external
+    
+    %% Processes
+    P1[1.0\nPlan Management]:::process_sub
+    P2[2.0\nSubscription Processing]:::process_sub
+    P3[3.0\nBilling Management]:::process_sub
+    P4[4.0\nPayment Processing]:::process_sub
+    P5[5.0\nFeature Provisioning]:::process_sub
+    P6[6.0\nUsage Tracking]:::process_sub
+    P7[7.0\nRenewal Processing]:::process_sub
+    
+    %% Data stores
+    DS1[(Subscription Plans)]:::datastore
+    DS2[(Tenant Subscriptions)]:::datastore
+    DS3[(Feature Definitions)]:::datastore
+    DS4[(Billing Records)]:::datastore
+    DS5[(Payment Methods)]:::datastore
+    DS6[(Usage Metrics)]:::datastore
+    DS7[(Tenant Registry)]:::datastore
+    
+    %% Data flows
+    %% Plan management flow
+    SA -->|Define plans| P1
+    P1 -->|Plan details| DS1
+    P1 -->|Feature inclusions| DS3
+    P1 -->|Available plans| TA
+    
+    %% Subscription flow
+    TA -->|Select plan| P2
+    P2 -->|Retrieve plan details| DS1
+    P2 -->|Create subscription| DS2
+    P2 -->|Update tenant status| DS7
+    P2 -->|Billing details| P3
+    
+    %% Billing flow
+    P3 -->|Create invoice| DS4
+    P3 -->|Get payment method| DS5
+    P3 -->|Billing record| BL
+    P3 -->|Payment request| P4
+    
+    %% Payment flow
+    P4 -->|Process payment| PS
+    PS -->|Payment confirmation| P4
+    P4 -->|Update payment status| DS4
+    P4 -->|Record payment method| DS5
+    P4 -->|Payment result| P2
+    
+    %% Feature provisioning
+    P2 -->|Subscription details| P5
+    P5 -->|Get available features| DS3
+    P5 -->|Apply feature access| DS7
+    P5 -->|Feature confirmation| TA
+    
+    %% Usage tracking
+    TA -->|System usage| P6
+    P6 -->|Record metrics| DS6
+    P6 -->|Check limits| DS2
+    P6 -->|Check features| DS3
+    P6 -->|Usage reports| TA
+    
+    %% Renewal flow
+    P7 -->|Check expiring subscriptions| DS2
+    P7 -->|Renewal notification| TA
+    TA -->|Confirm renewal| P7
+    P7 -->|Renewal details| P3
+    P7 -->|Update subscription| DS2
+    P7 -->|Extend access| DS7
+    
+    %% Optional connections
+    P1 -.->|Plan updates| P5
+    P6 -.->|Usage alerts| P7
+    P3 -.->|Payment failure| P2
+    P5 -.->|Feature usage limits| P6
+    
+    %% Styles
+    classDef external fill:#FFD700,stroke:#E6C300,color:black
+    classDef process_sub fill:#00CED1,stroke:#00B4B4,color:black
+    classDef datastore fill:#90EE90,stroke:#7BC96F,color:black

@@ -1,0 +1,594 @@
+classDiagram
+    %% ======================
+    %% Color Definitions
+    %% ======================
+    classDef core fill:#607D8B,stroke:#455A64,color:white
+    classDef hr fill:#E91E63,stroke:#C2185B,color:white
+    classDef payroll fill:#EC407A,stroke:#D81B60,color:white
+    
+    %% ======================
+    %% Parent Class
+    %% ======================
+    class BaseEntity {
+        +Long id
+        +Integer version
+        +LocalDateTime createdDate
+        +String createdBy
+        +LocalDateTime lastModifiedDate
+        +String lastModifiedBy
+        +Boolean isActive
+    }
+    
+    %% ======================
+    %% Employee Management
+    %% ======================
+    class Employee {
+        +Long tenantId
+        +String employeeCode
+        +String firstName
+        +String middleName
+        +String lastName
+        +String displayName
+        +Gender gender
+        +LocalDate dateOfBirth
+        +MaritalStatus maritalStatus
+        +String nationalId
+        +String taxId
+        +String socialSecurityNumber
+        +String email
+        +String personalEmail
+        +String phone
+        +String mobilePhone
+        +String address
+        +String city
+        +String state
+        +String zipCode
+        +String country
+        +String emergencyContactName
+        +String emergencyContactPhone
+        +String emergencyContactRelation
+        +String imageUrl
+        +EmploymentStatus status
+        +LocalDate statusDate
+        +createEmployee()
+        +updateEmployee()
+        +terminateEmployee()
+        +rehireEmployee()
+        +getFullName()
+    }
+    
+    class Gender {
+        <<enumeration>>
+        MALE
+        FEMALE
+        NON_BINARY
+        OTHER
+        PREFER_NOT_TO_SAY
+    }
+    
+    class MaritalStatus {
+        <<enumeration>>
+        SINGLE
+        MARRIED
+        DIVORCED
+        WIDOWED
+        SEPARATED
+        OTHER
+    }
+    
+    class EmploymentStatus {
+        <<enumeration>>
+        ACTIVE
+        PROBATION
+        LEAVE
+        SUSPENDED
+        TERMINATED
+        RETIRED
+    }
+    
+    class Department {
+        +Long tenantId
+        +String code
+        +String name
+        +String description
+        +Long managerId
+        +Long parentDepartmentId
+        +Boolean isActive
+        +createDepartment()
+        +updateDepartment()
+        +deactivateDepartment()
+    }
+    
+    class Position {
+        +Long tenantId
+        +Long departmentId
+        +String code
+        +String title
+        +String description
+        +Integer headCount
+        +Integer filledCount
+        +Boolean isManagement
+        +BigDecimal minimumSalary
+        +BigDecimal maximumSalary
+        +String salaryGrade
+        +Boolean isActive
+        +createPosition()
+        +updatePosition()
+        +deactivatePosition()
+    }
+    
+    class Employment {
+        +Long employeeId
+        +Long departmentId
+        +Long positionId
+        +Long supervisorId
+        +LocalDate startDate
+        +LocalDate endDate
+        +EmploymentType type
+        +String workLocation
+        +String workEmail
+        +String workPhone
+        +BigDecimal salary
+        +String payFrequency
+        +String payGroup
+        +Currency currency
+        +createEmployment()
+        +updateEmployment()
+        +endEmployment()
+    }
+    
+    class EmploymentType {
+        <<enumeration>>
+        FULL_TIME
+        PART_TIME
+        CONTRACT
+        TEMPORARY
+        INTERN
+        APPRENTICE
+        VOLUNTEER
+    }
+    
+    class EducationHistory {
+        +Long employeeId
+        +String institution
+        +String degree
+        +String field
+        +LocalDate startDate
+        +LocalDate endDate
+        +Boolean isCompleted
+        +String grade
+        +String description
+        +addEducation()
+        +updateEducation()
+        +removeEducation()
+    }
+    
+    class WorkHistory {
+        +Long employeeId
+        +String company
+        +String position
+        +String location
+        +LocalDate startDate
+        +LocalDate endDate
+        +String description
+        +String reasonForLeaving
+        +Boolean isVerified
+        +addWorkHistory()
+        +updateWorkHistory()
+        +removeWorkHistory()
+    }
+    
+    class SkillSet {
+        +Long employeeId
+        +String skill
+        +ProficiencyLevel level
+        +String description
+        +Boolean isCertified
+        +String certification
+        +LocalDate certificationDate
+        +LocalDate expiryDate
+        +addSkill()
+        +updateSkill()
+        +removeSkill()
+    }
+    
+    class ProficiencyLevel {
+        <<enumeration>>
+        BEGINNER
+        INTERMEDIATE
+        ADVANCED
+        EXPERT
+    }
+    
+    %% ======================
+    %% Time & Attendance
+    %% ======================
+    class AttendanceRecord {
+        +Long employeeId
+        +LocalDate date
+        +LocalDateTime timeIn
+        +LocalDateTime timeOut
+        +Double hoursWorked
+        +AttendanceStatus status
+        +String notes
+        +createAttendance()
+        +updateAttendance()
+        +calculateHours()
+    }
+    
+    class AttendanceStatus {
+        <<enumeration>>
+        PRESENT
+        ABSENT
+        LATE
+        HALF_DAY
+        EARLY_DEPARTURE
+        ON_LEAVE
+        HOLIDAY
+        WEEKEND
+    }
+    
+    class LeaveType {
+        +Long tenantId
+        +String code
+        +String name
+        +String description
+        +Integer annualEntitlement
+        +Boolean isPaid
+        +Boolean isCarryForward
+        +Integer maxCarryForward
+        +Boolean requiresApproval
+        +Integer minDaysNotice
+        +Boolean isActive
+        +createLeaveType()
+        +updateLeaveType()
+        +deactivateLeaveType()
+    }
+    
+    class LeaveBalance {
+        +Long employeeId
+        +Long leaveTypeId
+        +Integer year
+        +Double entitlement
+        +Double carried
+        +Double accrued
+        +Double taken
+        +Double pending
+        +Double balance
+        +Double reserved
+        +initializeBalance()
+        +accrueLeave()
+        +takeLeave()
+        +adjustBalance()
+        +calculateBalance()
+    }
+    
+    class LeaveRequest {
+        +Long employeeId
+        +Long leaveTypeId
+        +LocalDate startDate
+        +LocalDate endDate
+        +Double days
+        +String reason
+        +String contactInfo
+        +LeaveRequestStatus status
+        +String rejectionReason
+        +Long approvedById
+        +LocalDateTime approvedDate
+        +createRequest()
+        +updateRequest()
+        +approveRequest()
+        +rejectRequest()
+        +cancelRequest()
+    }
+    
+    class LeaveRequestStatus {
+        <<enumeration>>
+        PENDING
+        APPROVED
+        REJECTED
+        CANCELLED
+    }
+    
+    class WorkSchedule {
+        +Long employeeId
+        +String name
+        +ScheduleType type
+        +LocalTime startTime
+        +LocalTime endTime
+        +Double hoursPerDay
+        +Double hoursPerWeek
+        +Boolean monday
+        +Boolean tuesday
+        +Boolean wednesday
+        +Boolean thursday
+        +Boolean friday
+        +Boolean saturday
+        +Boolean sunday
+        +createSchedule()
+        +updateSchedule()
+        +calculateHours()
+    }
+    
+    class ScheduleType {
+        <<enumeration>>
+        REGULAR
+        SHIFT
+        FLEXIBLE
+        COMPRESSED
+        ROTATING
+        CUSTOM
+    }
+    
+    %% ======================
+    %% Payroll Management
+    %% ======================
+    class PayrollPeriod {
+        +Long tenantId
+        +String name
+        +PayrollFrequency frequency
+        +LocalDate startDate
+        +LocalDate endDate
+        +LocalDate paymentDate
+        +PayrollPeriodStatus status
+        +createPeriod()
+        +openPeriod()
+        +closePeriod()
+        +reopenPeriod()
+    }
+    
+    class PayrollFrequency {
+        <<enumeration>>
+        WEEKLY
+        BI_WEEKLY
+        SEMI_MONTHLY
+        MONTHLY
+        QUARTERLY
+    }
+    
+    class PayrollPeriodStatus {
+        <<enumeration>>
+        FUTURE
+        OPEN
+        PROCESSING
+        COMPUTED
+        APPROVED
+        PAID
+        CLOSED
+    }
+    
+    class PayrollRun {
+        +Long tenantId
+        +Long periodId
+        +String reference
+        +RunStatus status
+        +LocalDateTime startTime
+        +LocalDateTime endTime
+        +String processedBy
+        +String approvedBy
+        +LocalDateTime approvedTime
+        +Integer employeeCount
+        +BigDecimal totalGross
+        +BigDecimal totalDeductions
+        +BigDecimal totalNet
+        +String notes
+        +createPayrollRun()
+        +processPayroll()
+        +reviewPayroll()
+        +approvePayroll()
+        +finalizePayroll()
+    }
+    
+    class RunStatus {
+        <<enumeration>>
+        DRAFT
+        PROCESSING
+        COMPLETED
+        REVIEWED
+        APPROVED
+        PAID
+        CANCELLED
+    }
+    
+    class PayrollEntry {
+        +Long payrollRunId
+        +Long employeeId
+        +BigDecimal basicSalary
+        +BigDecimal regularHours
+        +BigDecimal overtimeHours
+        +BigDecimal grossPay
+        +BigDecimal totalDeductions
+        +BigDecimal netPay
+        +String paymentMethod
+        +String accountNumber
+        +String bankCode
+        +BigDecimal ytdEarnings
+        +String notes
+        +createEntry()
+        +calculatePayroll()
+        +adjustEntry()
+        +finalizeEntry()
+    }
+    
+    class PayrollComponent {
+        +Long tenantId
+        +String code
+        +String name
+        +ComponentType type
+        +String category
+        +Boolean taxable
+        +String formula
+        +BigDecimal defaultAmount
+        +BigDecimal minimumAmount
+        +BigDecimal maximumAmount
+        +Boolean isActive
+        +Integer priority
+        +Long accountId
+        +createComponent()
+        +updateComponent()
+        +deactivateComponent()
+    }
+    
+    class ComponentType {
+        <<enumeration>>
+        EARNING
+        DEDUCTION
+        CONTRIBUTION
+        TAX
+        BENEFIT
+        REIMBURSEMENT
+    }
+    
+    class PayrollEntryDetail {
+        +Long payrollEntryId
+        +Long componentId
+        +String description
+        +BigDecimal amount
+        +String calculationBase
+        +Double units
+        +BigDecimal rate
+        +String notes
+        +addDetail()
+        +updateDetail()
+        +removeDetail()
+        +calculateAmount()
+    }
+    
+    class EmployeeCompensation {
+        +Long employeeId
+        +Long componentId
+        +BigDecimal amount
+        +Double percentage
+        +String frequency
+        +LocalDate effectiveDate
+        +LocalDate endDate
+        +Boolean isActive
+        +addCompensation()
+        +updateCompensation()
+        +endCompensation()
+    }
+    
+    class TaxWithholding {
+        +Long employeeId
+        +String taxCode
+        +TaxFilingStatus filingStatus
+        +Integer allowances
+        +BigDecimal additionalWithholding
+        +Boolean isExempt
+        +String exemptReason
+        +LocalDate effectiveDate
+        +createWithholding()
+        +updateWithholding()
+        +calculateTax()
+    }
+    
+    class TaxFilingStatus {
+        <<enumeration>>
+        SINGLE
+        MARRIED_FILING_JOINTLY
+        MARRIED_FILING_SEPARATELY
+        HEAD_OF_HOUSEHOLD
+        QUALIFYING_WIDOW_WIDOWER
+    }
+    
+    %% ======================
+    %% Class Relationships
+    %% ======================
+    BaseEntity <|-- Employee
+    BaseEntity <|-- Department
+    BaseEntity <|-- Position
+    BaseEntity <|-- Employment
+    BaseEntity <|-- EducationHistory
+    BaseEntity <|-- WorkHistory
+    BaseEntity <|-- SkillSet
+    BaseEntity <|-- AttendanceRecord
+    BaseEntity <|-- LeaveType
+    BaseEntity <|-- LeaveBalance
+    BaseEntity <|-- LeaveRequest
+    BaseEntity <|-- WorkSchedule
+    BaseEntity <|-- PayrollPeriod
+    BaseEntity <|-- PayrollRun
+    BaseEntity <|-- PayrollEntry
+    BaseEntity <|-- PayrollComponent
+    BaseEntity <|-- PayrollEntryDetail
+    BaseEntity <|-- EmployeeCompensation
+    BaseEntity <|-- TaxWithholding
+    
+    Employee -- Gender : has
+    Employee -- MaritalStatus : has
+    Employee -- EmploymentStatus : has
+    Employment -- EmploymentType : has
+    SkillSet -- ProficiencyLevel : has
+    AttendanceRecord -- AttendanceStatus : has
+    LeaveRequest -- LeaveRequestStatus : has
+    WorkSchedule -- ScheduleType : has
+    PayrollPeriod -- PayrollFrequency : has
+    PayrollPeriod -- PayrollPeriodStatus : has
+    PayrollRun -- RunStatus : has
+    PayrollComponent -- ComponentType : has
+    TaxWithholding -- TaxFilingStatus : has
+    
+    Department "1" -- "many" Department : parent-of
+    Department "1" -- "many" Position : has
+    
+    Employee "1" -- "many" Employment : has
+    Employee "1" -- "many" EducationHistory : has
+    Employee "1" -- "many" WorkHistory : has
+    Employee "1" -- "many" SkillSet : has
+    
+    Employee "1" -- "many" AttendanceRecord : records
+    Employee "1" -- "many" LeaveBalance : has
+    Employee "1" -- "many" LeaveRequest : requests
+    Employee "1" -- "many" WorkSchedule : follows
+    
+    Department "1" -- "many" Employee : employs
+    Position "1" -- "many" Employment : filled-by
+    Employee "1" -- "many" Employee : supervises
+    
+    LeaveType "1" -- "many" LeaveBalance : defines
+    LeaveType "1" -- "many" LeaveRequest : for
+    
+    PayrollPeriod "1" -- "many" PayrollRun : processed-in
+    PayrollRun "1" -- "many" PayrollEntry : contains
+    PayrollEntry "1" -- "many" PayrollEntryDetail : itemizes
+    
+    Employee "1" -- "many" PayrollEntry : paid-through
+    PayrollComponent "1" -- "many" PayrollEntryDetail : uses
+    Employee "1" -- "many" EmployeeCompensation : receives
+    PayrollComponent "1" -- "many" EmployeeCompensation : applied-as
+    Employee "1" -- "many" TaxWithholding : withholds
+    
+    %% Apply styling
+    class BaseEntity core
+    class Employee hr
+    class Gender hr
+    class MaritalStatus hr
+    class EmploymentStatus hr
+    class Department hr
+    class Position hr
+    class Employment hr
+    class EmploymentType hr
+    class EducationHistory hr
+    class WorkHistory hr
+    class SkillSet hr
+    class ProficiencyLevel hr
+    class AttendanceRecord hr
+    class AttendanceStatus hr
+    class LeaveType hr
+    class LeaveBalance hr
+    class LeaveRequest hr
+    class LeaveRequestStatus hr
+    class WorkSchedule hr
+    class ScheduleType hr
+    class PayrollPeriod payroll
+    class PayrollFrequency payroll
+    class PayrollPeriodStatus payroll
+    class PayrollRun payroll
+    class RunStatus payroll
+    class PayrollEntry payroll
+    class PayrollComponent payroll
+    class ComponentType payroll
+    class PayrollEntryDetail payroll
+    class EmployeeCompensation payroll
+    class TaxWithholding payroll
+    class TaxFilingStatus payroll

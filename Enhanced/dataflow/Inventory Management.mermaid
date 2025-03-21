@@ -1,0 +1,101 @@
+flowchart TD
+    %% External entities
+    IM[Inventory Manager]:::external
+    WS[Warehouse Staff]:::external
+    PO[Procurement Officer]:::external
+    SA[Sales Agent]:::external
+    
+    %% Processes
+    P1[1.0\nProduct Management]:::process_inv
+    P2[2.0\nWarehouse Management]:::process_inv
+    P3[3.0\nStock Reception]:::process_inv
+    P4[4.0\nInventory Allocation]:::process_inv
+    P5[5.0\nStock Transfer]:::process_inv
+    P6[6.0\nStock Counting]:::process_inv
+    P7[7.0\nInventory Adjustments]:::process_inv
+    P8[8.0\nReporting & Analysis]:::process_inv
+    
+    %% Data stores
+    DS1[(Product Catalog)]:::datastore
+    DS2[(Warehouses)]:::datastore
+    DS3[(Inventory Positions)]:::datastore
+    DS4[(Stock Movements)]:::datastore
+    DS5[(Lot Tracking)]:::datastore
+    DS6[(Stocktake Records)]:::datastore
+    DS7[(Adjustment History)]:::datastore
+    DS8[(Purchase Orders)]:::datastore
+    DS9[(Sales Orders)]:::datastore
+    
+    %% Data flows
+    %% Product management flow
+    IM -->|Create/update product| P1
+    P1 -->|Product details| DS1
+    P1 -->|Initial inventory| DS3
+    P1 -->|Product specifications| IM
+    
+    %% Warehouse management flow
+    IM -->|Configure warehouse| P2
+    P2 -->|Warehouse settings| DS2
+    P2 -->|Location definitions| DS2
+    P2 -->|Warehouse structure| WS
+    
+    %% Stock reception flow
+    PO -->|PO delivery notice| P3
+    P3 -->|Check PO details| DS8
+    P3 -->|Get product info| DS1
+    WS -->|Confirm receipt| P3
+    P3 -->|Update inventory| DS3
+    P3 -->|Record lot info| DS5
+    P3 -->|Create stock movement| DS4
+    P3 -->|Receipt confirmation| PO
+    
+    %% Inventory allocation flow
+    SA -->|Sales order| P4
+    P4 -->|Check availability| DS3
+    P4 -->|Reserve inventory| DS3
+    P4 -->|Update sales order| DS9
+    P4 -->|Picking instructions| WS
+    
+    %% Stock transfer flow
+    IM -->|Transfer request| P5
+    WS -->|Execute transfer| P5
+    P5 -->|Source inventory| DS3
+    P5 -->|Destination inventory| DS3
+    P5 -->|Record movement| DS4
+    P5 -->|Transfer confirmation| IM
+    
+    %% Stock counting flow
+    IM -->|Initiate stocktake| P6
+    WS -->|Count results| P6
+    P6 -->|Expected quantities| DS3
+    P6 -->|Actual counts| DS6
+    P6 -->|Discrepancies| IM
+    P6 -->|Count confirmation| P7
+    
+    %% Adjustment flow
+    IM -->|Approve adjustments| P7
+    P7 -->|Adjustment details| DS7
+    P7 -->|Update inventory| DS3
+    P7 -->|Adjustment record| DS4
+    P7 -->|Adjustment confirmation| IM
+    
+    %% Reporting flow
+    IM -->|Request reports| P8
+    P8 -->|Inventory levels| DS3
+    P8 -->|Movement history| DS4
+    P8 -->|Stocktake results| DS6
+    P8 -->|Adjustment data| DS7
+    P8 -->|Inventory reports| IM
+    
+    %% Optional connections
+    P1 -.->|Product categories| DS1
+    P2 -.->|Bin locations| DS2
+    P3 -.->|Quality inspection| DS7
+    P7 -.->|Cost adjustments| DS1
+    P8 -.->|Slow-moving items| IM
+    P8 -.->|Reorder suggestions| IM
+    
+    %% Styles
+    classDef external fill:#FFD700,stroke:#E6C300,color:black
+    classDef process_inv fill:#66BB6A,stroke:#4E9A52,color:white
+    classDef datastore fill:#90EE90,stroke:#7BC96F,color:black

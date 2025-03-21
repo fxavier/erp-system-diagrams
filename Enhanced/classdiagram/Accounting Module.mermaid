@@ -1,0 +1,484 @@
+classDiagram
+    %% ======================
+    %% Color Definitions
+    %% ======================
+    classDef core fill:#607D8B,stroke:#455A64,color:white
+    classDef accounting fill:#2196F3,stroke:#1976D2,color:white
+    
+    %% ======================
+    %% Parent Class
+    %% ======================
+    class BaseEntity {
+        +Long id
+        +Integer version
+        +LocalDateTime createdDate
+        +String createdBy
+        +LocalDateTime lastModifiedDate
+        +String lastModifiedBy
+        +Boolean isActive
+    }
+    
+    %% ======================
+    %% Tax Management (continued)
+    %% ======================
+    class TaxType {
+        <<enumeration>>
+        VAT
+        GST
+        SALES_TAX
+        WITHHOLDING
+        INCOME_TAX
+        CUSTOM
+    }
+    
+    class TaxPeriod {
+        +Long tenantId
+        +String code
+        +LocalDate startDate
+        +LocalDate endDate
+        +LocalDate dueDate
+        +TaxPeriodStatus status
+        +createTaxPeriod()
+        +openTaxPeriod()
+        +closeTaxPeriod()
+        +fillTaxReturn()
+    }
+    
+    class TaxPeriodStatus {
+        <<enumeration>>
+        FUTURE
+        OPEN
+        CLOSED
+        FILED
+        PAID
+    }
+    
+    class TaxTransaction {
+        +Long tenantId
+        +Long taxCodeId
+        +Long journalEntryId
+        +LocalDateTime transactionDate
+        +BigDecimal netAmount
+        +BigDecimal taxAmount
+        +BigDecimal grossAmount
+        +String reference
+        +String documentType
+        +Long documentId
+        +Long customerId
+        +Long vendorId
+        +TaxDirection direction
+        +recordTaxTransaction()
+        +updateTaxTransaction()
+        +voidTaxTransaction()
+    }
+    
+    class TaxDirection {
+        <<enumeration>>
+        COLLECTED
+        PAID
+    }
+    
+    class TaxReturn {
+        +Long tenantId
+        +Long taxPeriodId
+        +String returnNumber
+        +TaxReturnStatus status
+        +LocalDate filingDate
+        +LocalDate paymentDate
+        +BigDecimal totalSalesTax
+        +BigDecimal totalPurchaseTax
+        +BigDecimal netTaxDue
+        +String notes
+        +createTaxReturn()
+        +updateTaxReturn()
+        +fileTaxReturn()
+        +payTaxReturn()
+    }
+    
+    class TaxReturnStatus {
+        <<enumeration>>
+        DRAFT
+        FILED
+        PAID
+        AMENDED
+    }
+    
+    %% ======================
+    %% Bank Accounts
+    %% ======================
+    class BankAccount {
+        +Long tenantId
+        +Long accountId
+        +String accountName
+        +String accountNumber
+        +String bankName
+        +String bankCode
+        +String branchCode
+        +String swiftCode
+        +String ibanCode
+        +String routingNumber
+        +String currencyCode
+        +BigDecimal currentBalance
+        +BigDecimal availableBalance
+        +Boolean isActive
+        +createBankAccount()
+        +updateBankAccount()
+        +updateBalance()
+        +deactivateBankAccount()
+    }
+    
+    class BankTransaction {
+        +Long bankAccountId
+        +TransactionType type
+        +LocalDateTime transactionDate
+        +String reference
+        +String description
+        +BigDecimal amount
+        +BigDecimal runningBalance
+        +Boolean isReconciled
+        +Long journalEntryId
+        +recordTransaction()
+        +updateTransaction()
+        +voidTransaction()
+    }
+    
+    class BankTransactionType {
+        <<enumeration>>
+        DEPOSIT
+        WITHDRAWAL
+        TRANSFER
+        PAYMENT
+        RECEIPT
+        BANK_CHARGE
+        INTEREST_EARNED
+        CHECK
+    }
+    
+    class BankReconciliation {
+        +Long bankAccountId
+        +String reconciliationId
+        +LocalDate statementDate
+        +BigDecimal statementBalance
+        +BigDecimal systemBalance
+        +BigDecimal difference
+        +ReconciliationStatus status
+        +String notes
+        +LocalDateTime completedDate
+        +createReconciliation()
+        +addTransactions()
+        +completeReconciliation()
+    }
+    
+    class ReconciliationStatus {
+        <<enumeration>>
+        IN_PROGRESS
+        BALANCED
+        DISCREPANCY
+        COMPLETED
+    }
+    
+    class BankReconciliationItem {
+        +Long reconciliationId
+        +Long bankTransactionId
+        +Boolean isMatched
+        +BigDecimal amount
+        +LocalDateTime transactionDate
+        +String reference
+        +String description
+        +addItem()
+        +matchItem()
+        +unmatchItem()
+    }
+    
+    %% ======================
+    %% Financial Reporting
+    %% ======================
+    class FinancialReport {
+        +Long tenantId
+        +String reportCode
+        +String name
+        +ReportType type
+        +String description
+        +Boolean isActive
+        +Boolean isSystemReport
+        +String layoutDefinition
+        +createReport()
+        +updateReport()
+        +deactivateReport()
+        +generateReport()
+    }
+    
+    class ReportType {
+        <<enumeration>>
+        BALANCE_SHEET
+        INCOME_STATEMENT
+        CASH_FLOW
+        TRIAL_BALANCE
+        GENERAL_LEDGER
+        ACCOUNTS_RECEIVABLE
+        ACCOUNTS_PAYABLE
+        CUSTOM
+    }
+    
+    class ReportLayout {
+        +Long reportId
+        +String name
+        +String description
+        +Boolean isDefault
+        +String headerHtml
+        +String footerHtml
+        +String layoutType
+        +String layoutData
+        +createLayout()
+        +updateLayout()
+        +deleteLayout()
+    }
+    
+    class ReportParameter {
+        +Long reportId
+        +String name
+        +String label
+        +ParameterType type
+        +String defaultValue
+        +Boolean isRequired
+        +Integer displayOrder
+        +String validationRule
+        +addParameter()
+        +updateParameter()
+        +removeParameter()
+    }
+    
+    class ParameterType {
+        <<enumeration>>
+        DATE
+        DATE_RANGE
+        PERIOD
+        FISCAL_YEAR
+        ACCOUNT
+        DEPARTMENT
+        TEXT
+        NUMBER
+        BOOLEAN
+        LIST
+    }
+    
+    class ReportSchedule {
+        +Long reportId
+        +String name
+        +RecurrencePattern frequency
+        +Integer interval
+        +LocalDate startDate
+        +LocalDate endDate
+        +String recipients
+        +String fileFormat
+        +Boolean isActive
+        +LocalDateTime lastRunDate
+        +createSchedule()
+        +updateSchedule()
+        +deactivateSchedule()
+        +runScheduledReport()
+    }
+    
+    %% ======================
+    %% Budgeting
+    %% ======================
+    class Budget {
+        +Long tenantId
+        +String name
+        +String description
+        +Long fiscalYearId
+        +BudgetType type
+        +BudgetStatus status
+        +BigDecimal totalAmount
+        +createBudget()
+        +updateBudget()
+        +approveBudget()
+        +rejectBudget()
+        +finalizeBudget()
+    }
+    
+    class BudgetType {
+        <<enumeration>>
+        OPERATING
+        CAPITAL
+        PROJECT
+        SALES
+        DEPARTMENT
+        CUSTOM
+    }
+    
+    class BudgetStatus {
+        <<enumeration>>
+        DRAFT
+        PENDING_APPROVAL
+        APPROVED
+        REJECTED
+        FINALIZED
+    }
+    
+    class BudgetAccount {
+        +Long budgetId
+        +Long accountId
+        +String description
+        +BigDecimal annualAmount
+        +Boolean distributionEnabled
+        +DistributionMethod distributionMethod
+        +addAccount()
+        +updateAccount()
+        +removeAccount()
+    }
+    
+    class DistributionMethod {
+        <<enumeration>>
+        EQUAL
+        SEASONAL
+        MANUAL
+        PERCENTAGE
+    }
+    
+    class BudgetPeriod {
+        +Long budgetAccountId
+        +Integer periodNumber
+        +String periodName
+        +BigDecimal amount
+        +BigDecimal actualAmount
+        +BigDecimal variance
+        +BigDecimal percentageUsed
+        +allocateAmount()
+        +updateAmount()
+        +calculateVariance()
+    }
+    
+    %% ======================
+    %% Class Relationships
+    %% ======================
+    BaseEntity <|-- Account
+    BaseEntity <|-- FiscalYear
+    BaseEntity <|-- AccountingPeriod
+    BaseEntity <|-- JournalEntry
+    BaseEntity <|-- JournalLine
+    BaseEntity <|-- RecurringJournal
+    BaseEntity <|-- JournalEntryTemplate
+    BaseEntity <|-- GeneralLedgerEntry
+    BaseEntity <|-- AccountBalance
+    BaseEntity <|-- TaxCode
+    BaseEntity <|-- TaxPeriod
+    BaseEntity <|-- TaxTransaction
+    BaseEntity <|-- TaxReturn
+    BaseEntity <|-- BankAccount
+    BaseEntity <|-- BankTransaction
+    BaseEntity <|-- BankReconciliation
+    BaseEntity <|-- BankReconciliationItem
+    BaseEntity <|-- FinancialReport
+    BaseEntity <|-- ReportLayout
+    BaseEntity <|-- ReportParameter
+    BaseEntity <|-- ReportSchedule
+    BaseEntity <|-- Budget
+    BaseEntity <|-- BudgetAccount
+    BaseEntity <|-- BudgetPeriod
+    
+    Account -- AccountType : has
+    Account -- AccountCategory : has
+    FiscalYear -- FiscalYearStatus : has
+    AccountingPeriod -- PeriodStatus : has
+    JournalEntry -- JournalEntryType : has
+    JournalEntry -- JournalEntryStatus : has
+    RecurringJournal -- RecurrencePattern : has
+    TaxCode -- TaxType : has
+    TaxPeriod -- TaxPeriodStatus : has
+    TaxTransaction -- TaxDirection : has
+    TaxReturn -- TaxReturnStatus : has
+    BankTransaction -- BankTransactionType : is
+    BankReconciliation -- ReconciliationStatus : has
+    FinancialReport -- ReportType : has
+    ReportParameter -- ParameterType : has
+    ReportSchedule -- RecurrencePattern : has
+    Budget -- BudgetType : has
+    Budget -- BudgetStatus : has
+    BudgetAccount -- DistributionMethod : uses
+    
+    Account "1" -- "many" Account : parent-of
+    FiscalYear "1" -- "many" AccountingPeriod : contains
+    
+    JournalEntry "1" -- "many" JournalLine : contains
+    JournalLine "many" -- "1" Account : debits-credits
+    AccountingPeriod "1" -- "many" JournalEntry : contains
+    
+    RecurringJournal "1" -- "1" JournalEntryTemplate : uses
+    JournalEntryTemplate "1" -- "many" TemplateJournalLine : contains
+    
+    JournalLine "1" -- "1" GeneralLedgerEntry : creates
+    
+    Account "1" -- "many" AccountBalance : has
+    FiscalYear "1" -- "many" AccountBalance : for
+    AccountingPeriod "1" -- "many" AccountBalance : for
+    
+    TaxPeriod "1" -- "many" TaxTransaction : contains
+    TaxCode "1" -- "many" TaxTransaction : applies
+    JournalEntry "1" -- "many" TaxTransaction : records
+    
+    TaxPeriod "1" -- "1" TaxReturn : generates
+    
+    Account "1" -- "0..1" BankAccount : linked-to
+    BankAccount "1" -- "many" BankTransaction : records
+    BankTransaction "many" -- "0..1" JournalEntry : linked-to
+    
+    BankAccount "1" -- "many" BankReconciliation : reconciles
+    BankReconciliation "1" -- "many" BankReconciliationItem : contains
+    BankReconciliationItem "many" -- "1" BankTransaction : matches
+    
+    FinancialReport "1" -- "many" ReportLayout : has
+    FinancialReport "1" -- "many" ReportParameter : uses
+    FinancialReport "1" -- "many" ReportSchedule : runs-on
+    
+    FiscalYear "1" -- "many" Budget : for
+    Budget "1" -- "many" BudgetAccount : allocates
+    BudgetAccount "1" -- "many" BudgetPeriod : distributes
+    BudgetAccount "many" -- "1" Account : budgets
+    BudgetPeriod "many" -- "1" AccountingPeriod : for
+    
+    %% Apply styling
+    class BaseEntity core
+    class Account accounting
+    class AccountType accounting
+    class AccountCategory accounting
+    class FiscalYear accounting
+    class FiscalYearStatus accounting
+    class AccountingPeriod accounting
+    class PeriodStatus accounting
+    class JournalEntry accounting
+    class JournalEntryType accounting
+    class JournalEntryStatus accounting
+    class JournalLine accounting
+    class RecurringJournal accounting
+    class RecurrencePattern accounting
+    class JournalEntryTemplate accounting
+    class TemplateJournalLine accounting
+    class GeneralLedgerEntry accounting
+    class AccountBalance accounting
+    class TaxCode accounting
+    class TaxType accounting
+    class TaxPeriod accounting
+    class TaxPeriodStatus accounting
+    class TaxTransaction accounting
+    class TaxDirection accounting
+    class TaxReturn accounting
+    class TaxReturnStatus accounting
+    class BankAccount accounting
+    class BankTransaction accounting
+    class BankTransactionType accounting
+    class BankReconciliation accounting
+    class ReconciliationStatus accounting
+    class BankReconciliationItem accounting
+    class FinancialReport accounting
+    class ReportType accounting
+    class ReportLayout accounting
+    class ReportParameter accounting
+    class ParameterType accounting
+    class ReportSchedule accounting
+    class Budget accounting
+    class BudgetType accounting
+    class BudgetStatus accounting
+    class BudgetAccount accounting
+    class DistributionMethod accounting
+    class BudgetPeriod accounting

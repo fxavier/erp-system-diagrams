@@ -1,0 +1,308 @@
+erDiagram
+    %% Entity Definitions
+    CUSTOMER {
+        int id PK
+        int tenant_id FK
+        string code
+        string name
+        string contact_person
+        string email
+        string phone
+        string address
+        string billing_address
+        string shipping_address
+        string tax_id
+        string type
+        string currency
+        int price_list_id FK
+        string payment_terms
+        decimal credit_limit
+        boolean is_tax_exempt
+        string notes
+        boolean is_active
+    }
+    
+    CUSTOMER_GROUP {
+        int id PK
+        int tenant_id FK
+        string name
+        string description
+        boolean is_active
+    }
+    
+    CUSTOMER_CONTACT {
+        int id PK
+        int customer_id FK
+        string first_name
+        string last_name
+        string email
+        string phone
+        string position
+        boolean is_primary
+        string notes
+    }
+    
+    PRICE_LIST {
+        int id PK
+        int tenant_id FK
+        string name
+        string description
+        date valid_from
+        date valid_to
+        string currency
+        decimal default_markup
+        boolean is_active
+        string type
+    }
+    
+    PRICE_LIST_ITEM {
+        int id PK
+        int price_list_id FK
+        int product_id FK
+        int variant_id FK
+        string uom
+        decimal price
+        decimal min_quantity
+        decimal max_quantity
+    }
+    
+    SALES_QUOTATION {
+        int id PK
+        int tenant_id FK
+        int customer_id FK
+        string quotation_number
+        string status
+        datetime issue_date
+        datetime expiry_date
+        string reference
+        string notes
+        decimal subtotal
+        decimal tax_total
+        decimal discount_total
+        decimal total
+        string currency
+        string terms
+    }
+    
+    QUOTATION_ITEM {
+        int id PK
+        int quotation_id FK
+        int product_id FK
+        int variant_id FK
+        string description
+        decimal quantity
+        string uom
+        decimal unit_price
+        decimal discount
+        decimal tax_rate
+        decimal amount
+        string notes
+    }
+    
+    SALES_ORDER {
+        int id PK
+        int tenant_id FK
+        int customer_id FK
+        int quotation_id FK
+        string order_number
+        string status
+        datetime order_date
+        datetime expected_ship_date
+        string reference
+        string notes
+        decimal subtotal
+        decimal tax_total
+        decimal discount_total
+        decimal shipping_cost
+        decimal total
+        string currency
+        string payment_terms
+        string shipping_method
+        string shipping_address
+        string billing_address
+    }
+    
+    ORDER_ITEM {
+        int id PK
+        int order_id FK
+        int product_id FK
+        int variant_id FK
+        string description
+        decimal quantity
+        decimal delivered_quantity
+        decimal backordered_quantity
+        string uom
+        decimal unit_price
+        decimal discount
+        decimal tax_rate
+        decimal amount
+        string notes
+    }
+    
+    SALES_INVOICE {
+        int id PK
+        int tenant_id FK
+        int customer_id FK
+        int order_id FK
+        string invoice_number
+        string status
+        datetime invoice_date
+        datetime due_date
+        string reference
+        string notes
+        decimal subtotal
+        decimal tax_total
+        decimal discount_total
+        decimal total
+        decimal amount_paid
+        decimal amount_due
+        string currency
+        string payment_terms
+    }
+    
+    INVOICE_ITEM {
+        int id PK
+        int invoice_id FK
+        int product_id FK
+        int variant_id FK
+        int order_item_id FK
+        string description
+        decimal quantity
+        string uom
+        decimal unit_price
+        decimal discount
+        decimal tax_rate
+        decimal amount
+        string notes
+    }
+    
+    SALES_PAYMENT {
+        int id PK
+        int tenant_id FK
+        int customer_id FK
+        int invoice_id FK
+        string payment_number
+        string method
+        datetime payment_date
+        decimal amount
+        string currency
+        string reference
+        string notes
+        string received_by
+    }
+    
+    PAYMENT_ALLOCATION {
+        int id PK
+        int payment_id FK
+        int invoice_id FK
+        decimal allocated_amount
+        datetime allocation_date
+        string notes
+    }
+    
+    CREDIT_NOTE {
+        int id PK
+        int tenant_id FK
+        int customer_id FK
+        int invoice_id FK
+        string credit_note_number
+        string status
+        datetime issue_date
+        string reason
+        string notes
+        decimal subtotal
+        decimal tax_total
+        decimal total
+        decimal amount_used
+        decimal amount_remaining
+        string currency
+    }
+    
+    CREDIT_NOTE_ITEM {
+        int id PK
+        int credit_note_id FK
+        int product_id FK
+        int variant_id FK
+        int invoice_item_id FK
+        string description
+        decimal quantity
+        string uom
+        decimal unit_price
+        decimal tax_rate
+        decimal amount
+        string reason
+    }
+    
+    SALES_RETURN {
+        int id PK
+        int tenant_id FK
+        int customer_id FK
+        int invoice_id FK
+        string return_number
+        string status
+        datetime return_date
+        string reason
+        string notes
+        decimal total_amount
+    }
+    
+    RETURN_ITEM {
+        int id PK
+        int sales_return_id FK
+        int invoice_item_id FK
+        int product_id FK
+        string description
+        decimal quantity
+        string uom
+        decimal unit_price
+        decimal amount
+        string reason
+        string condition
+    }
+    
+    %% Relationships
+    CUSTOMER }o--o{ CUSTOMER_GROUP : "belongs to"
+    CUSTOMER ||--o{ CUSTOMER_CONTACT : "has"
+    CUSTOMER ||--o{ SALES_QUOTATION : "requests"
+    CUSTOMER ||--o{ SALES_ORDER : "places"
+    CUSTOMER ||--o{ SALES_INVOICE : "billed to"
+    CUSTOMER ||--o{ SALES_PAYMENT : "makes"
+    CUSTOMER ||--o{ CREDIT_NOTE : "receives"
+    CUSTOMER ||--o{ SALES_RETURN : "returns"
+    
+    PRICE_LIST ||--o{ PRICE_LIST_ITEM : "includes"
+    
+    SALES_QUOTATION ||--o{ QUOTATION_ITEM : "contains"
+    SALES_QUOTATION ||--o{ SALES_ORDER : "becomes"
+    
+    SALES_ORDER ||--o{ ORDER_ITEM : "contains"
+    SALES_ORDER ||--o{ SALES_INVOICE : "generates"
+    
+    SALES_INVOICE ||--o{ INVOICE_ITEM : "contains"
+    SALES_INVOICE ||--o{ SALES_PAYMENT : "paid by"
+    SALES_INVOICE ||--o{ CREDIT_NOTE : "credited by"
+    SALES_INVOICE ||--o{ SALES_RETURN : "returned from"
+    
+    SALES_PAYMENT ||--o{ PAYMENT_ALLOCATION : "allocated to"
+    PAYMENT_ALLOCATION }o--|| SALES_INVOICE : "applied to"
+    
+    CREDIT_NOTE ||--o{ CREDIT_NOTE_ITEM : "contains"
+    INVOICE_ITEM ||--o{ CREDIT_NOTE_ITEM : "credited by"
+    
+    SALES_RETURN ||--o{ RETURN_ITEM : "contains"
+    INVOICE_ITEM ||--o{ RETURN_ITEM : "returned as"
+    
+    %% Styling with class definitions
+    classDef customer_entities fill:#FF9800,stroke:#F57C00,color:black
+    classDef price_entities fill:#FFA726,stroke:#FB8C00,color:black
+    classDef quote_order_entities fill:#FFB74D,stroke:#FF9800,color:black
+    classDef invoice_entities fill:#FFCC80,stroke:#FFB74D,color:black
+    classDef payment_entities fill:#FFE0B2,stroke:#FFCC80,color:black
+    classDef return_entities fill:#FFF3E0,stroke:#FFE0B2,color:black
+    
+    class CUSTOMER,CUSTOMER_GROUP,CUSTOMER_CONTACT customer_entities
+    class PRICE_LIST,PRICE_LIST_ITEM price_entities
+    class SALES_QUOTATION,QUOTATION_ITEM,SALES_ORDER,ORDER_ITEM quote_order_entities
+    class SALES_INVOICE,INVOICE_ITEM invoice_entities
+    class SALES_PAYMENT,PAYMENT_ALLOCATION,CREDIT_NOTE,CREDIT_NOTE_ITEM payment_entities
+    class SALES_RETURN,RETURN_ITEM return_entities

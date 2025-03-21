@@ -1,0 +1,135 @@
+graph TB
+    %% Actor definitions
+    subgraph Actors
+        IM([Inventory Manager])
+        WM([Warehouse Manager])
+        PU([Purchasing])
+        SA([Sales Agent])
+    end
+    
+    %% Use cases
+    subgraph ProductManagementUseCases["Product Management Use Cases"]
+        UC1[Create Product]:::inventory
+        UC2[Update Product Information]:::inventory
+        UC3[Manage Product Categories]:::inventory
+        UC4[Create Product Variants]:::inventory
+        UC5[Manage Product Attributes]:::inventory
+        UC6[Set Product Pricing]:::inventory
+        UC7[Deactivate Product]:::inventory
+    end
+    
+    subgraph WarehouseManagementUseCases["Warehouse Management Use Cases"]
+        UC8[Create Warehouse]:::inventory
+        UC9[Manage Warehouse Locations]:::inventory
+        UC10[Assign Storage Rules]:::inventory
+        UC11[Set Bin Capacity]:::inventory
+        UC12[Configure Warehouse Zones]:::inventory
+    end
+    
+    subgraph InventoryOperationsUseCases["Inventory Operations Use Cases"]
+        UC13[Receive Stock]:::inventory
+        UC14[Issue Stock]:::inventory
+        UC15[Transfer Stock]:::inventory
+        UC16[Adjust Inventory]:::inventory
+        UC17[Reserve Stock]:::inventory
+        UC18[Release Reservation]:::inventory
+        UC19[Process Returns]:::inventory
+    end
+    
+    subgraph InventoryTrackingUseCases["Inventory Tracking Use Cases"]
+        UC20[Track Inventory Levels]:::inventory
+        UC21[Set Reorder Points]:::inventory
+        UC22[Set Safety Stock Levels]:::inventory
+        UC23[Generate Low Stock Alerts]:::inventory
+        UC24[Track Lot Numbers]:::inventory
+        UC25[Track Serial Numbers]:::inventory
+    end
+    
+    subgraph InventoryCountUseCases["Inventory Count Use Cases"]
+        UC26[Plan Stock Count]:::inventory
+        UC27[Perform Cycle Count]:::inventory
+        UC28[Perform Full Inventory Count]:::inventory
+        UC29[Record Count Results]:::inventory
+        UC30[Reconcile Discrepancies]:::inventory
+        UC31[Approve Adjustments]:::inventory
+    end
+    
+    subgraph ReportingUseCases["Reporting Use Cases"]
+        UC32[View Inventory Valuation]:::inventory
+        UC33[Generate Stock Movement Report]:::inventory
+        UC34[Generate Inventory Aging Report]:::inventory
+        UC35[Generate Stock Status Report]:::inventory
+        UC36[Generate ABC Analysis]:::inventory
+    end
+    
+    %% Actor to Use Case connections
+    IM --> UC1
+    IM --> UC2
+    IM --> UC3
+    IM --> UC4
+    IM --> UC5
+    IM --> UC6
+    IM --> UC7
+    IM --> UC20
+    IM --> UC21
+    IM --> UC22
+    IM --> UC23
+    IM --> UC24
+    IM --> UC25
+    IM --> UC26
+    IM --> UC31
+    IM --> UC32
+    IM --> UC33
+    IM --> UC34
+    IM --> UC35
+    IM --> UC36
+    
+    WM --> UC8
+    WM --> UC9
+    WM --> UC10
+    WM --> UC11
+    WM --> UC12
+    WM --> UC13
+    WM --> UC14
+    WM --> UC15
+    WM --> UC16
+    WM --> UC19
+    WM --> UC27
+    WM --> UC28
+    WM --> UC29
+    WM --> UC30
+    
+    PU --> UC13
+    PU --> UC17
+    
+    SA --> UC14
+    SA --> UC17
+    SA --> UC18
+    SA --> UC19
+    
+    %% Use Case relationships
+    UC1 --> UC5
+    UC1 --> UC4
+    UC1 --> UC6
+    UC8 --> UC9
+    UC9 --> UC10
+    UC9 --> UC11
+    UC8 --> UC12
+    UC13 --> UC24
+    UC13 --> UC25
+    UC20 --> UC23
+    UC21 --> UC23
+    UC22 --> UC23
+    UC26 --> UC27
+    UC26 --> UC28
+    UC27 --> UC29
+    UC28 --> UC29
+    UC29 --> UC30
+    UC30 --> UC31
+    UC30 --> UC16
+    
+    %% Styling
+    classDef inventory fill:#4CAF50,stroke:#388E3C,color:white
+    classDef actor fill:#81D4FA,stroke:#039BE5,color:black
+    
+    class IM,WM,PU,SA actor

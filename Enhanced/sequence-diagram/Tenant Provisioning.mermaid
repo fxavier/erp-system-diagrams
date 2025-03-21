@@ -1,0 +1,59 @@
+sequenceDiagram
+    %% Participants
+    actor SA as System Admin 🛠️
+    participant TS as Tenant Service 🏢
+    participant SS as Schema Service 📦
+    participant US as User Service 👤
+    participant PS as Provisioning Service 🔧
+    participant DB as Database 🗄️
+    participant NS as Notification Service 📧
+    participant TA as Tenant Admin 🎟️
+
+    autonumber
+    
+    SA->>+TS: Create New Tenant
+    Note over SA,TS: Tenant Details: Name, Domain, Plan
+    
+    TS->>TS: Validate Tenant Info
+    TS->>DB: Check Domain Availability
+    DB-->>TS: Domain Available
+    
+    TS->>+SS: Request Schema Creation
+    SS->>DB: Create Tenant Schema
+    DB-->>SS: Schema Created
+    SS->>SS: Apply Base DB Migrations
+    SS-->>-TS: Schema Provisioned
+    
+    TS->>+PS: Initialize Tenant Data
+    PS->>DB: Create Core Configuration
+    DB-->>PS: Core Configuration Created
+    PS->>DB: Set Default Settings
+    DB-->>PS: Default Settings Applied
+    PS-->>-TS: Tenant Data Initialized
+    
+    TS->>+US: Create Admin User
+    US->>US: Generate Credentials
+    US->>DB: Store Admin User
+    DB-->>US: User Created
+    US-->>-TS: Admin User Created
+    
+    TS->>DB: Update Tenant Status to Active
+    DB-->>TS: Status Updated
+    
+    TS->>+NS: Send Welcome Notification
+    NS->>NS: Generate Welcome Email
+    NS-->>TA: Send Welcome Email with Credentials
+    NS-->>-TS: Notification Sent
+    
+    TS-->>-SA: Tenant Creation Completed
+    
+    Note over SA,TA: Tenant is now active and ready for use
+    
+    %% Optional subsequent flow
+    TA->>TS: First Login
+    TS->>TS: Validate Credentials
+    TS-->>TA: Login Successful
+    TA->>TS: Complete Tenant Setup
+    TS->>DB: Save Custom Settings
+    DB-->>TS: Settings Saved
+    TS-->>TA: Setup Completed

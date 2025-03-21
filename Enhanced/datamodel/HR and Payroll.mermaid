@@ -1,0 +1,388 @@
+erDiagram
+    %% Entity Definitions
+    EMPLOYEE {
+        int id PK
+        int tenant_id FK
+        string employee_code
+        string first_name
+        string middle_name
+        string last_name
+        string display_name
+        string gender
+        date date_of_birth
+        string marital_status
+        string national_id
+        string tax_id
+        string social_security_number
+        string email
+        string personal_email
+        string phone
+        string mobile_phone
+        string address
+        string city
+        string state
+        string zip_code
+        string country
+        string emergency_contact_name
+        string emergency_contact_phone
+        string emergency_contact_relation
+        string image_url
+        string status
+        date status_date
+    }
+    
+    DEPARTMENT {
+        int id PK
+        int tenant_id FK
+        string code
+        string name
+        string description
+        int manager_id FK
+        int parent_department_id FK
+        boolean is_active
+    }
+    
+    POSITION {
+        int id PK
+        int tenant_id FK
+        int department_id FK
+        string code
+        string title
+        string description
+        int head_count
+        int filled_count
+        boolean is_management
+        decimal minimum_salary
+        decimal maximum_salary
+        string salary_grade
+        boolean is_active
+    }
+    
+    EMPLOYMENT {
+        int id PK
+        int employee_id FK
+        int department_id FK
+        int position_id FK
+        int supervisor_id FK
+        date start_date
+        date end_date
+        string type
+        string work_location
+        string work_email
+        string work_phone
+        decimal salary
+        string pay_frequency
+        string pay_group
+        string currency
+    }
+    
+    EDUCATION_HISTORY {
+        int id PK
+        int employee_id FK
+        string institution
+        string degree
+        string field
+        date start_date
+        date end_date
+        boolean is_completed
+        string grade
+        string description
+    }
+    
+    WORK_HISTORY {
+        int id PK
+        int employee_id FK
+        string company
+        string position
+        string location
+        date start_date
+        date end_date
+        string description
+        string reason_for_leaving
+        boolean is_verified
+    }
+    
+    SKILL_SET {
+        int id PK
+        int employee_id FK
+        string skill
+        string level
+        string description
+        boolean is_certified
+        string certification
+        date certification_date
+        date expiry_date
+    }
+    
+    ATTENDANCE_RECORD {
+        int id PK
+        int employee_id FK
+        date date
+        datetime time_in
+        datetime time_out
+        decimal hours_worked
+        string status
+        string notes
+    }
+    
+    LEAVE_TYPE {
+        int id PK
+        int tenant_id FK
+        string code
+        string name
+        string description
+        decimal annual_entitlement
+        boolean is_paid
+        boolean is_carry_forward
+        decimal max_carry_forward
+        boolean requires_approval
+        int min_days_notice
+        boolean is_active
+    }
+    
+    LEAVE_BALANCE {
+        int id PK
+        int employee_id FK
+        int leave_type_id FK
+        int year
+        decimal entitlement
+        decimal carried
+        decimal accrued
+        decimal taken
+        decimal pending
+        decimal balance
+        decimal reserved
+    }
+    
+    LEAVE_REQUEST {
+        int id PK
+        int employee_id FK
+        int leave_type_id FK
+        date start_date
+        date end_date
+        decimal days
+        string reason
+        string contact_info
+        string status
+        string rejection_reason
+        int approved_by_id FK
+        datetime approved_date
+    }
+    
+    WORK_SCHEDULE {
+        int id PK
+        int employee_id FK
+        string name
+        string type
+        time start_time
+        time end_time
+        decimal hours_per_day
+        decimal hours_per_week
+        boolean monday
+        boolean tuesday
+        boolean wednesday
+        boolean thursday
+        boolean friday
+        boolean saturday
+        boolean sunday
+    }
+    
+    PERFORMANCE_REVIEW {
+        int id PK
+        int employee_id FK
+        int reviewer_id FK
+        string review_period
+        date start_date
+        date end_date
+        string status
+        decimal overall_rating
+        string comments
+        date completed_date
+    }
+    
+    PERFORMANCE_GOAL {
+        int id PK
+        int employee_id FK
+        int review_id FK
+        string title
+        string description
+        date due_date
+        string status
+        decimal weight
+        decimal achievement
+        string comments
+    }
+    
+    PAYROLL_PERIOD {
+        int id PK
+        int tenant_id FK
+        string name
+        string frequency
+        date start_date
+        date end_date
+        date payment_date
+        string status
+    }
+    
+    PAYROLL_RUN {
+        int id PK
+        int tenant_id FK
+        int period_id FK
+        string reference
+        string status
+        datetime start_time
+        datetime end_time
+        string processed_by
+        string approved_by
+        datetime approved_time
+        int employee_count
+        decimal total_gross
+        decimal total_deductions
+        decimal total_net
+        string notes
+    }
+    
+    PAYROLL_ENTRY {
+        int id PK
+        int payroll_run_id FK
+        int employee_id FK
+        decimal basic_salary
+        decimal regular_hours
+        decimal overtime_hours
+        decimal gross_pay
+        decimal total_deductions
+        decimal net_pay
+        string payment_method
+        string account_number
+        string bank_code
+        decimal ytd_earnings
+        string notes
+    }
+    
+    PAYROLL_COMPONENT {
+        int id PK
+        int tenant_id FK
+        string code
+        string name
+        string type
+        string category
+        boolean taxable
+        string formula
+        decimal default_amount
+        decimal minimum_amount
+        decimal maximum_amount
+        boolean is_active
+        int priority
+        int account_id FK
+    }
+    
+    PAYROLL_ENTRY_DETAIL {
+        int id PK
+        int payroll_entry_id FK
+        int component_id FK
+        string description
+        decimal amount
+        string calculation_base
+        decimal units
+        decimal rate
+        string notes
+    }
+    
+    EMPLOYEE_COMPENSATION {
+        int id PK
+        int employee_id FK
+        int component_id FK
+        decimal amount
+        decimal percentage
+        string frequency
+        date effective_date
+        date end_date
+        boolean is_active
+    }
+    
+    TAX_WITHHOLDING {
+        int id PK
+        int employee_id FK
+        string tax_code
+        string filing_status
+        int allowances
+        decimal additional_withholding
+        boolean is_exempt
+        string exempt_reason
+        date effective_date
+    }
+    
+    BENEFIT_PLAN {
+        int id PK
+        int tenant_id FK
+        string code
+        string name
+        string description
+        string provider
+        string type
+        boolean is_active
+    }
+    
+    EMPLOYEE_BENEFIT {
+        int id PK
+        int employee_id FK
+        int benefit_plan_id FK
+        date start_date
+        date end_date
+        decimal employee_contribution
+        decimal employer_contribution
+        string status
+        string notes
+    }
+    
+    %% Relationships
+    EMPLOYEE ||--o{ EDUCATION_HISTORY : "has"
+    EMPLOYEE ||--o{ WORK_HISTORY : "has"
+    EMPLOYEE ||--o{ SKILL_SET : "has"
+    EMPLOYEE ||--o{ ATTENDANCE_RECORD : "records"
+    EMPLOYEE ||--o{ LEAVE_BALANCE : "entitled to"
+    EMPLOYEE ||--o{ LEAVE_REQUEST : "requests"
+    EMPLOYEE ||--o{ WORK_SCHEDULE : "follows"
+    EMPLOYEE ||--o{ PERFORMANCE_REVIEW : "receives"
+    EMPLOYEE ||--o{ PERFORMANCE_GOAL : "pursues"
+    EMPLOYEE ||--o{ PAYROLL_ENTRY : "paid through"
+    EMPLOYEE ||--o{ EMPLOYEE_COMPENSATION : "compensated by"
+    EMPLOYEE ||--o{ TAX_WITHHOLDING : "taxed via"
+    EMPLOYEE ||--o{ EMPLOYEE_BENEFIT : "enrolled in"
+    
+    DEPARTMENT ||--o{ DEPARTMENT : "parent of"
+    DEPARTMENT ||--o{ POSITION : "has"
+    DEPARTMENT ||--o{ EMPLOYEE : "employs"
+    
+    POSITION ||--o{ EMPLOYMENT : "filled by"
+    
+    EMPLOYEE ||--o{ EMPLOYMENT : "has"
+    
+    EMPLOYEE ||--o{ EMPLOYEE : "supervises"
+    
+    LEAVE_TYPE ||--o{ LEAVE_BALANCE : "defines"
+    LEAVE_TYPE ||--o{ LEAVE_REQUEST : "used for"
+    
+    PAYROLL_PERIOD ||--o{ PAYROLL_RUN : "processed in"
+    PAYROLL_RUN ||--o{ PAYROLL_ENTRY : "includes"
+    PAYROLL_ENTRY ||--o{ PAYROLL_ENTRY_DETAIL : "itemizes"
+    
+    PAYROLL_COMPONENT ||--o{ PAYROLL_ENTRY_DETAIL : "used in"
+    PAYROLL_COMPONENT ||--o{ EMPLOYEE_COMPENSATION : "applied as"
+    
+    BENEFIT_PLAN ||--o{ EMPLOYEE_BENEFIT : "provides"
+    
+    %% Styling with class definitions
+    classDef employee_entities fill:#EC407A,stroke:#D81B60,color:white
+    classDef department_entities fill:#F06292,stroke:#EC407A,color:white
+    classDef attendance_entities fill:#F48FB1,stroke:#F06292,color:black
+    classDef performance_entities fill:#F8BBD0,stroke:#F48FB1,color:black
+    classDef payroll_entities fill:#880E4F,stroke:#560027,color:white
+    classDef benefit_entities fill:#AD1457,stroke:#880E4F,color:white
+    
+    class EMPLOYEE,EDUCATION_HISTORY,WORK_HISTORY,SKILL_SET,EMPLOYMENT employee_entities
+    class DEPARTMENT,POSITION department_entities
+    class ATTENDANCE_RECORD,LEAVE_TYPE,LEAVE_BALANCE,LEAVE_REQUEST,WORK_SCHEDULE attendance_entities
+    class PERFORMANCE_REVIEW,PERFORMANCE_GOAL performance_entities
+    class PAYROLL_PERIOD,PAYROLL_RUN,PAYROLL_ENTRY,PAYROLL_COMPONENT,PAYROLL_ENTRY_DETAIL,EMPLOYEE_COMPENSATION,TAX_WITHHOLDING payroll_entities
+    class BENEFIT_PLAN,EMPLOYEE_BENEFIT benefit_entities

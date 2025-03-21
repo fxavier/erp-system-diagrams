@@ -1,0 +1,79 @@
+flowchart TD
+    %% External entities
+    SA[System Administrator]:::external
+    TA[Tenant Administrator]:::external
+    EU[End User]:::external
+    
+    %% Processes
+    P1[1.0\nTenant Registration]:::process
+    P2[2.0\nTenant Provisioning]:::process
+    P3[3.0\nUser Management]:::process
+    P4[4.0\nRole Management]:::process
+    P5[5.0\nAccess Control]:::process
+    P6[6.0\nTenant Configuration]:::process
+    P7[7.0\nActivity Monitoring]:::process
+    
+    %% Data stores
+    DS1[(Tenant Registry)]:::datastore
+    DS2[(User Database)]:::datastore
+    DS3[(Role Definitions)]:::datastore
+    DS4[(Permission Registry)]:::datastore
+    DS5[(Tenant Schema)]:::datastore
+    DS6[(Configuration Store)]:::datastore
+    DS7[(Audit Logs)]:::datastore
+    
+    %% Data flows
+    %% Tenant creation flow
+    SA -->|Create tenant request| P1
+    P1 -->|Validate domain| DS1
+    P1 -->|Store tenant info| DS1
+    P1 -->|Tenant details| P2
+    P2 -->|Create schema| DS5
+    P2 -->|Default settings| DS6
+    P2 -->|Create admin user| DS2
+    P2 -->|Log provisioning| DS7
+    P2 -->|Access details| TA
+    
+    %% User management flow
+    TA -->|Create/update users| P3
+    P3 -->|User credentials| DS2
+    P3 -->|User activity| DS7
+    P3 -->|User info| EU
+    
+    %% Role management flow
+    TA -->|Define roles| P4
+    P4 -->|Role definitions| DS3
+    P4 -->|Role permissions| DS4
+    P4 -->|Role assignments| DS2
+    
+    %% Access control flow
+    EU -->|Authentication request| P5
+    P5 -->|Verify credentials| DS2
+    P5 -->|Check roles| DS3
+    P5 -->|Verify permissions| DS4
+    P5 -->|Access decision| EU
+    P5 -->|Log access| DS7
+    
+    %% Configuration flow
+    TA -->|Update settings| P6
+    P6 -->|Configuration data| DS6
+    P6 -->|Log changes| DS7
+    P6 -->|Applied settings| TA
+    
+    %% Monitoring flow
+    SA -->|View activity| P7
+    TA -->|Monitor tenant| P7
+    P7 -->|Retrieve logs| DS7
+    P7 -->|Activity report| SA
+    P7 -->|Tenant usage| TA
+    
+    %% Optional connections
+    P3 -.->|Assign roles| P4
+    P4 -.->|Update permissions| P5
+    P5 -.->|Enforce tenant isolation| DS5
+    P6 -.->|Update tenant info| DS1
+    
+    %% Styles
+    classDef external fill:#FFD700,stroke:#E6C300,color:black
+    classDef process fill:#6495ED,stroke:#5A86D6,color:white
+    classDef datastore fill:#90EE90,stroke:#7BC96F,color:black

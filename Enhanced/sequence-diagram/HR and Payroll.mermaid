@@ -1,0 +1,102 @@
+sequenceDiagram
+    %% Participants with Emojis
+    actor HR as 👩💼 HR Manager
+    actor DM as 👨💻 Department Manager
+    actor EM as 👤 Employee
+    actor PM as 💰 Payroll Manager
+    participant EMS as 🏢 Employee Service
+    participant ORS as 📊 Org Structure Service
+    participant TAS as ⏰ Time & Attendance
+    participant LVS as 🏖️ Leave Service
+    participant PRS as 📈 Performance Service
+    participant PYS as 🧾 Payroll Service
+    participant TXS as 💸 Tax Service
+    participant BFS as 📋 Benefits Service
+    participant GLS as 📘 GL Service
+    participant NS as 📧 Notification Service
+    
+    autonumber
+
+    %% Employee Lifecycle
+    alt 🆕 Employee Onboarding
+        HR->>+EMS: 📥 Create Employee Record
+        EMS->>EMS: ✅ Validate Data
+        EMS-->>-HR: 🎉 Employee Created
+        
+        HR->>+ORS: 🏢 Assign Department
+        ORS->>EMS: 🔗 Link Position
+        EMS-->>ORS: ✔️ Linked
+        ORS-->>-HR: 📌 Assignment Complete
+        
+        HR->>+TAS: 🕒 Set Schedule
+        TAS-->>-HR: 📅 Schedule Set
+        
+        HR->>+BFS: 🛡️ Setup Benefits
+        BFS-->>-HR: 📦 Benefits Ready
+        
+        HR->>+NS: 📨 Send Welcome
+        NS-->>EM: 👋 Welcome Email
+    end
+    
+    %% Time & Attendance
+    alt ⏳ Time Tracking
+        EM->>+TAS: 🕗 Clock In/Out
+        TAS-->>-EM: ✔️ Time Recorded
+        
+        EM->>+LVS: 📅 Request Leave
+        LVS-->>-EM: 📤 Request Submitted
+        
+        DM->>+LVS: ✅ Approve Leave
+        LVS->>TAS: 🗓️ Update Calendar
+        LVS->>+NS: 📩 Notify Approval
+        NS-->>EM: 📬 Leave Approved
+    end
+    
+    %% Performance Management
+    alt 📊 Performance Review
+        DM->>+PRS: 📝 Create Review
+        PRS-->>-DM: 📄 Review Template
+        
+        PRS->>+NS: 🔔 Notify Employee
+        NS-->>EM: 📧 Review Pending
+        
+        EM->>+PRS: ✍️ Self-Assessment
+        PRS-->>-EM: 💾 Saved
+        
+        DM->>+PRS: 👨💼 Manager Assessment
+        PRS-->>-DM: 💾 Saved
+        
+        DM->>+PRS: 🤝 Review Meeting
+        PRS-->>-DM: 🎯 Goals Set
+    end
+    
+    %% Payroll Processing
+    alt 💵 Payroll Run
+        PM->>+PYS: ▶️ Initiate Payroll
+        PYS->>+TAS: ⏳ Get Attendance
+        PYS->>+LVS: 🏖️ Get Leave Data
+        PYS->>+BFS: 📋 Get Benefits
+        PYS->>+TXS: 💰 Calculate Taxes
+        PYS->>PYS: 🧮 Calculate Net Pay
+        PM->>+PYS: 👀 Review Payroll
+        PM->>+PYS: ✅ Approve Payroll
+        PYS->>+GLS: 📒 Post to GL
+        PYS->>+NS: 📧 Send Payslips
+    end
+    
+    %% Employee Changes
+    alt 🔄 Employee Changes
+        DM->>+HR: ⬆️ Request Promotion
+        HR->>+EMS: 📈 Update Position
+        HR->>+PYS: 💳 Adjust Salary
+        HR->>+NS: 📨 Notify Promotion
+    end
+    
+    %% Termination
+    alt 🚪 Termination
+        HR->>+EMS: ❌ Process Exit
+        EMS->>+LVS: 💸 Final Payout
+        HR->>+PYS: 💰 Final Pay
+        HR->>+BFS: 🛑 End Benefits
+        HR->>+NS: 📩 Send Offboarding
+    end

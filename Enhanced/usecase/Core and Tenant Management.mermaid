@@ -1,0 +1,73 @@
+graph LR
+    %% Actor definitions
+    subgraph Actors
+        SA([System Administrator])
+        TA([Tenant Administrator])
+        EU([End User])
+    end
+    
+    %% Use cases
+    subgraph TenantManagementUseCases["Tenant Management Use Cases"]
+        UC1[Create New Tenant]:::core
+        UC2[Configure Tenant]:::core
+        UC3[Provision Tenant Schema]:::core
+        UC4[Manage Tenant Settings]:::core
+        UC5[Suspend Tenant]:::core
+        UC6[Reactivate Tenant]:::core
+        UC7[Delete Tenant]:::core
+    end
+    
+    subgraph UserManagementUseCases["User Management Use Cases"]
+        UC8[Manage Users]:::core
+        UC9[Create User]:::core
+        UC10[Update User]:::core
+        UC11[Deactivate User]:::core
+        UC12[Reset User Password]:::core
+        UC13[Manage Roles]:::core
+        UC14[Assign Permissions to Roles]:::core
+    end
+    
+    subgraph AccessControlUseCases["Access Control Use Cases"]
+        UC15[Authenticate User]:::core
+        UC16[Authorize User Actions]:::core
+        UC17[Manage API Keys]:::core
+        UC18[Manage Sessions]:::core
+        UC19[Audit User Activity]:::core
+    end
+    
+    %% Actor to Use Case connections
+    SA --> UC1
+    SA --> UC3
+    SA --> UC5
+    SA --> UC6
+    SA --> UC7
+    
+    TA --> UC2
+    TA --> UC4
+    TA --> UC8
+    TA --> UC9
+    TA --> UC10
+    TA --> UC11
+    TA --> UC12
+    TA --> UC13
+    TA --> UC14
+    TA --> UC17
+    
+    EU --> UC15
+    EU --> UC18
+    
+    %% Use Case relationships
+    UC1 --> UC3
+    UC1 --> UC2
+    UC1 --> UC9
+    UC9 --> UC13
+    UC13 --> UC14
+    UC15 --> UC16
+    UC15 --> UC18
+    UC18 --> UC19
+    
+    %% Styling
+    classDef core fill:#607D8B,stroke:#455A64,color:white
+    classDef actor fill:#81D4FA,stroke:#039BE5,color:black
+    
+    class SA,TA,EU actor

@@ -1,0 +1,78 @@
+flowchart LR
+    %% Main systems
+    HR[HR Management System]:::hr
+    PR[Payroll System]:::payroll
+    
+    %% External entities
+    HRM([HR Manager]):::external
+    DM([Department Manager]):::external
+    EM([Employee]):::external
+    TX([Tax Authority]):::external
+    BANK([Banking Institution]):::external
+    
+    %% Other systems
+    TA[Time & Attendance]:::hr
+    LM[Leave Management]:::hr
+    PM[Performance Management]:::hr
+    BN[Benefits Management]:::payroll
+    ACC[Accounting System]:::accounting
+    REP[Reporting System]:::reporting
+    DOC[Document Management]:::external_system
+    RC[Recruitment System]:::hr
+    TRN[Training Management]:::hr
+    
+    %% Connections with data flows
+    %% HR Manager interactions
+    HRM -->|Employee\nOnboarding| HR
+    HRM -->|Personnel\nActions| HR
+    HRM -->|Configure\nPayroll Rules| PR
+    HR -->|Employee\nAnalytics| HRM
+    PR -->|Payroll\nReports| HRM
+    
+    %% Department Manager interactions
+    DM -->|Team\nManagement| HR
+    DM -->|Performance\nReviews| HR
+    HR -->|Team\nStructure| DM
+    
+    %% Employee interactions
+    EM -->|Personal\nInformation| HR
+    EM -->|Time\nRegistration| TA
+    EM -->|Leave\nRequests| LM
+    EM -->|Self Assessment| PM
+    HR -->|Employment\nDetails| EM
+    PR -->|Pay\nStatements| EM
+    
+    %% External authority interactions
+    PR -->|Tax\nFilings| TX
+    PR -->|Payroll\nDeposits| BANK
+    
+    %% System interactions
+    HR <-->|Attendance\nData| TA
+    HR <-->|Leave\nEntitlements| LM
+    HR <-->|Performance\nData| PM
+    
+    HR -->|Employee\nData| PR
+    TA -->|Time\nData| PR
+    LM -->|Leave\nData| PR
+    PR <-->|Benefits\nData| BN
+    
+    PR -->|Payroll\nJournals| ACC
+    ACC -->|GL\nCodes| PR
+    
+    HR -->|HR\nMetrics| REP
+    PR -->|Payroll\nMetrics| REP
+    REP -->|HR & Payroll\nAnalytics| HR
+    
+    HR -->|Employee\nDocuments| DOC
+    DOC -->|Document\nRetrieval| HR
+    
+    HR <-->|Recruitment\nData| RC
+    HR <-->|Training\nData| TRN
+    
+    %% Styles
+    classDef hr fill:#EC407A,stroke:#D81B60,color:white,rx:10,ry:10
+    classDef payroll fill:#F06292,stroke:#E91E63,color:white,rx:10,ry:10
+    classDef accounting fill:#42A5F5,stroke:#1E88E5,color:white,rx:10,ry:10
+    classDef external fill:#FFD700,stroke:#DAA520,color:black,rx:5,ry:5,shape:stadium
+    classDef external_system fill:#B0C4DE,stroke:#778899,color:black,rx:5,ry:5
+    classDef reporting fill:#9370DB,stroke:#7B68EE,color:white,rx:10,ry:10

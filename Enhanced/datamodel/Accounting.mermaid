@@ -1,0 +1,327 @@
+erDiagram
+    %% Entity Definitions
+    ACCOUNT {
+        int id PK
+        int tenant_id FK
+        string code
+        string name
+        string description
+        string type
+        string category
+        int parent_account_id FK
+        boolean is_active
+        boolean is_system_account
+        string currency_code
+        int level
+        boolean allow_journal_entries
+    }
+    
+    FISCAL_YEAR {
+        int id PK
+        int tenant_id FK
+        string name
+        date start_date
+        date end_date
+        string status
+        boolean is_current
+    }
+    
+    ACCOUNTING_PERIOD {
+        int id PK
+        int fiscal_year_id FK
+        string name
+        int period_number
+        date start_date
+        date end_date
+        string status
+    }
+    
+    JOURNAL_ENTRY {
+        int id PK
+        int tenant_id FK
+        int accounting_period_id FK
+        string entry_number
+        datetime entry_date
+        string reference
+        string description
+        string type
+        string status
+        string document_ref
+        string notes
+        decimal total_debit
+        decimal total_credit
+        boolean is_recurring
+        boolean is_reversal
+        int reversal_of_entry_id FK
+    }
+    
+    JOURNAL_LINE {
+        int id PK
+        int journal_entry_id FK
+        int account_id FK
+        decimal debit_amount
+        decimal credit_amount
+        string description
+        string reference
+        int department_id
+        int project_id
+        int customer_id
+        int vendor_id
+        int employee_id
+        string tax_code
+    }
+    
+    RECURRING_JOURNAL {
+        int id PK
+        int tenant_id FK
+        string name
+        string description
+        string pattern
+        int frequency
+        date start_date
+        date end_date
+        int occurrences
+        date next_run_date
+        boolean is_active
+    }
+    
+    JOURNAL_TEMPLATE {
+        int id PK
+        int recurring_journal_id FK
+        string description
+        string type
+        string notes
+    }
+    
+    TEMPLATE_JOURNAL_LINE {
+        int id PK
+        int journal_template_id FK
+        int account_id FK
+        string description
+        boolean is_debit
+        decimal amount
+        string formula
+    }
+    
+    GENERAL_LEDGER_ENTRY {
+        int id PK
+        int tenant_id FK
+        int journal_line_id FK
+        int account_id FK
+        datetime entry_date
+        decimal debit_amount
+        decimal credit_amount
+        decimal balance
+        string reference
+        string description
+    }
+    
+    ACCOUNT_BALANCE {
+        int id PK
+        int account_id FK
+        int fiscal_year_id FK
+        int accounting_period_id FK
+        decimal opening_debit
+        decimal opening_credit
+        decimal period_debit
+        decimal period_credit
+        decimal closing_debit
+        decimal closing_credit
+        decimal balance
+    }
+    
+    TAX_CODE {
+        int id PK
+        int tenant_id FK
+        string code
+        string name
+        string description
+        string type
+        decimal rate
+        boolean is_active
+        boolean is_recoverable
+        int sales_account_id FK
+        int purchase_account_id FK
+    }
+    
+    TAX_PERIOD {
+        int id PK
+        int tenant_id FK
+        string code
+        date start_date
+        date end_date
+        date due_date
+        string status
+    }
+    
+    TAX_TRANSACTION {
+        int id PK
+        int tenant_id FK
+        int tax_code_id FK
+        int journal_entry_id FK
+        datetime transaction_date
+        decimal net_amount
+        decimal tax_amount
+        decimal gross_amount
+        string reference
+        string document_type
+        int document_id
+        int customer_id
+        int vendor_id
+        string direction
+    }
+    
+    TAX_RETURN {
+        int id PK
+        int tenant_id FK
+        int tax_period_id FK
+        string return_number
+        string status
+        date filing_date
+        date payment_date
+        decimal total_sales_tax
+        decimal total_purchase_tax
+        decimal net_tax_due
+        string notes
+    }
+    
+    BANK_ACCOUNT {
+        int id PK
+        int tenant_id FK
+        int account_id FK
+        string account_name
+        string account_number
+        string bank_name
+        string bank_code
+        string branch_code
+        string swift_code
+        string iban_code
+        string routing_number
+        string currency_code
+        decimal current_balance
+        decimal available_balance
+        boolean is_active
+    }
+    
+    BANK_TRANSACTION {
+        int id PK
+        int bank_account_id FK
+        string type
+        datetime transaction_date
+        string reference
+        string description
+        decimal amount
+        decimal running_balance
+        boolean is_reconciled
+        int journal_entry_id FK
+    }
+    
+    BANK_RECONCILIATION {
+        int id PK
+        int bank_account_id FK
+        string reconciliation_id
+        date statement_date
+        decimal statement_balance
+        decimal system_balance
+        decimal difference
+        string status
+        string notes
+        datetime completed_date
+    }
+    
+    BANK_RECONCILIATION_ITEM {
+        int id PK
+        int reconciliation_id FK
+        int bank_transaction_id FK
+        boolean is_matched
+        decimal amount
+        datetime transaction_date
+        string reference
+        string description
+    }
+    
+    BUDGET {
+        int id PK
+        int tenant_id FK
+        string name
+        string description
+        int fiscal_year_id FK
+        string type
+        string status
+        decimal total_amount
+    }
+    
+    BUDGET_ACCOUNT {
+        int id PK
+        int budget_id FK
+        int account_id FK
+        string description
+        decimal annual_amount
+        boolean distribution_enabled
+        string distribution_method
+    }
+    
+    BUDGET_PERIOD {
+        int id PK
+        int budget_account_id FK
+        int period_number
+        string period_name
+        decimal amount
+        decimal actual_amount
+        decimal variance
+        decimal percentage_used
+    }
+    
+    %% Relationships
+    ACCOUNT ||--o{ ACCOUNT : "parent of"
+    ACCOUNT ||--o{ JOURNAL_LINE : "used in"
+    ACCOUNT ||--o{ GENERAL_LEDGER_ENTRY : "records"
+    ACCOUNT ||--o{ ACCOUNT_BALANCE : "has"
+    ACCOUNT ||--o{ BANK_ACCOUNT : "linked to"
+    ACCOUNT ||--o{ BUDGET_ACCOUNT : "budgeted in"
+    
+    FISCAL_YEAR ||--o{ ACCOUNTING_PERIOD : "contains"
+    FISCAL_YEAR ||--o{ ACCOUNT_BALANCE : "includes"
+    FISCAL_YEAR ||--o{ BUDGET : "has"
+    
+    ACCOUNTING_PERIOD ||--o{ JOURNAL_ENTRY : "contains"
+    ACCOUNTING_PERIOD ||--o{ ACCOUNT_BALANCE : "includes"
+    ACCOUNTING_PERIOD ||--o{ BUDGET_PERIOD : "corresponds to"
+    
+    JOURNAL_ENTRY ||--o{ JOURNAL_LINE : "contains"
+    JOURNAL_ENTRY ||--o{ JOURNAL_ENTRY : "reverses"
+    JOURNAL_ENTRY ||--o{ TAX_TRANSACTION : "generates"
+    JOURNAL_ENTRY ||--o{ BANK_TRANSACTION : "linked to"
+    
+    RECURRING_JOURNAL ||--o| JOURNAL_TEMPLATE : "uses"
+    JOURNAL_TEMPLATE ||--o{ TEMPLATE_JOURNAL_LINE : "includes"
+    
+    JOURNAL_LINE ||--o| GENERAL_LEDGER_ENTRY : "creates"
+    
+    TAX_CODE ||--o{ TAX_TRANSACTION : "applies to"
+    TAX_PERIOD ||--o{ TAX_TRANSACTION : "includes"
+    TAX_PERIOD ||--o| TAX_RETURN : "filed as"
+    
+    BANK_ACCOUNT ||--o{ BANK_TRANSACTION : "records"
+    BANK_ACCOUNT ||--o{ BANK_RECONCILIATION : "reconciled in"
+    
+    BANK_RECONCILIATION ||--o{ BANK_RECONCILIATION_ITEM : "includes"
+    BANK_TRANSACTION ||--o{ BANK_RECONCILIATION_ITEM : "matched in"
+    
+    BUDGET ||--o{ BUDGET_ACCOUNT : "allocates"
+    BUDGET_ACCOUNT ||--o{ BUDGET_PERIOD : "distributes"
+    
+    %% Styling with class definitions
+    classDef account_entities fill:#42A5F5,stroke:#1E88E5,color:white
+    classDef period_entities fill:#64B5F6,stroke:#42A5F5,color:white
+    classDef journal_entities fill:#90CAF9,stroke:#64B5F6,color:black
+    classDef tax_entities fill:#BBDEFB,stroke:#90CAF9,color:black
+    classDef bank_entities fill:#E3F2FD,stroke:#BBDEFB,color:black
+    classDef budget_entities fill:#1976D2,stroke:#1565C0,color:white
+    
+    class ACCOUNT,ACCOUNT_BALANCE account_entities
+    class FISCAL_YEAR,ACCOUNTING_PERIOD period_entities
+    class JOURNAL_ENTRY,JOURNAL_LINE,RECURRING_JOURNAL,JOURNAL_TEMPLATE,TEMPLATE_JOURNAL_LINE,GENERAL_LEDGER_ENTRY journal_entities
+    class TAX_CODE,TAX_PERIOD,TAX_TRANSACTION,TAX_RETURN tax_entities
+    class BANK_ACCOUNT,BANK_TRANSACTION,BANK_RECONCILIATION,BANK_RECONCILIATION_ITEM bank_entities
+    class BUDGET,BUDGET_ACCOUNT,BUDGET_PERIOD budget_entities

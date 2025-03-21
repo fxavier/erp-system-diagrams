@@ -1,0 +1,139 @@
+graph TB
+    %% Actor definitions
+    subgraph Actors
+        SM([Sales Manager])
+        SA([Sales Agent])
+        CA([Customer])
+        CS([Cashier])
+        IM([Inventory Manager])
+        AC([Accounting])
+    end
+    
+    %% Use cases
+    subgraph CustomerManagementUseCases["Customer Management Use Cases"]
+        UC1[Create Customer]:::sales
+        UC2[Update Customer Information]:::sales
+        UC3[Manage Customer Groups]:::sales
+        UC4[Manage Customer Contacts]:::sales
+        UC5[Set Credit Limits]:::sales
+        UC6[View Customer History]:::sales
+    end
+    
+    subgraph QuotationUseCases["Quotation Use Cases"]
+        UC7[Create Sales Quotation]:::sales
+        UC8[Email Quotation to Customer]:::sales
+        UC9[Update Quotation]:::sales
+        UC10[Expire Quotation]:::sales
+        UC11[Convert Quotation to Order]:::sales
+    end
+    
+    subgraph OrderProcessingUseCases["Order Processing Use Cases"]
+        UC12[Create Sales Order]:::sales
+        UC13[Update Sales Order]:::sales
+        UC14[Approve Sales Order]:::sales
+        UC15[Reserve Inventory]:::sales
+        UC16[Fulfill Order]:::sales
+        UC17[Cancel Order]:::sales
+        UC18[Process Returns]:::sales
+    end
+    
+    subgraph InvoicingUseCases["Invoicing Use Cases"]
+        UC19[Generate Invoice]:::sales
+        UC20[Send Invoice to Customer]:::sales
+        UC21[Record Payment]:::sales
+        UC22[Issue Credit Note]:::sales
+        UC23[Manage Overdue Invoices]:::sales
+    end
+    
+    subgraph PointOfSaleUseCases["Point of Sale Use Cases"]
+        UC24[Process Sale]:::sales
+        UC25[Apply Discounts]:::sales
+        UC26[Process Payment]:::sales
+        UC27[Issue Receipt]:::sales
+        UC28[Process Return/Refund]:::sales
+        UC29[Open/Close Register]:::sales
+    end
+    
+    subgraph ReportingUseCases["Reporting Use Cases"]
+        UC30[View Sales Dashboard]:::sales
+        UC31[Generate Sales Report]:::sales
+        UC32[Analyze Customer Sales]:::sales
+        UC33[Track Sales Pipeline]:::sales
+        UC34[Track Sales by Region]:::sales
+        UC35[Analyze Product Performance]:::sales
+    end
+    
+    %% Actor to Use Case connections
+    SM --> UC3
+    SM --> UC5
+    SM --> UC14
+    SM --> UC30
+    SM --> UC31
+    SM --> UC32
+    SM --> UC33
+    SM --> UC34
+    SM --> UC35
+    
+    SA --> UC1
+    SA --> UC2
+    SA --> UC4
+    SA --> UC6
+    SA --> UC7
+    SA --> UC8
+    SA --> UC9
+    SA --> UC10
+    SA --> UC11
+    SA --> UC12
+    SA --> UC13
+    SA --> UC16
+    SA --> UC17
+    SA --> UC18
+    SA --> UC19
+    SA --> UC20
+    SA --> UC21
+    SA --> UC22
+    SA --> UC23
+    
+    CA --> UC6
+    CA --> UC24
+    CA --> UC28
+    
+    CS --> UC24
+    CS --> UC25
+    CS --> UC26
+    CS --> UC27
+    CS --> UC28
+    CS --> UC29
+    
+    IM --> UC15
+    IM --> UC16
+    
+    AC --> UC19
+    AC --> UC21
+    AC --> UC22
+    
+    %% Use Case relationships
+    UC1 --> UC4
+    UC7 --> UC8
+    UC7 --> UC9
+    UC9 --> UC10
+    UC7 --> UC11
+    UC11 --> UC12
+    UC12 --> UC14
+    UC14 --> UC15
+    UC15 --> UC16
+    UC16 --> UC19
+    UC19 --> UC20
+    UC20 --> UC21
+    UC18 --> UC22
+    UC21 --> UC23
+    UC24 --> UC25
+    UC24 --> UC26
+    UC26 --> UC27
+    UC24 --> UC19
+    
+    %% Styling
+    classDef sales fill:#FF9800,stroke:#F57C00,color:black
+    classDef actor fill:#81D4FA,stroke:#039BE5,color:black
+    
+    class SM,SA,CA,CS,IM,AC actor

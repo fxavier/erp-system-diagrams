@@ -1,0 +1,85 @@
+graph TB
+    %% Actor definitions
+    subgraph Actors
+        SA([System Administrator])
+        TA([Tenant Administrator])
+        BS([Billing System])
+    end
+    
+    %% Use cases
+    subgraph PlanManagementUseCases["Plan Management Use Cases"]
+        UC1[Create Subscription Plan]:::subscription
+        UC2[Manage Plan Features]:::subscription
+        UC3[Set Usage Limits]:::subscription
+        UC4[Update Plan Pricing]:::subscription
+        UC5[Deactivate Plan]:::subscription
+    end
+    
+    subgraph SubscriptionUseCases["Subscription Use Cases"]
+        UC6[Subscribe to Plan]:::subscription
+        UC7[Upgrade Subscription]:::subscription
+        UC8[Downgrade Subscription]:::subscription
+        UC9[Renew Subscription]:::subscription
+        UC10[Cancel Subscription]:::subscription
+        UC11[Manage Auto-Renewal]:::subscription
+        UC12[Apply Promotional Code]:::subscription
+    end
+    
+    subgraph BillingUseCases["Billing Use Cases"]
+        UC13[Generate Invoice]:::billing
+        UC14[Process Payment]:::billing
+        UC15[Manage Payment Methods]:::billing
+        UC16[Handle Failed Payments]:::billing
+        UC17[Issue Refund]:::billing
+        UC18[View Billing History]:::billing
+    end
+    
+    subgraph UsageTrackingUseCases["Usage Tracking Use Cases"]
+        UC19[Track Feature Usage]:::subscription
+        UC20[Enforce Usage Limits]:::subscription
+        UC21[Generate Usage Reports]:::subscription
+        UC22[Send Usage Alerts]:::subscription
+    end
+    
+    %% Actor to Use Case connections
+    SA --> UC1
+    SA --> UC2
+    SA --> UC3
+    SA --> UC4
+    SA --> UC5
+    
+    TA --> UC6
+    TA --> UC7
+    TA --> UC8
+    TA --> UC9
+    TA --> UC10
+    TA --> UC11
+    TA --> UC12
+    TA --> UC15
+    TA --> UC18
+    
+    BS --> UC13
+    BS --> UC14
+    BS --> UC16
+    BS --> UC17
+    
+    %% Use Case relationships
+    UC1 --> UC2
+    UC2 --> UC3
+    UC6 --> UC13
+    UC7 --> UC13
+    UC9 --> UC13
+    UC13 --> UC14
+    UC14 --> UC16
+    UC6 --> UC19
+    UC19 --> UC20
+    UC19 --> UC21
+    UC19 --> UC22
+    UC20 --> UC7
+    
+    %% Styling
+    classDef subscription fill:#00BCD4,stroke:#0097A7,color:white
+    classDef billing fill:#009688,stroke:#00796B,color:white
+    classDef actor fill:#81D4FA,stroke:#039BE5,color:black
+    
+    class SA,TA,BS actor

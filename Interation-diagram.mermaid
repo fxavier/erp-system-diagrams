@@ -1,0 +1,158 @@
+graph TB
+    %% ======================
+    %% Color Definitions
+    %% ======================
+    classDef core fill:#78909C,stroke:#546E7A,color:#ffffff
+    classDef sales fill:#FFA726,stroke:#FB8C00,color:#000000
+    classDef inventory fill:#66BB6A,stroke:#43A047,color:#000000
+    classDef accounting fill:#42A5F5,stroke:#1E88E5,color:#000000
+    classDef procurement fill:#AB47BC,stroke:#8E24AA,color:#ffffff
+    classDef rfq fill:#BA68C8,stroke:#9C27B0,color:#ffffff
+    classDef payroll fill:#EC407A,stroke:#D81B60,color:#ffffff
+    classDef hr fill:#EF5350,stroke:#D32F2F,color:#ffffff
+    classDef reporting fill:#26A69A,stroke:#00897B,color:#ffffff
+    classDef subscription fill:#00ACC1,stroke:#0097A7,color:#ffffff
+    linkStyle default stroke:#616161,stroke-width:2px
+
+    %% ======================
+    %% Core System
+    %% ======================
+    subgraph Core["Core System"]
+        TM[Tenant Management]:::core
+        UM[User Management]:::core
+        AC[Access Control]:::core
+        SM[Subscription Management]:::subscription
+    end
+    
+    %% ======================
+    %% Module Groups
+    %% ======================
+    subgraph Sales["Sales Module"]
+        SO[Sales Orders]:::sales
+        INV[Invoicing]:::sales
+        QUO[Quotations]:::sales
+        POS[Point of Sale]:::sales
+        CRM[Customer Management]:::sales
+    end
+    
+    subgraph Inventory["Inventory Module"]
+        STK[Stock Control]:::inventory
+        WH[Warehouse Management]:::inventory
+        IM[Item Management]:::inventory
+        LC[Location Control]:::inventory
+    end
+    
+    subgraph Accounting["Accounting Module"]
+        GL[General Ledger]:::accounting
+        AR[Accounts Receivable]:::accounting
+        AP[Accounts Payable]:::accounting
+        FA[Financial Analysis]:::accounting
+        TX[Tax Management]:::accounting
+    end
+    
+    subgraph Procurement["Procurement Module"]
+        PR[Purchase Requisitions]:::procurement
+        PO[Purchase Orders]:::procurement
+        RFB[Request for Buy]:::procurement
+        VM[Vendor Management]:::procurement
+    end
+    
+    subgraph RFQ["RFQ Module"]
+        RQ[Request for Quotation]:::rfq
+        VQ[Vendor Quotations]:::rfq
+        QC[Quotation Comparison]:::rfq
+        VS[Vendor Selection]:::rfq
+    end
+    
+    subgraph HR["HR Module"]
+        EM[Employee Management]:::hr
+        LM[Leave Management]:::hr
+        PM[Performance Management]:::hr
+        RC[Recruitment]:::hr
+    end
+    
+    subgraph Payroll["Payroll Module"]
+        PS[Payroll Setup]:::payroll
+        PC[Payroll Calculation]:::payroll
+        PY[Payment Processing]:::payroll
+        TX2[Tax Reporting]:::payroll
+    end
+    
+    subgraph Reporting["Reporting & Analytics"]
+        DR[Dashboard Reports]:::reporting
+        FR[Financial Reports]:::reporting
+        OR[Operational Reports]:::reporting
+        CR[Custom Reports]:::reporting
+    end
+    
+    %% ======================
+    %% Module Interactions
+    %% ======================
+    TM --- UM
+    TM --- AC
+    TM --- SM
+    
+    SM --- Sales
+    SM --- Inventory
+    SM --- Accounting
+    SM --- Procurement
+    SM --- RFQ
+    SM --- HR
+    SM --- Payroll
+    SM --- Reporting
+    
+    SO --- INV
+    INV --- AR
+    SO --- STK
+    POS --- STK
+    POS --- INV
+    QUO --- SO
+    
+    RFB --- RQ
+    RQ --- VQ
+    VQ --- QC
+    QC --- VS
+    VS --- PO
+    
+    PO --- VM
+    PO --- STK
+    PO --- AP
+    
+    PC --- PS
+    PC --- EM
+    PC --- AP
+    PC --- GL
+    
+    STK --- WH
+    STK --- IM
+    WH --- LC
+    
+    GL --- AR
+    GL --- AP
+    GL --- FA
+    
+    EM --- LM
+    EM --- PM
+    EM --- RC
+    
+    DR --- FR
+    DR --- OR
+    FR --- FA
+    
+    %% ======================
+    %% Cross-Module Flows
+    %% ======================
+    SO -.-> GL
+    INV -.-> GL
+    PO -.-> GL
+    PC -.-> GL
+    
+    STK -.-> OR
+    INV -.-> OR
+    PO -.-> OR
+    EM -.-> OR
+    
+    AR -.-> FR
+    AP -.-> FR
+    GL -.-> FR
+    PC -.-> FR

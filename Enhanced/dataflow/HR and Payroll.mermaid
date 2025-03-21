@@ -1,0 +1,110 @@
+flowchart TD
+    %% External entities
+    HR[HR Manager]:::external
+    DM[Department Manager]:::external
+    EM[Employee]:::external
+    PM[Payroll Manager]:::external
+    TX[Tax Authority]:::external
+    AC[Accounting]:::external
+    
+    %% Processes
+    P1[1.0\nEmployee Management]:::process_hr
+    P2[2.0\nOrganization Structure]:::process_hr
+    P3[3.0\nTime & Attendance]:::process_hr
+    P4[4.0\nLeave Management]:::process_hr
+    P5[5.0\nPerformance Management]:::process_hr
+    P6[6.0\nPayroll Calculation]:::process_pay
+    P7[7.0\nTax Processing]:::process_pay
+    P8[8.0\nPayment Disbursement]:::process_pay
+    
+    %% Data stores
+    DS1[(Employee Records)]:::datastore
+    DS2[(Organization Chart)]:::datastore
+    DS3[(Time Records)]:::datastore
+    DS4[(Leave Balances)]:::datastore
+    DS5[(Performance Data)]:::datastore
+    DS6[(Compensation)]:::datastore
+    DS7[(Payroll Periods)]:::datastore
+    DS8[(Tax Tables)]:::datastore
+    DS9[(Payment History)]:::datastore
+    
+    %% Data flows
+    %% Employee management flow
+    HR -->|Hire/update employee| P1
+    EM -->|Provide information| P1
+    P1 -->|Employee details| DS1
+    P1 -->|Employee profile| HR
+    P1 -->|Employee information| P2
+    
+    %% Organization structure flow
+    HR -->|Define structure| P2
+    P2 -->|Department setup| DS2
+    P2 -->|Position definitions| DS2
+    P2 -->|Assign employees| DS1
+    P2 -->|Reporting structure| DM
+    
+    %% Time & attendance flow
+    EM -->|Clock in/out| P3
+    P3 -->|Employee verification| DS1
+    P3 -->|Record attendance| DS3
+    P3 -->|Schedule verification| DS2
+    P3 -->|Attendance summary| EM
+    P3 -->|Time reports| DM
+    
+    %% Leave management flow
+    EM -->|Request leave| P4
+    P4 -->|Check entitlement| DS4
+    P4 -->|Leave request| DM
+    DM -->|Approve/deny| P4
+    P4 -->|Update leave balance| DS4
+    P4 -->|Leave approval| EM
+    P4 -->|Leave calendar| DM
+    
+    %% Performance management flow
+    DM -->|Conduct reviews| P5
+    EM -->|Self assessment| P5
+    P5 -->|Employee history| DS1
+    P5 -->|Record evaluations| DS5
+    P5 -->|Performance ratings| DS1
+    P5 -->|Review results| EM
+    P5 -->|Performance metrics| HR
+    
+    %% Payroll calculation flow
+    PM -->|Process payroll| P6
+    P6 -->|Employee data| DS1
+    P6 -->|Time records| DS3
+    P6 -->|Leave data| DS4
+    P6 -->|Compensation data| DS6
+    P6 -->|Payroll period| DS7
+    P6 -->|Gross pay calculations| P7
+    P6 -->|Payroll results| PM
+    
+    %% Tax processing flow
+    P7 -->|Employee tax data| DS1
+    P7 -->|Tax rates| DS8
+    P7 -->|Calculate withholdings| DS9
+    P7 -->|Tax reports| TX
+    P7 -->|Net pay calculations| P8
+    
+    %% Payment disbursement flow
+    P8 -->|Payment details| DS9
+    P8 -->|Bank instructions| AC
+    P8 -->|Payment confirmations| DS9
+    P8 -->|Pay slips| EM
+    P8 -->|Payroll journal| AC
+    
+    %% Optional connections
+    P1 -.->|Benefits enrollment| DS6
+    P2 -.->|Succession planning| HR
+    P3 -.->|Overtime calculations| P6
+    P4 -.->|PTO accrual| P6
+    P5 -.->|Compensation review| DS6
+    P6 -.->|Retroactive calculations| DS9
+    P7 -.->|Compliance reporting| TX
+    P8 -.->|Year-end processing| P7
+    
+    %% Styles
+    classDef external fill:#FFD700,stroke:#E6C300,color:black
+    classDef process_hr fill:#EC407A,stroke:#D81B60,color:white
+    classDef process_pay fill:#F06292,stroke:#D81B60,color:white
+    classDef datastore fill:#90EE90,stroke:#7BC96F,color:black

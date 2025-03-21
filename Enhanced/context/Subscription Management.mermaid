@@ -1,0 +1,43 @@
+flowchart LR
+    %% Main system
+    SM[Subscription Management System]:::subscription
+    
+    %% External entities
+    SA([System Administrator]):::external
+    TA([Tenant Administrator]):::external
+    
+    %% Other systems
+    TM[Tenant Management]:::system
+    BM[Billing Management]:::billing
+    PM[Payment Processing]:::external_system
+    FS[Feature Control System]:::system
+    MAIL[Email Notifications]:::external_system
+    REP[Reporting System]:::reporting
+    
+    %% Connections with data flows
+    SA -->|Define\nSubscription Plans| SM
+    SM -->|Plan\nConfiguration| SA
+    
+    TA -->|Subscribe/Change\nPlans| SM
+    SM -->|Subscription\nConfirmation| TA
+    
+    SM <-->|Tenant\nSubscription Status| TM
+    SM -->|Invoice\nGeneration Request| BM
+    BM -->|Payment\nStatus| SM
+    
+    SM -->|Payment\nProcessing Request| PM
+    PM -->|Payment\nConfirmation| SM
+    
+    SM -->|Feature Access\nConfiguration| FS
+    SM -->|Subscription\nNotifications| MAIL
+    
+    SM -->|Usage &\nRevenue Data| REP
+    REP -->|Subscription\nAnalytics| SM
+    
+    %% Styles
+    classDef system fill:#6495ED,stroke:#4169E1,color:white,rx:10,ry:10
+    classDef subscription fill:#00CED1,stroke:#008B8B,color:white,rx:10,ry:10
+    classDef billing fill:#20B2AA,stroke:#008080,color:white,rx:10,ry:10
+    classDef external fill:#FFD700,stroke:#DAA520,color:black,rx:5,ry:5,shape:stadium
+    classDef external_system fill:#B0C4DE,stroke:#778899,color:black,rx:5,ry:5
+    classDef reporting fill:#9370DB,stroke:#7B68EE,color:white,rx:10,ry:10

@@ -1,0 +1,70 @@
+sequenceDiagram
+    %% Participants
+    actor TA as Tenant Admin 🎟️
+    participant UI as User Interface 🖥️
+    participant SS as Subscription Service 📝
+    participant PS as Plan Service 📋
+    participant BS as Billing Service 💳
+    participant PG as Payment Gateway 🏦
+    participant TS as Tenant Service 🏢
+    participant FS as Feature Service 🔧
+    participant NS as Notification Service 📧
+    
+    autonumber
+    
+    %% Interactions
+    TA->>+UI: View Available Subscription Plans
+    UI->>+PS: Get Available Plans
+    PS-->>-UI: Return Plan Options
+    UI-->>-TA: Display Available Plans
+    
+    TA->>+UI: Select Plan & Payment Method
+    UI->>+SS: Request Subscription Change
+    
+    SS->>+PS: Validate Plan Details
+    PS-->>-SS: Plan Details Validated
+    
+    SS->>+BS: Create Billing Record
+    BS->>BS: Calculate Prorated Amount
+    BS->>+PG: Process Payment
+    PG->>PG: Authorize Payment
+    PG-->>-BS: Payment Authorized
+    BS-->>-SS: Billing Record Created
+    
+    SS->>+TS: Update Tenant Subscription
+    TS->>TS: Update Subscription Status
+    TS-->>-SS: Tenant Subscription Updated
+    
+    SS->>+FS: Apply Feature Access
+    FS->>FS: Update Feature Flags
+    FS->>FS: Set Usage Limits
+    FS-->>-SS: Feature Access Applied
+    
+    SS->>+NS: Send Subscription Confirmation
+    NS->>NS: Generate Confirmation
+    NS-->>TA: Send Confirmation Email
+    NS-->>-SS: Notification Sent
+    
+    SS-->>-UI: Subscription Updated Successfully
+    UI-->>-TA: Display Confirmation
+    
+    %% Renewal Flow
+    Note over TA,NS: Before Subscription Expiry
+    
+    SS->>SS: Detect Upcoming Renewal
+    SS->>+NS: Send Renewal Reminder
+    NS-->>TA: Send Renewal Notification
+    NS-->>-SS: Reminder Sent
+    
+    SS->>+BS: Generate Renewal Invoice
+    BS->>BS: Calculate Renewal Amount
+    BS->>+PG: Process Automatic Payment
+    PG-->>-BS: Payment Processed
+    BS-->>-SS: Invoice Paid
+    
+    SS->>+TS: Extend Subscription Period
+    TS-->>-SS: Subscription Extended
+    
+    SS->>+NS: Send Renewal Confirmation
+    NS-->>TA: Send Confirmation Email
+    NS-->>-SS: Notification Sent

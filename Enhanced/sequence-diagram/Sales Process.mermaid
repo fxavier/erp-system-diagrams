@@ -1,0 +1,112 @@
+sequenceDiagram
+    %% Participants
+    actor SA as Sales Agent 🧑‍💼
+    actor CU as Customer 🧑‍🤝‍🧑
+    participant CS as Customer Service ☎️
+    participant QS as Quotation Service 📝
+    participant SOS as Sales Order Service 📦
+    participant IS as Inventory Service 📊
+    participant INS as Invoice Service 💰
+    participant PS as Payment Service 💳
+    participant ARS as Accounts Receivable 🧾
+    participant NS as Notification Service 📲
+
+    autonumber
+    
+    %% Sales Process Flow
+    CU->>+SA: Request Product Information
+    SA->>+CS: Look Up Customer
+    CS-->>-SA: Customer Details
+    
+    alt New Customer
+        SA->>+CS: Create Customer Record
+        CS->>CS: Validate Customer Data
+        CS-->>-SA: Customer Created
+    end
+    
+    SA->>+QS: Create Sales Quotation
+    QS->>CS: Get Customer Details
+    CS-->>QS: Customer Details
+    QS->>IS: Check Product Availability
+    IS-->>QS: Availability Status
+    QS->>QS: Calculate Pricing
+    QS-->>-SA: Quotation Created
+    
+    SA->>+NS: Send Quotation to Customer
+    NS-->>CU: Send Quotation Document
+    NS-->>-SA: Quotation Sent
+    
+    CU->>+SA: Accept Quotation
+    SA->>+QS: Mark Quotation as Accepted
+    QS->>QS: Update Quotation Status
+    QS-->>-SA: Quotation Accepted
+    
+    SA->>+SOS: Convert to Sales Order
+    SOS->>QS: Get Quotation Details
+    QS-->>SOS: Quotation Details
+    SOS->>SOS: Create Order Record
+    SOS-->>-SA: Sales Order Created
+    
+    SA->>+SOS: Submit Order for Processing
+    SOS->>+IS: Reserve Inventory
+    IS->>IS: Allocate Stock
+    IS-->>-SOS: Stock Reserved
+    SOS->>SOS: Update Order Status
+    SOS-->>-SA: Order Processing Started
+    
+    SOS->>+IS: Fulfill Order
+    IS->>IS: Update Inventory Levels
+    IS-->>-SOS: Fulfillment Complete
+    
+    SOS->>+INS: Generate Invoice
+    INS->>SOS: Get Order Details
+    SOS-->>INS: Order Details
+    INS->>INS: Create Invoice Record
+    INS-->>-SOS: Invoice Generated
+    
+    SOS->>+NS: Send Order Confirmation
+    NS-->>CU: Send Order & Invoice Details
+    NS-->>-SOS: Confirmation Sent
+    
+    CU->>+PS: Make Payment
+    PS->>INS: Get Invoice Details
+    INS-->>PS: Invoice Details
+    PS->>PS: Process Payment
+    PS-->>-CU: Payment Confirmed
+    
+    PS->>+ARS: Record Payment
+    ARS->>INS: Update Invoice Status
+    INS-->>ARS: Status Updated
+    ARS-->>-PS: Payment Recorded
+    
+    INS->>+NS: Send Payment Receipt
+    NS-->>CU: Send Receipt
+    NS-->>-INS: Receipt Sent
+    
+    %% Return Process
+    alt Customer Return
+        CU->>+SA: Request Return
+        SA->>+SOS: Create Return Order
+        SOS->>SOS: Create Return Record
+        SOS-->>-SA: Return Created
+        
+        SA->>+IS: Process Return Receipt
+        IS->>IS: Update Inventory
+        IS-->>-SA: Return Received
+        
+        SA->>+INS: Issue Credit Note
+        INS->>INS: Create Credit Record
+        INS-->>-SA: Credit Note Issued
+        
+        SA->>+NS: Send Credit Note
+        NS-->>CU: Send Credit Document
+        NS-->>-SA: Credit Note Sent
+        
+        SA->>+PS: Process Refund
+        PS->>PS: Execute Refund
+        PS-->>-SA: Refund Processed
+        
+        PS->>+NS: Send Refund Confirmation
+        NS-->>CU: Send Refund Receipt
+        NS-->>-PS: Confirmation Sent
+    end

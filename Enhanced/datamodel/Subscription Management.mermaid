@@ -1,0 +1,161 @@
+erDiagram
+    %% Entity Definitions
+    SUBSCRIPTION_PLAN {
+        int id PK
+        string name
+        string description
+        decimal monthly_price
+        decimal annual_price
+        string currency
+        int max_users
+        int max_storage_mb
+        boolean is_trial
+        int trial_days
+        boolean is_active
+        datetime created_date
+        datetime updated_date
+        string created_by
+    }
+    
+    TENANT_SUBSCRIPTION {
+        int id PK
+        int tenant_id FK
+        int subscription_plan_id FK
+        string status
+        datetime start_date
+        datetime end_date
+        string billing_cycle
+        boolean auto_renew
+        string payment_method_id
+        datetime last_billing_date
+        datetime next_billing_date
+        string cancel_reason
+    }
+    
+    SUBSCRIPTION_FEATURE {
+        int id PK
+        string feature_code
+        string feature_name
+        string description
+        string category
+        string module_code
+        boolean is_premium
+        boolean is_active
+    }
+    
+    PLAN_FEATURE {
+        int id PK
+        int subscription_plan_id FK
+        int subscription_feature_id FK
+        boolean is_enabled
+        int usage_limit
+        string limit_period
+        string limit_type
+    }
+    
+    SUBSCRIPTION_DISCOUNT {
+        int id PK
+        string code
+        string name
+        string type
+        decimal amount
+        decimal percent_off
+        datetime valid_from
+        datetime valid_to
+        int max_redemptions
+        int current_redemptions
+        boolean is_active
+    }
+    
+    FEATURE_USAGE {
+        int id PK
+        int tenant_id FK
+        int feature_id FK
+        int current_usage
+        int allocated_limit
+        datetime reset_date
+        string usage_period
+    }
+    
+    INVOICE {
+        int id PK
+        int tenant_id FK
+        int subscription_id FK
+        string invoice_number
+        datetime issue_date
+        datetime due_date
+        decimal amount
+        decimal discount
+        decimal tax
+        decimal total
+        string currency
+        string status
+        datetime paid_date
+    }
+    
+    INVOICE_ITEM {
+        int id PK
+        int invoice_id FK
+        string description
+        decimal quantity
+        decimal unit_price
+        decimal amount
+        string tax_code
+        decimal tax_rate
+        decimal tax_amount
+        string feature_code
+    }
+    
+    PAYMENT_METHOD {
+        int id PK
+        int tenant_id FK
+        string type
+        string provider
+        string account_name
+        string token
+        string last4
+        string expiry_month
+        string expiry_year
+        boolean is_default
+        datetime created_date
+    }
+    
+    PAYMENT {
+        int id PK
+        int invoice_id FK
+        int payment_method_id FK
+        string transaction_id
+        datetime date
+        decimal amount
+        string currency
+        string status
+        string gateway_response
+    }
+    
+    %% Relationships
+    SUBSCRIPTION_PLAN ||--o{ TENANT_SUBSCRIPTION : "subscribed by"
+    SUBSCRIPTION_PLAN ||--o{ PLAN_FEATURE : "includes"
+    
+    SUBSCRIPTION_FEATURE ||--o{ PLAN_FEATURE : "included in"
+    SUBSCRIPTION_FEATURE ||--o{ FEATURE_USAGE : "tracked by"
+    
+    TENANT_SUBSCRIPTION ||--o{ INVOICE : "billed via"
+    TENANT_SUBSCRIPTION ||--o{ FEATURE_USAGE : "monitors"
+    
+    INVOICE ||--o{ INVOICE_ITEM : "contains"
+    INVOICE ||--o{ PAYMENT : "paid by"
+    
+    PAYMENT_METHOD ||--o{ PAYMENT : "used for"
+    
+    %% Styling with class definitions
+    classDef plan_entities fill:#00BCD4,stroke:#0097A7,color:white
+    classDef subscription_entities fill:#26C6DA,stroke:#00ACC1,color:white
+    classDef feature_entities fill:#4DD0E1,stroke:#00BCD4,color:white
+    classDef billing_entities fill:#80DEEA,stroke:#4DD0E1,color:black
+    classDef payment_entities fill:#B2EBF2,stroke:#80DEEA,color:black
+    
+    class SUBSCRIPTION_PLAN,PLAN_FEATURE,SUBSCRIPTION_DISCOUNT plan_entities
+    class TENANT_SUBSCRIPTION subscription_entities
+    class SUBSCRIPTION_FEATURE,FEATURE_USAGE feature_entities
+    class INVOICE,INVOICE_ITEM billing_entities
+    class PAYMENT_METHOD,PAYMENT payment_entities

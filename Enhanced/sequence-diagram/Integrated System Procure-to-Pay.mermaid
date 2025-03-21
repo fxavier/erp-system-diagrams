@@ -1,0 +1,88 @@
+sequenceDiagram
+    %% Participants with Emojis
+    actor DM as 👨💼 Dept Manager
+    actor PO as 📋 Procurement Officer
+    actor VE as 🚚 Vendor
+    actor WH as 🏭 Warehouse Staff
+    actor AC as 💰 Accountant
+    
+    participant PMS as 🛒 Procurement Module
+    participant RQS as 📄🔍 RFQ Module
+    participant IMS as 📦 Inventory Module
+    participant ACS as 📒 Accounting Module
+    
+    autonumber
+
+    %% Procure-to-Pay Flow
+    DM->>+PMS: 📝 Create Request
+    PMS-->>-DM: ✔️ Request Created
+    
+    DM->>+PMS: 📤 Submit Approval
+    PMS-->>-DM: 📨 Request Submitted
+    
+    %% Approval Flow
+    PO->>+PMS: 🔍 Review Request
+    PMS-->>-PO: 📋 Details Displayed
+    
+    PO->>+PMS: ✅ Approve Request
+    PMS-->>-PO: 🎉 Request Approved
+    
+    %% RFQ Process
+    PO->>+RQS: 📑 Generate RFQ
+    RQS-->>-PO: 📄 RFQ Created
+    
+    PO->>+RQS: 👥 Select Vendors
+    RQS-->>-PO: 🤝 Vendors Linked
+    
+    PO->>+RQS: ✉️ Issue RFQ
+    RQS-->>VE: 📧 Send RFQ
+    RQS-->>-PO: 📤 RFQ Sent
+    
+    %% Vendor Response
+    VE->>+RQS: 💵 Submit Quote
+    RQS-->>-VE: ✔️ Quote Received
+    
+    %% Comparison
+    PO->>+RQS: ⚖️ Compare Quotes
+    RQS-->>-PO: 📊 Matrix Displayed
+    
+    PO->>+RQS: 🏆 Select Vendor
+    RQS-->>-PO: ✅ Vendor Chosen
+    
+    %% PO Creation
+    PO->>+PMS: 📝 Create PO
+    PMS-->>-PO: 📑 PO Generated
+    
+    PO->>+PMS: ✅ Approve PO
+    PMS-->>-PO: 🎉 PO Approved
+    
+    PO->>+PMS: 📤 Send PO
+    PMS-->>VE: 📧 PO Delivered
+    PMS-->>-PO: 📤 PO Sent
+    
+    %% Goods Receipt
+    VE->>+WH: 🚚 Deliver Items
+    
+    WH->>+IMS: 📦 Receive Goods
+    IMS-->>-WH: 📥 Stock Updated
+    
+    WH->>+PMS: ✔️ Confirm Receipt
+    PMS-->>-WH: ✅ Receipt Recorded
+    
+    %% Invoice & Payment
+    AC->>+ACS: 🧾 Record Invoice
+    ACS-->>-AC: ✔️ Invoice Posted
+    
+    AC->>+ACS: ✅ Approve Payment
+    ACS-->>-AC: 💸 Payment Ready
+    
+    AC->>+ACS: 📤 Process Payment
+    ACS-->>VE: 💳 Payment Sent
+    ACS-->>-AC: 🎉 Payment Completed
+    
+    %% System Updates
+    ACS->>+PMS: 🔄 Update PO Status
+    PMS-->>-ACS: ✅ Marked Paid
+    
+    ACS->>+IMS: 💹 Adjust Costs
+    IMS-->>-ACS: 📈 Costs Updated

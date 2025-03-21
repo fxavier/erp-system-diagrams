@@ -1,0 +1,140 @@
+flowchart TD
+    %% Key business processes
+    subgraph OTC[Order-to-Cash Process]
+        OTC1[Customer\nOrder]:::process_sales
+        OTC2[Inventory\nCheck]:::process_inv
+        OTC3[Order\nFulfillment]:::process_inv
+        OTC4[Invoice\nGeneration]:::process_sales
+        OTC5[Payment\nProcessing]:::process_acc
+        OTC6[Revenue\nRecognition]:::process_acc
+    end
+    
+    subgraph PTP[Procure-to-Pay Process]
+        PTP1[Purchase\nRequest]:::process_proc
+        PTP2[RFQ\nManagement]:::process_rfq
+        PTP3[Purchase\nOrder]:::process_proc
+        PTP4[Goods\nReceipt]:::process_inv
+        PTP5[Invoice\nProcessing]:::process_acc
+        PTP6[Payment\nDisbursement]:::process_acc
+    end
+    
+    subgraph HTR[Hire-to-Retire Process]
+        HTR1[Employee\nOnboarding]:::process_hr
+        HTR2[Time\nTracking]:::process_hr
+        HTR3[Payroll\nProcessing]:::process_pay
+        HTR4[Benefits\nManagement]:::process_pay
+        HTR5[Performance\nManagement]:::process_hr
+        HTR6[Employee\nTermination]:::process_hr
+    end
+    
+    subgraph RTR[Record-to-Report Process]
+        RTR1[Transaction\nRecording]:::process_acc
+        RTR2[Account\nReconciliation]:::process_acc
+        RTR3[Period\nClose]:::process_acc
+        RTR4[Financial\nReporting]:::process_acc
+        RTR5[Compliance\nReporting]:::process_acc
+    end
+    
+    %% Data flow between process steps
+    %% OTC Process
+    OTC1 --> OTC2
+    OTC2 --> OTC3
+    OTC3 --> OTC4
+    OTC4 --> OTC5
+    OTC5 --> OTC6
+    
+    %% PTP Process
+    PTP1 --> PTP2
+    PTP2 --> PTP3
+    PTP3 --> PTP4
+    PTP4 --> PTP5
+    PTP5 --> PTP6
+    
+    %% HTR Process
+    HTR1 --> HTR2
+    HTR2 --> HTR3
+    HTR3 --> HTR4
+    HTR2 --> HTR5
+    HTR5 --> HTR6
+    
+    %% RTR Process
+    RTR1 --> RTR2
+    RTR2 --> RTR3
+    RTR3 --> RTR4
+    RTR4 --> RTR5
+    
+    %% Data stores
+    DS1[(Customer\nDatabase)]:::datastore
+    DS2[(Product\nCatalog)]:::datastore
+    DS3[(Inventory\nRecords)]:::datastore
+    DS4[(Sales\nOrders)]:::datastore
+    DS5[(Accounts\nReceivable)]:::datastore
+    
+    DS6[(Purchase\nRequests)]:::datastore
+    DS7[(Vendor\nDatabase)]:::datastore
+    DS8[(RFQ\nRecords)]:::datastore
+    DS9[(Purchase\nOrders)]:::datastore
+    DS10[(Accounts\nPayable)]:::datastore
+    
+    DS11[(Employee\nRecords)]:::datastore
+    DS12[(Time &\nAttendance)]:::datastore
+    DS13[(Payroll\nData)]:::datastore
+    DS14[(Benefits\nRecords)]:::datastore
+    
+    DS15[(General\nLedger)]:::datastore
+    DS16[(Financial\nStatements)]:::datastore
+    
+    %% Cross-process data flows
+    
+    %% OTC data stores
+    OTC1 -->|Customer info| DS1
+    OTC1 -->|Product info| DS2
+    OTC2 -->|Check stock| DS3
+    OTC2 -->|Record order| DS4
+    OTC3 -->|Update inventory| DS3
+    OTC4 -->|Create invoice| DS5
+    OTC5 -->|Update AR| DS5
+    OTC6 -->|Post to GL| DS15
+    
+    %% PTP data stores
+    PTP1 -->|Request details| DS6
+    PTP2 -->|Vendor info| DS7
+    PTP2 -->|RFQ details| DS8
+    PTP3 -->|Create PO| DS9
+    PTP4 -->|Update inventory| DS3
+    PTP5 -->|Create bill| DS10
+    PTP6 -->|Update AP| DS10
+    PTP6 -->|Post to GL| DS15
+    
+    %% HTR data stores
+    HTR1 -->|Employee details| DS11
+    HTR2 -->|Time records| DS12
+    HTR3 -->|Payroll calculations| DS13
+    HTR4 -->|Benefits data| DS14
+    HTR5 -->|Performance records| DS11
+    HTR6 -->|Update employee status| DS11
+    HTR3 -->|Payroll journal| DS15
+    
+    %% RTR data stores
+    RTR1 -->|Transactions| DS15
+    RTR2 -->|Account balances| DS15
+    RTR3 -->|Period entries| DS15
+    RTR4 -->|Financial reports| DS16
+    
+    %% Cross-module integrations
+    OTC5 -.->|Payment data| RTR1
+    PTP6 -.->|Payment data| RTR1
+    HTR3 -.->|Payroll expense| RTR1
+    
+    OTC3 -.->|Inventory change| PTP4
+    PTP4 -.->|Inventory cost| OTC3
+    
+    %% Styles
+    classDef process_sales fill:#FF9800,stroke:#E68A00,color:black
+    classDef process_inv fill:#66BB6A,stroke:#4E9A52,color:white
+    classDef process_proc fill:#BA68C8,stroke:#A44CAA,color:white
+    classDef process_rfq fill:#9575CD,stroke:#7958B3,color:white
+    classDef process_acc fill:#42A5F5,stroke:#2886D4,color:white
+    classDef process_hr fill:#EC407A,stroke:#D81B60,color:white
+    classDef process_pay fill:#F06292,stroke:#D81B60,color:white
+    classDef datastore fill:#90EE90,stroke:#7BC96F,color:black

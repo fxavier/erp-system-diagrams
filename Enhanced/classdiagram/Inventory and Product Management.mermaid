@@ -1,0 +1,320 @@
+classDiagram
+    %% ======================
+    %% Color Definitions
+    %% ======================
+    classDef core fill:#607D8B,stroke:#455A64,color:white
+    classDef inventory fill:#4CAF50,stroke:#388E3C,color:white
+    
+    %% ======================
+    %% Parent Class
+    %% ======================
+    class BaseEntity {
+        +Long id
+        +Integer version
+        +LocalDateTime createdDate
+        +String createdBy
+        +LocalDateTime lastModifiedDate
+        +String lastModifiedBy
+        +Boolean isActive
+    }
+    
+    %% ======================
+    %% Remaining Inventory Classes
+    %% ======================
+    class MovementType {
+        <<enumeration>>
+        PURCHASE_RECEIPT
+        SALES_ISSUE
+        TRANSFER
+        ADJUSTMENT
+        RETURN
+        SCRAP
+        PRODUCTION_INPUT
+        PRODUCTION_OUTPUT
+        STOCK_COUNT
+        REPACK
+    }
+    
+    class Stocktake {
+        +Long tenantId
+        +Long warehouseId
+        +String reference
+        +StocktakeStatus status
+        +LocalDateTime startDate
+        +LocalDateTime completionDate
+        +String initiatedBy
+        +String approvedBy
+        +String notes
+        +Boolean includeZeroStock
+        +createStocktake()
+        +startStocktake()
+        +recordCounts()
+        +reviewDiscrepancies()
+        +approveStocktake()
+        +cancelStocktake()
+    }
+    
+    class StocktakeStatus {
+        <<enumeration>>
+        PLANNED
+        IN_PROGRESS
+        COUNTING
+        REVIEW
+        COMPLETED
+        CANCELLED
+    }
+    
+    class StocktakeItem {
+        +Long stocktakeId
+        +Long productId
+        +Long variantId
+        +Long locationId
+        +String lotNumber
+        +String serialNumber
+        +Double systemQuantity
+        +Double countedQuantity
+        +Double discrepancy
+        +String uom
+        +Boolean isCounted
+        +String countedBy
+        +LocalDateTime countDate
+        +String notes
+        +addItem()
+        +recordCount()
+        +updateCount()
+        +calculateDiscrepancy()
+    }
+    
+    class StockAdjustment {
+        +Long tenantId
+        +Long warehouseId
+        +String reference
+        +AdjustmentType type
+        +String reason
+        +LocalDateTime adjustmentDate
+        +String approvedBy
+        +String notes
+        +createAdjustment()
+        +addItems()
+        +processAdjustment()
+        +cancelAdjustment()
+    }
+    
+    class AdjustmentType {
+        <<enumeration>>
+        STOCK_COUNT
+        DAMAGE
+        EXPIRY
+        THEFT
+        WRITE_OFF
+        CORRECTION
+        REVALUATION
+    }
+    
+    class StockAdjustmentItem {
+        +Long stockAdjustmentId
+        +Long productId
+        +Long variantId
+        +Long locationId
+        +String lotNumber
+        +String serialNumber
+        +Double quantityBefore
+        +Double quantityAfter
+        +Double adjustmentQuantity
+        +String uom
+        +BigDecimal valueBefore
+        +BigDecimal valueAfter
+        +String reason
+        +String notes
+        +addItem()
+        +updateItem()
+        +removeItem()
+    }
+    
+    class InventoryTransfer {
+        +Long tenantId
+        +Long sourceWarehouseId
+        +Long destinationWarehouseId
+        +String reference
+        +TransferStatus status
+        +LocalDateTime requestDate
+        +LocalDateTime shipDate
+        +LocalDateTime receiptDate
+        +String requestedBy
+        +String approvedBy
+        +String notes
+        +createTransfer()
+        +addItems()
+        +approveTransfer()
+        +shipTransfer()
+        +receiveTransfer()
+        +cancelTransfer()
+    }
+    
+    class TransferStatus {
+        <<enumeration>>
+        DRAFT
+        PENDING
+        APPROVED
+        SHIPPED
+        PARTIALLY_RECEIVED
+        RECEIVED
+        CANCELLED
+    }
+    
+    class InventoryTransferItem {
+        +Long transferId
+        +Long productId
+        +Long variantId
+        +String lotNumber
+        +String serialNumber
+        +Double requestedQuantity
+        +Double shippedQuantity
+        +Double receivedQuantity
+        +String uom
+        +String notes
+        +addItem()
+        +updateItem()
+        +removeItem()
+        +shipItem()
+        +receiveItem()
+    }
+    
+    class LotTracking {
+        +Long productId
+        +String lotNumber
+        +Long supplierId
+        +String supplierReference
+        +LocalDate manufactureDate
+        +LocalDate expiryDate
+        +String notes
+        +Boolean isQuarantined
+        +createLot()
+        +updateLot()
+        +quarantineLot()
+        +releaseLot()
+    }
+    
+    class SerialTracking {
+        +Long productId
+        +String serialNumber
+        +Long supplierId
+        +String supplierReference
+        +LocalDate manufactureDate
+        +LocalDate expiryDate
+        +String notes
+        +String status
+        +createSerial()
+        +updateSerial()
+        +changeStatus()
+    }
+    
+    class ReorderPoint {
+        +Long productId
+        +Long variantId
+        +Long warehouseId
+        +Double minimumLevel
+        +Double maximumLevel
+        +Double reorderLevel
+        +Double reorderQuantity
+        +Boolean isActive
+        +setReorderPoint()
+        +updateReorderPoint()
+        +deactivateReorderPoint()
+        +checkReorderStatus()
+    }
+    
+    %% ======================
+    %% Class Relationships
+    %% ======================
+    BaseEntity <|-- Product
+    BaseEntity <|-- ProductCategory
+    BaseEntity <|-- ProductAttribute
+    BaseEntity <|-- ProductVariant
+    BaseEntity <|-- ProductUnitOfMeasure
+    BaseEntity <|-- PriceList
+    BaseEntity <|-- PriceListItem
+    BaseEntity <|-- Warehouse
+    BaseEntity <|-- Location
+    BaseEntity <|-- InventoryItem
+    BaseEntity <|-- StockMovement
+    BaseEntity <|-- Stocktake
+    BaseEntity <|-- StocktakeItem
+    BaseEntity <|-- StockAdjustment
+    BaseEntity <|-- StockAdjustmentItem
+    BaseEntity <|-- InventoryTransfer
+    BaseEntity <|-- InventoryTransferItem
+    BaseEntity <|-- LotTracking
+    BaseEntity <|-- SerialTracking
+    BaseEntity <|-- ReorderPoint
+    
+    Product -- AttributeType : uses
+    PriceList -- PriceType : has
+    StockMovement -- MovementType : has
+    Stocktake -- StocktakeStatus : has
+    StockAdjustment -- AdjustmentType : has
+    InventoryTransfer -- TransferStatus : has
+    InventoryItem -- InventoryStatus : has
+    
+    ProductCategory "1" -- "many" Product : categorizes
+    Product "1" -- "many" ProductAttribute : has
+    Product "1" -- "many" ProductVariant : has
+    Product "1" -- "many" ProductUnitOfMeasure : uses
+    
+    PriceList "1" -- "many" PriceListItem : contains
+    PriceListItem "many" -- "1" Product : prices
+    PriceListItem "many" -- "0..1" ProductVariant : forVariant
+    
+    Warehouse "1" -- "many" Location : contains
+    Warehouse "1" -- "many" InventoryItem : stores
+    Location "1" -- "many" InventoryItem : holds
+    InventoryItem "many" -- "1" Product : tracks
+    
+    StockMovement "many" -- "1" Warehouse : source
+    StockMovement "many" -- "1" Warehouse : destination
+    StockMovement "many" -- "1" Product : moves
+    
+    Stocktake "1" -- "many" StocktakeItem : includes
+    StocktakeItem "many" -- "1" Product : counts
+    
+    StockAdjustment "1" -- "many" StockAdjustmentItem : contains
+    StockAdjustmentItem "many" -- "1" Product : adjusts
+    
+    InventoryTransfer "1" -- "many" InventoryTransferItem : transfers
+    InventoryTransferItem "many" -- "1" Product : itemToTransfer
+    
+    LotTracking "many" -- "1" Product : tracksLotFor
+    SerialTracking "many" -- "1" Product : tracksSerialFor
+    
+    ReorderPoint "many" -- "1" Product : monitorsLevelsFor
+    ReorderPoint "many" -- "1" Warehouse : monitorsByLocation
+    
+    %% Apply styling
+    class BaseEntity core
+    class Product inventory
+    class ProductCategory inventory
+    class ProductAttribute inventory
+    class AttributeType inventory
+    class ProductVariant inventory
+    class ProductUnitOfMeasure inventory
+    class PriceList inventory
+    class PriceType inventory
+    class PriceListItem inventory
+    class Warehouse inventory
+    class Location inventory
+    class InventoryItem inventory
+    class InventoryStatus inventory
+    class StockMovement inventory
+    class MovementType inventory
+    class Stocktake inventory
+    class StocktakeStatus inventory
+    class StocktakeItem inventory
+    class StockAdjustment inventory
+    class AdjustmentType inventory
+    class StockAdjustmentItem inventory
+    class InventoryTransfer inventory
+    class TransferStatus inventory
+    class InventoryTransferItem inventory
+    class LotTracking inventory
+    class SerialTracking inventory
+    class ReorderPoint inventory

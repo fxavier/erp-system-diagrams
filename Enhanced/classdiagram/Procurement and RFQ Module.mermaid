@@ -1,0 +1,416 @@
+classDiagram
+    %% ======================
+    %% Color Definitions
+    %% ======================
+    classDef core fill:#607D8B,stroke:#455A64,color:white
+    classDef procurement fill:#9C27B0,stroke:#7B1FA2,color:white
+    classDef rfq fill:#AB47BC,stroke:#8E24AA,color:white
+    
+    %% ======================
+    %% Parent Class
+    %% ======================
+    class BaseEntity {
+        +Long id
+        +Integer version
+        +LocalDateTime createdDate
+        +String createdBy
+        +LocalDateTime lastModifiedDate
+        +String lastModifiedBy
+        +Boolean isActive
+    }
+    
+    %% ======================
+    %% Procurement Classes
+    %% ======================
+    class Vendor {
+        +Long tenantId
+        +String code
+        +String name
+        +String contactPerson
+        +String email
+        +String phone
+        +String address
+        +String taxId
+        +String website
+        +String notes
+        +VendorType type
+        +Boolean isApproved
+        +String paymentTerms
+        +String currency
+        +createVendor()
+        +updateVendor()
+        +approveVendor()
+        +deactivateVendor()
+    }
+    
+    class VendorType {
+        <<enumeration>>
+        SUPPLIER
+        SERVICE_PROVIDER
+        CONTRACTOR
+        DISTRIBUTOR
+        MANUFACTURER
+    }
+    
+    class RequestForBuy {
+        +Long tenantId
+        +String rfbNumber
+        +String title
+        +String description
+        +RequestForBuyStatus status
+        +String department
+        +String requestedBy
+        +LocalDate requiredByDate
+        +String justification
+        +BigDecimal estimatedTotal
+        +String currency
+        +String budgetCode
+        +Boolean budgetApproved
+        +String approvedBy
+        +LocalDateTime approvedAt
+        +String comments
+        +createRfb()
+        +updateRfb()
+        +submitRfb()
+        +approveRfb()
+        +rejectRfb()
+        +cancelRfb()
+        +completeRfb()
+    }
+    
+    class RequestForBuyStatus {
+        <<enumeration>>
+        DRAFT
+        SUBMITTED
+        PARTIALLY_APPROVED
+        APPROVED
+        REJECTED
+        CANCELED
+        COMPLETED
+    }
+    
+    class RequestForBuyItem {
+        +Long rfbId
+        +String itemCode
+        +String description
+        +String category
+        +Double quantity
+        +String uom
+        +BigDecimal estimatedUnitPrice
+        +String vendorSuggestion
+        +String specifications
+        +String notes
+        +LocalDate requiredByDate
+        +addItem()
+        +updateItem()
+        +removeItem()
+    }
+    
+    class RequestForBuyApproval {
+        +Long rfbId
+        +String approverName
+        +String approverRole
+        +String approvalLevel
+        +String approvalStatus
+        +LocalDateTime approvalDate
+        +String comments
+        +approve()
+        +reject()
+        +requestChanges()
+    }
+    
+    class PurchaseOrder {
+        +Long tenantId
+        +Long vendorId
+        +Long rfqId
+        +String poNumber
+        +LocalDateTime orderDate
+        +LocalDate expectedDeliveryDate
+        +PurchaseOrderStatus status
+        +String deliveryAddress
+        +String billingAddress
+        +BigDecimal subtotal
+        +BigDecimal taxes
+        +BigDecimal shippingCost
+        +BigDecimal total
+        +String currency
+        +String paymentTerms
+        +String notes
+        +String attachments
+        +createPurchaseOrder()
+        +updatePurchaseOrder()
+        +sendToVendor()
+        +cancelPurchaseOrder()
+        +completePurchaseOrder()
+    }
+    
+    class PurchaseOrderStatus {
+        <<enumeration>>
+        DRAFT
+        SENT
+        ACKNOWLEDGED
+        PARTIALLY_FULFILLED
+        FULFILLED
+        CLOSED
+        CANCELED
+    }
+    
+    class PurchaseOrderItem {
+        +Long purchaseOrderId
+        +Long productId
+        +String description
+        +Double quantity
+        +String uom
+        +BigDecimal unitPrice
+        +BigDecimal taxRate
+        +BigDecimal amount
+        +String notes
+        +addItem()
+        +updateItem()
+        +removeItem()
+        +calculateAmount()
+    }
+    
+    %% ======================
+    %% RFQ Classes
+    %% ======================
+    class RFQ {
+        +Long tenantId
+        +Long rfbId
+        +String rfqNumber
+        +String title
+        +String description
+        +RFQStatus status
+        +LocalDateTime issueDate
+        +LocalDateTime expiryDate
+        +String instructions
+        +String terms
+        +String attachments
+        +String notes
+        +createRFQ()
+        +updateRFQ()
+        +issueRFQ()
+        +cancelRFQ()
+        +closeRFQ()
+    }
+    
+    class RFQStatus {
+        <<enumeration>>
+        DRAFT
+        ISSUED
+        IN_PROGRESS
+        COMPLETED
+        EXPIRED
+        CANCELED
+    }
+    
+    class RFQItem {
+        +Long rfqId
+        +Long productId
+        +String description
+        +Double quantity
+        +String uom
+        +String specifications
+        +LocalDate requiredByDate
+        +String notes
+        +addItem()
+        +updateItem()
+        +removeItem()
+    }
+    
+    class VendorRFQ {
+        +Long rfqId
+        +Long vendorId
+        +VendorRFQStatus status
+        +LocalDateTime sentDate
+        +LocalDateTime responseDate
+        +String comments
+        +Boolean isResponded
+        +addVendor()
+        +sendToVendor()
+        +recordResponse()
+        +markAsDeclined()
+    }
+    
+    class VendorRFQStatus {
+        <<enumeration>>
+        PENDING
+        SENT
+        VIEWED
+        RESPONDED
+        DECLINED
+        NO_RESPONSE
+    }
+    
+    class VendorQuotation {
+        +Long vendorRFQId
+        +String quotationNumber
+        +LocalDateTime quotationDate
+        +LocalDate validUntil
+        +BigDecimal subtotal
+        +BigDecimal taxes
+        +BigDecimal shippingCost
+        +BigDecimal total
+        +String currency
+        +String deliveryTerms
+        +String paymentTerms
+        +String notes
+        +String attachments
+        +QuotationStatus status
+        +registerQuotation()
+        +updateQuotation()
+        +acceptQuotation()
+        +rejectQuotation()
+    }
+    
+    class QuotationStatus {
+        <<enumeration>>
+        RECEIVED
+        UNDER_REVIEW
+        CLARIFICATION_REQUESTED
+        ACCEPTED
+        REJECTED
+    }
+    
+    class QuotationItem {
+        +Long vendorQuotationId
+        +Long rfqItemId
+        +String description
+        +Double quantity
+        +String uom
+        +BigDecimal unitPrice
+        +BigDecimal amount
+        +Integer leadTimeInDays
+        +String notes
+        +Boolean alternativeOffered
+        +String alternativeDescription
+        +addItem()
+        +updateItem()
+        +removeItem()
+        +calculateAmount()
+    }
+    
+    class QuotationComparison {
+        +Long rfqId
+        +String title
+        +LocalDateTime creationDate
+        +String comparisonMethod
+        +String status
+        +String approvedBy
+        +LocalDateTime approvalDate
+        +String notes
+        +createComparison()
+        +updateComparison()
+        +finalizeComparison()
+        +approveComparison()
+    }
+    
+    class ComparisonCriteria {
+        +Long comparisonId
+        +String criteriaName
+        +Integer weightPercent
+        +String description
+        +addCriteria()
+        +updateCriteria()
+        +removeCriteria()
+    }
+    
+    class VendorScore {
+        +Long comparisonId
+        +Long vendorId
+        +Long criteriaId
+        +Double score
+        +String notes
+        +setScore()
+        +updateScore()
+        +calculateTotalScore()
+    }
+    
+    class SelectedVendor {
+        +Long comparisonId
+        +Long vendorId
+        +Long quotationId
+        +String selectionReason
+        +LocalDateTime selectionDate
+        +String approvedBy
+        +selectVendor()
+        +generatePurchaseOrder()
+    }
+    
+    %% ======================
+    %% Class Relationships
+    %% ======================
+    BaseEntity <|-- Vendor
+    BaseEntity <|-- RequestForBuy
+    BaseEntity <|-- RequestForBuyItem
+    BaseEntity <|-- RequestForBuyApproval
+    BaseEntity <|-- PurchaseOrder
+    BaseEntity <|-- PurchaseOrderItem
+    BaseEntity <|-- RFQ
+    BaseEntity <|-- RFQItem
+    BaseEntity <|-- VendorRFQ
+    BaseEntity <|-- VendorQuotation
+    BaseEntity <|-- QuotationItem
+    BaseEntity <|-- QuotationComparison
+    BaseEntity <|-- ComparisonCriteria
+    BaseEntity <|-- VendorScore
+    BaseEntity <|-- SelectedVendor
+    
+    Vendor -- VendorType : has
+    RequestForBuy -- RequestForBuyStatus : has
+    PurchaseOrder -- PurchaseOrderStatus : has
+    RFQ -- RFQStatus : has
+    VendorRFQ -- VendorRFQStatus : has
+    VendorQuotation -- QuotationStatus : has
+    
+    RequestForBuy "1" -- "many" RequestForBuyItem : contains
+    RequestForBuy "1" -- "many" RequestForBuyApproval : has
+    RequestForBuy "1" -- "1" RFQ : initiates
+    
+    PurchaseOrder "1" -- "many" PurchaseOrderItem : contains
+    PurchaseOrder "many" -- "1" Vendor : orderedFrom
+    
+    RFQ "1" -- "many" RFQItem : contains
+    RFQ "1" -- "many" VendorRFQ : sentTo
+    RFQ "1" -- "1" QuotationComparison : evaluatedIn
+    
+    VendorRFQ "many" -- "1" Vendor : targets
+    VendorRFQ "1" -- "0..1" VendorQuotation : receives
+    
+    VendorQuotation "1" -- "many" QuotationItem : details
+    QuotationItem "many" -- "1" RFQItem : quotesFor
+    
+    QuotationComparison "1" -- "many" ComparisonCriteria : usesForEvaluation
+    QuotationComparison "1" -- "many" VendorScore : rates
+    QuotationComparison "1" -- "1" SelectedVendor : selects
+    
+    VendorScore "many" -- "1" ComparisonCriteria : scores
+    VendorScore "many" -- "1" Vendor : evaluates
+    
+    SelectedVendor "many" -- "1" Vendor : chooses
+    SelectedVendor "many" -- "1" VendorQuotation : baseOn
+    SelectedVendor "1" -- "1" PurchaseOrder : generates
+    
+    %% Apply styling
+    class BaseEntity core
+    class Vendor procurement
+    class VendorType procurement
+    class RequestForBuy procurement
+    class RequestForBuyStatus procurement
+    class RequestForBuyItem procurement
+    class RequestForBuyApproval procurement
+    class PurchaseOrder procurement
+    class PurchaseOrderStatus procurement
+    class PurchaseOrderItem procurement
+    class RFQ rfq
+    class RFQStatus rfq
+    class RFQItem rfq
+    class VendorRFQ rfq
+    class VendorRFQStatus rfq
+    class VendorQuotation rfq
+    class QuotationStatus rfq
+    class QuotationItem rfq
+    class QuotationComparison rfq
+    class ComparisonCriteria rfq
+    class VendorScore rfq
+    class SelectedVendor rfq

@@ -1,0 +1,73 @@
+flowchart LR
+    %% Main system
+    AS[Accounting System]:::accounting
+    
+    %% External entities
+    AC([Accountant]):::external
+    FM([Finance Manager]):::external
+    TX([Tax Authority]):::external
+    AU([Auditor]):::external
+    
+    %% Other systems
+    SALES[Sales Management]:::sales
+    PROC[Procurement System]:::procurement
+    INV[Inventory Management]:::inventory
+    PAY[Payroll System]:::payroll
+    BANK[Banking System]:::external_system
+    TAX[Tax Management]:::accounting
+    BUD[Budgeting System]:::accounting
+    REP[Financial Reporting]:::reporting
+    COMP[Compliance Management]:::external_system
+    
+    %% Connections with data flows
+    %% Accountant interactions
+    AC -->|Journal\nEntries| AS
+    AC -->|Reconciliations| AS
+    AS -->|GL Reports| AC
+    
+    %% Finance Manager interactions
+    FM -->|Approve Financial\nTransactions| AS
+    FM -->|Configure\nAccounting Rules| AS
+    AS -->|Financial\nStatements| FM
+    AS -->|Financial\nMetrics| FM
+    
+    %% Tax Authority interactions
+    AS -->|Tax\nReports| TX
+    TX -->|Tax\nRequirements| AS
+    
+    %% Auditor interactions
+    AU -->|Audit\nRequests| AS
+    AS -->|Audit\nTrail| AU
+    
+    %% System interactions
+    SALES -->|Sales Invoices\n& Receipts| AS
+    AS -->|AR Status\n& Aging| SALES
+    
+    PROC -->|Purchase Invoices\n& Payments| AS
+    AS -->|AP Status\n& Aging| PROC
+    
+    INV -->|Inventory\nValuations| AS
+    AS -->|Cost\nUpdates| INV
+    
+    PAY -->|Payroll\nJournals| AS
+    
+    AS <-->|Bank\nTransactions| BANK
+    
+    AS <-->|Tax Calculations\n& Filings| TAX
+    
+    AS <-->|Budget vs.\nActual| BUD
+    
+    AS -->|Financial\nData| REP
+    REP -->|Financial\nAnalytics| AS
+    
+    AS <-->|Compliance\nChecks| COMP
+    
+    %% Styles
+    classDef accounting fill:#42A5F5,stroke:#1E88E5,color:white,rx:10,ry:10
+    classDef sales fill:#FF9800,stroke:#F57C00,color:black,rx:10,ry:10
+    classDef procurement fill:#BA68C8,stroke:#9C27B0,color:white,rx:10,ry:10
+    classDef inventory fill:#66BB6A,stroke:#43A047,color:white,rx:10,ry:10
+    classDef payroll fill:#F06292,stroke:#E91E63,color:white,rx:10,ry:10
+    classDef external fill:#FFD700,stroke:#DAA520,color:black,rx:5,ry:5,shape:stadium
+    classDef external_system fill:#B0C4DE,stroke:#778899,color:black,rx:5,ry:5
+    classDef reporting fill:#9370DB,stroke:#7B68EE,color:white,rx:10,ry:10

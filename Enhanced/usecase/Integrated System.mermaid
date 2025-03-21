@@ -1,0 +1,209 @@
+graph TB
+    %% Actor definitions
+    subgraph ExternalActors["External Actors"]
+        SA([System Administrator])
+        TA([Tenant Administrator])
+        CS([Customer])
+        VE([Vendor])
+        EM([Employee])
+    end
+    
+    subgraph InternalActors["Internal Actors"]
+        FN([Finance Team])
+        SL([Sales Team])
+        PC([Procurement Team])
+        IM([Inventory Team])
+        HR([HR Team])
+        MG([Management])
+    end
+    
+    %% Use cases by module
+    subgraph CoreUseCases["Core System Use Cases"]
+        UC1[Manage Tenants]:::core
+        UC2[Manage Users & Access]:::core
+        UC3[Configure System Settings]:::core
+        UC4[Manage Subscription]:::subscription
+        UC5[Manage Billing & Payments]:::subscription
+    end
+    
+    subgraph SalesUseCases["Sales Use Cases"]
+        UC6[Manage Customers]:::sales
+        UC7[Process Sales Orders]:::sales
+        UC8[Generate Invoices]:::sales
+        UC9[Process Payments]:::sales
+        UC10[Manage Returns]:::sales
+    end
+    
+    subgraph InventoryUseCases["Inventory Use Cases"]
+        UC11[Manage Products]:::inventory
+        UC12[Track Inventory]:::inventory
+        UC13[Process Stock Movements]:::inventory
+        UC14[Perform Stock Counts]:::inventory
+        UC15[Manage Warehouses]:::inventory
+    end
+    
+    subgraph ProcurementUseCases["Procurement Use Cases"]
+        UC16[Manage Vendors]:::procurement
+        UC17[Process Purchase Requests]:::procurement
+        UC18[Generate Purchase Orders]:::procurement
+        UC19[Receive Goods]:::procurement
+        UC20[Process Vendor Payments]:::procurement
+    end
+    
+    subgraph RFQUseCases["RFQ Use Cases"]
+        UC21[Create RFQs]:::rfq
+        UC22[Compare Quotations]:::rfq
+        UC23[Select Vendors]:::rfq
+    end
+    
+    subgraph AccountingUseCases["Accounting Use Cases"]
+        UC24[Maintain Chart of Accounts]:::accounting
+        UC25[Process Journal Entries]:::accounting
+        UC26[Manage AR/AP]:::accounting
+        UC27[Reconcile Accounts]:::accounting
+        UC28[Generate Financial Reports]:::accounting
+        UC29[Process Tax]:::accounting
+    end
+    
+    subgraph HRPayrollUseCases["HR & Payroll Use Cases"]
+        UC30[Manage Employees]:::hr
+        UC31[Track Time & Attendance]:::hr
+        UC32[Process Payroll]:::payroll
+        UC33[Manage Benefits]:::payroll
+        UC34[Administer Performance]:::hr
+    end
+    
+    subgraph ReportingUseCases["Reporting Use Cases"]
+        UC35[View Dashboards]:::reports
+        UC36[Generate Reports]:::reports
+        UC37[Analyze Data]:::reports
+        UC38[Export Data]:::reports
+    end
+    
+    %% Cross-module use cases for integrated workflows
+    subgraph IntegratedWorkflows["Integrated Workflows"]
+        IW1[Procure-to-Pay Cycle]:::workflow
+        IW2[Order-to-Cash Cycle]:::workflow
+        IW3[Hire-to-Retire Cycle]:::workflow
+        IW4[Plan-to-Inventory Cycle]:::workflow
+        IW5[Record-to-Report Cycle]:::workflow
+    end
+    
+    %% Actor to Use Case connections
+    SA --> UC1
+    SA --> UC3
+    
+    TA --> UC2
+    TA --> UC3
+    TA --> UC4
+    TA --> UC5
+    
+    CS --> UC7
+    CS --> UC9
+    CS --> UC10
+    
+    VE --> UC22
+    VE --> UC19
+    
+    EM --> UC31
+    
+    FN --> UC24
+    FN --> UC25
+    FN --> UC26
+    FN --> UC27
+    FN --> UC28
+    FN --> UC29
+    FN --> UC32
+    FN --> UC38
+    
+    SL --> UC6
+    SL --> UC7
+    SL --> UC8
+    SL --> UC9
+    SL --> UC10
+    
+    PC --> UC16
+    PC --> UC17
+    PC --> UC18
+    PC --> UC19
+    PC --> UC20
+    PC --> UC21
+    PC --> UC22
+    PC --> UC23
+    
+    IM --> UC11
+    IM --> UC12
+    IM --> UC13
+    IM --> UC14
+    IM --> UC15
+    
+    HR --> UC30
+    HR --> UC31
+    HR --> UC32
+    HR --> UC33
+    HR --> UC34
+    
+    MG --> UC35
+    MG --> UC36
+    MG --> UC37
+    MG --> UC38
+    
+    %% Integrated workflows connections
+    IW1 --> UC17
+    IW1 --> UC21
+    IW1 --> UC22
+    IW1 --> UC23
+    IW1 --> UC18
+    IW1 --> UC19
+    IW1 --> UC20
+    IW1 --> UC26
+    
+    IW2 --> UC7
+    IW2 --> UC13
+    IW2 --> UC8
+    IW2 --> UC9
+    IW2 --> UC26
+    
+    IW3 --> UC30
+    IW3 --> UC31
+    IW3 --> UC34
+    IW3 --> UC32
+    IW3 --> UC33
+    
+    IW4 --> UC11
+    IW4 --> UC12
+    IW4 --> UC13
+    IW4 --> UC14
+    IW4 --> UC15
+    
+    IW5 --> UC25
+    IW5 --> UC27
+    IW5 --> UC28
+    IW5 --> UC35
+    IW5 --> UC36
+    
+    %% Module interconnections (key integrations)
+    UC7 --> UC13
+    UC8 --> UC26
+    UC19 --> UC13
+    UC18 --> UC20
+    UC20 --> UC26
+    UC13 --> UC12
+    UC32 --> UC25
+    UC28 --> UC35
+    
+    %% Styling
+    classDef core fill:#607D8B,stroke:#455A64,color:white
+    classDef subscription fill:#00BCD4,stroke:#0097A7,color:white
+    classDef accounting fill:#2196F3,stroke:#1976D2,color:white
+    classDef sales fill:#FF9800,stroke:#F57C00,color:black
+    classDef inventory fill:#4CAF50,stroke:#388E3C,color:white
+    classDef hr fill:#E91E63,stroke:#C2185B,color:white
+    classDef payroll fill:#EC407A,stroke:#D81B60,color:white
+    classDef procurement fill:#9C27B0,stroke:#7B1FA2,color:white
+    classDef rfq fill:#AB47BC,stroke:#8E24AA,color:white
+    classDef reports fill:#009688,stroke:#00796B,color:white
+    classDef workflow fill:#8BC34A,stroke:#689F38,color:black
+    classDef actor fill:#81D4FA,stroke:#039BE5,color:black
+    
+    class SA,TA,CS,VE,EM,FN,SL,PC,IM,HR,MG actor

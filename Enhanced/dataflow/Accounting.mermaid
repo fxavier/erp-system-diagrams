@@ -1,0 +1,111 @@
+flowchart TD
+    %% External entities
+    AC[Accountant]:::external
+    FM[Finance Manager]:::external
+    AP[AP Clerk]:::external
+    AR[AR Clerk]:::external
+    TX[Tax Authority]:::external
+    
+    %% Processes
+    P1[1.0\nJournal Entry]:::process_acc
+    P2[2.0\nAccounts Payable]:::process_acc
+    P3[3.0\nAccounts Receivable]:::process_acc
+    P4[4.0\nBanking & Reconciliation]:::process_acc
+    P5[5.0\nTax Management]:::process_acc
+    P6[6.0\nPeriod Close]:::process_acc
+    P7[7.0\nFinancial Reporting]:::process_acc
+    P8[8.0\nBudgeting]:::process_acc
+    
+    %% Data stores
+    DS1[(Chart of Accounts)]:::datastore
+    DS2[(General Ledger)]:::datastore
+    DS3[(Vendor Invoices)]:::datastore
+    DS4[(Customer Invoices)]:::datastore
+    DS5[(Bank Transactions)]:::datastore
+    DS6[(Tax Records)]:::datastore
+    DS7[(Fiscal Periods)]:::datastore
+    DS8[(Financial Statements)]:::datastore
+    DS9[(Budget Data)]:::datastore
+    
+    %% Data flows
+    %% Journal entry flow
+    AC -->|Create entries| P1
+    P1 -->|Account validation| DS1
+    P1 -->|Post transactions| DS2
+    P1 -->|Posting confirmation| AC
+    
+    %% Accounts payable flow
+    AP -->|Process vendor invoices| P2
+    P2 -->|Vendor information| DS3
+    P2 -->|Create AP entry| DS2
+    P2 -->|Invoice status| AP
+    AP -->|Process payments| P2
+    P2 -->|Update vendor balances| DS3
+    P2 -->|Create payment entry| DS2
+    P2 -->|Payment record| DS5
+    P2 -->|Payment confirmation| AP
+    
+    %% Accounts receivable flow
+    AR -->|Process customer invoices| P3
+    P3 -->|Customer information| DS4
+    P3 -->|Create AR entry| DS2
+    P3 -->|Invoice status| AR
+    AR -->|Process receipts| P3
+    P3 -->|Update customer balances| DS4
+    P3 -->|Create receipt entry| DS2
+    P3 -->|Deposit record| DS5
+    P3 -->|Receipt confirmation| AR
+    
+    %% Banking flow
+    AC -->|Process bank transactions| P4
+    P4 -->|Transaction details| DS5
+    P4 -->|Reconcile transactions| DS2
+    P4 -->|Reconciliation status| AC
+    P4 -->|Bank statements| FM
+    
+    %% Tax management flow
+    AC -->|Process taxes| P5
+    P5 -->|Tax transactions| DS2
+    P5 -->|Tax calculations| DS6
+    P5 -->|Tax reports| TX
+    P5 -->|Tax payments| DS5
+    P5 -->|Tax status| AC
+    
+    %% Period close flow
+    FM -->|Initiate period close| P6
+    P6 -->|Period transactions| DS2
+    P6 -->|Account balances| DS1
+    P6 -->|Update period status| DS7
+    P6 -->|Create closing entries| DS2
+    P6 -->|Period close status| FM
+    
+    %% Financial reporting flow
+    FM -->|Request reports| P7
+    P7 -->|GL transactions| DS2
+    P7 -->|Account hierarchies| DS1
+    P7 -->|Period information| DS7
+    P7 -->|Generate statements| DS8
+    P7 -->|Financial reports| FM
+    
+    %% Budgeting flow
+    FM -->|Create budget| P8
+    P8 -->|Account structure| DS1
+    P8 -->|Historical data| DS2
+    P8 -->|Budget allocations| DS9
+    P8 -->|Budget vs actual| P7
+    P8 -->|Budget reports| FM
+    
+    %% Optional connections
+    P1 -.->|Recurring entries| DS2
+    P2 -.->|Vendor analysis| FM
+    P3 -.->|Aging reports| FM
+    P4 -.->|Cash flow forecasting| FM
+    P5 -.->|Compliance reporting| TX
+    P6 -.->|Year-end closing| P7
+    P7 -.->|Management dashboards| FM
+    P8 -.->|Variance analysis| P7
+    
+    %% Styles
+    classDef external fill:#FFD700,stroke:#E6C300,color:black
+    classDef process_acc fill:#42A5F5,stroke:#2886D4,color:white
+    classDef datastore fill:#90EE90,stroke:#7BC96F,color:black

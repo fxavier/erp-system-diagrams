@@ -1,0 +1,121 @@
+sequenceDiagram
+    %% Participants
+    actor IM as Inventory Manager 🧑‍💼
+    actor WH as Warehouse Staff 📦
+    participant PS as Product Service 🛍️
+    participant IS as Inventory Service 📊
+    participant WS as Warehouse Service 🏢
+    participant LS as Location Service 🗺️
+    participant MS as Movement Service 🔄
+    participant STS as Stocktake Service 🧮
+    participant ALS as Alert Service ⚠️
+    participant RS as Reporting Service 📈
+
+    autonumber
+    
+    %% Inventory Operations Flow
+    alt Product Management
+        IM->>+PS: Create New Product
+        PS->>PS: Validate Product Data
+        PS-->>-IM: Product Created
+        
+        IM->>+PS: Configure Product Variants
+        PS->>PS: Create Variant Records
+        PS-->>-IM: Variants Created
+        
+        IM->>+PS: Set Inventory Settings
+        PS->>PS: Update Product Properties
+        PS-->>-IM: Settings Applied
+    end
+    
+    alt Initial Stock Setup
+        IM->>+WS: Create Warehouse
+        WS->>WS: Validate Warehouse Data
+        WS-->>-IM: Warehouse Created
+        
+        IM->>+LS: Define Storage Locations
+        LS->>WS: Link to Warehouse
+        WS-->>LS: Link Established
+        LS-->>-IM: Locations Created
+        
+        IM->>+IS: Set Initial Stock Levels
+        IS->>PS: Get Product Details
+        PS-->>IS: Product Details
+        IS->>WS: Verify Warehouse
+        WS-->>IS: Warehouse Verified
+        IS->>LS: Verify Locations
+        LS-->>IS: Locations Verified
+        IS->>IS: Create Inventory Records
+        IS-->>-IM: Initial Stock Set
+    end
+    
+    %% Goods Receipt Flow
+    alt Goods Receipt
+        WH->>+IS: Receive Goods
+        IS->>PS: Verify Products
+        PS-->>IS: Products Verified
+        IS->>IS: Update Inventory Levels
+        IS->>+MS: Record Stock Movement
+        MS->>MS: Create Movement Record
+        MS-->>-IS: Movement Recorded
+        IS-->>-WH: Goods Received Successfully
+    end
+    
+    %% Stock Transfer Flow
+    alt Stock Transfer
+        IM->>+MS: Initiate Stock Transfer
+        MS->>IS: Check Source Availability
+        IS-->>MS: Stock Available
+        MS->>MS: Create Transfer Record
+        MS-->>-IM: Transfer Created
+        
+        WH->>+MS: Process Transfer
+        MS->>IS: Reduce Stock at Source
+        IS-->>MS: Source Updated
+        MS->>IS: Increase Stock at Destination
+        IS-->>MS: Destination Updated
+        MS->>MS: Update Transfer Status
+        MS-->>-WH: Transfer Completed
+    end
+    
+    %% Stock Take Flow
+    alt Stock Count
+        IM->>+STS: Plan Stock Count
+        STS->>WS: Get Warehouse Details
+        WS-->>STS: Warehouse Details
+        STS->>IS: Get Current Inventory
+        IS-->>STS: Current Inventory Levels
+        STS->>STS: Create Stocktake Plan
+        STS-->>-IM: Stocktake Created
+        
+        WH->>+STS: Perform Physical Count
+        STS->>STS: Record Counted Quantities
+        STS-->>-WH: Count Recorded
+        
+        IM->>+STS: Review Discrepancies
+        STS->>STS: Calculate Variances
+        STS-->>-IM: Discrepancies Displayed
+        
+        IM->>+STS: Approve Adjustments
+        STS->>IS: Update Inventory Levels
+        IS-->>STS: Levels Updated
+        STS->>+MS: Record Adjustment Movements
+        MS->>MS: Create Adjustment Records
+        MS-->>-STS: Movements Recorded
+        STS-->>-IM: Adjustments Applied
+    end
+    
+    %% Low Stock Alerts
+    alt Inventory Monitoring
+        IS->>IS: Periodic Stock Check
+        IS->>+ALS: Detect Low Stock Items
+        ALS->>ALS: Generate Alerts
+        ALS-->>IM: Send Low Stock Notifications
+        ALS-->>-IS: Alerts Sent
+        
+        IM->>+RS: Generate Inventory Reports
+        RS->>IS: Get Inventory Data
+        IS-->>RS: Inventory Data
+        RS->>RS: Process Report
+        RS-->>-IM: Display Report
+    end

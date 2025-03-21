@@ -1,0 +1,158 @@
+graph TB
+    %% Actor definitions
+    subgraph Actors
+        CFO([Chief Financial Officer])
+        AC([Accountant])
+        AP([Accounts Payable Clerk])
+        AR([Accounts Receivable Clerk])
+        BK([Bookkeeper])
+        TX([Tax Accountant])
+    end
+    
+    %% Use cases
+    subgraph ChartOfAccountsUseCases["Chart of Accounts Use Cases"]
+        UC1[Create Account]:::accounting
+        UC2[Update Account]:::accounting
+        UC3[Deactivate Account]:::accounting
+        UC4[Define Account Categories]:::accounting
+        UC5[Set Up Account Hierarchy]:::accounting
+    end
+    
+    subgraph GeneralLedgerUseCases["General Ledger Use Cases"]
+        UC6[Create Journal Entry]:::accounting
+        UC7[Post Journal Entry]:::accounting
+        UC8[Reverse Journal Entry]:::accounting
+        UC9[View General Ledger]:::accounting
+        UC10[Create Recurring Entries]:::accounting
+        UC11[Close Accounting Period]:::accounting
+        UC12[Open New Fiscal Year]:::accounting
+    end
+    
+    subgraph AccountsPayableUseCases["Accounts Payable Use Cases"]
+        UC13[Record Vendor Invoice]:::accounting
+        UC14[Approve Invoice for Payment]:::accounting
+        UC15[Schedule Payments]:::accounting
+        UC16[Process Vendor Payments]:::accounting
+        UC17[Reconcile Vendor Statements]:::accounting
+        UC18[Manage Vendor Credits]:::accounting
+    end
+    
+    subgraph AccountsReceivableUseCases["Accounts Receivable Use Cases"]
+        UC19[Manage Customer Invoices]:::accounting
+        UC20[Record Customer Payments]:::accounting
+        UC21[Apply Credits/Discounts]:::accounting
+        UC22[Process Refunds]:::accounting
+        UC23[Track Aging Receivables]:::accounting
+        UC24[Generate Collection Letters]:::accounting
+    end
+    
+    subgraph BankingUseCases["Banking Use Cases"]
+        UC25[Manage Bank Accounts]:::accounting
+        UC26[Record Bank Transactions]:::accounting
+        UC27[Reconcile Bank Statements]:::accounting
+        UC28[Process Bank Transfers]:::accounting
+        UC29[Generate Bank Deposits]:::accounting
+    end
+    
+    subgraph TaxManagementUseCases["Tax Management Use Cases"]
+        UC30[Configure Tax Rates]:::accounting
+        UC31[Generate Tax Reports]:::accounting
+        UC32[Record Tax Payments]:::accounting
+        UC33[Prepare Tax Returns]:::accounting
+        UC34[Manage Tax Compliance]:::accounting
+    end
+    
+    subgraph FinancialReportingUseCases["Financial Reporting Use Cases"]
+        UC35[Generate Balance Sheet]:::accounting
+        UC36[Generate Income Statement]:::accounting
+        UC37[Generate Cash Flow Statement]:::accounting
+        UC38[Create Custom Financial Reports]:::accounting
+        UC39[Export Financial Data]:::accounting
+    end
+    
+    subgraph BudgetingUseCases["Budgeting Use Cases"]
+        UC40[Create Budget]:::accounting
+        UC41[Update Budget Allocations]:::accounting
+        UC42[Compare Actual vs Budget]:::accounting
+        UC43[Generate Variance Reports]:::accounting
+    end
+    
+    %% Actor to Use Case connections
+    CFO --> UC5
+    CFO --> UC11
+    CFO --> UC12
+    CFO --> UC35
+    CFO --> UC36
+    CFO --> UC37
+    CFO --> UC40
+    CFO --> UC42
+    CFO --> UC43
+    
+    AC --> UC1
+    AC --> UC2
+    AC --> UC3
+    AC --> UC4
+    AC --> UC6
+    AC --> UC7
+    AC --> UC8
+    AC --> UC9
+    AC --> UC10
+    AC --> UC38
+    AC --> UC39
+    AC --> UC41
+    
+    AP --> UC13
+    AP --> UC14
+    AP --> UC15
+    AP --> UC16
+    AP --> UC17
+    AP --> UC18
+    
+    AR --> UC19
+    AR --> UC20
+    AR --> UC21
+    AR --> UC22
+    AR --> UC23
+    AR --> UC24
+    
+    BK --> UC25
+    BK --> UC26
+    BK --> UC27
+    BK --> UC28
+    BK --> UC29
+    
+    TX --> UC30
+    TX --> UC31
+    TX --> UC32
+    TX --> UC33
+    TX --> UC34
+    
+    %% Use Case relationships
+    UC1 --> UC5
+    UC6 --> UC7
+    UC7 --> UC9
+    UC11 --> UC12
+    UC13 --> UC14
+    UC14 --> UC15
+    UC15 --> UC16
+    UC16 --> UC26
+    UC19 --> UC20
+    UC20 --> UC21
+    UC20 --> UC26
+    UC23 --> UC24
+    UC26 --> UC27
+    UC30 --> UC31
+    UC31 --> UC33
+    UC33 --> UC34
+    UC9 --> UC35
+    UC9 --> UC36
+    UC9 --> UC37
+    UC40 --> UC41
+    UC41 --> UC42
+    UC42 --> UC43
+    
+    %% Styling
+    classDef accounting fill:#2196F3,stroke:#1976D2,color:white
+    classDef actor fill:#81D4FA,stroke:#039BE5,color:black
+    
+    class CFO,AC,AP,AR,BK,TX actor

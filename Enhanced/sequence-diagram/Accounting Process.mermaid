@@ -1,0 +1,146 @@
+sequenceDiagram
+    %% Participants
+    actor AC as Accountant 🧑‍💼
+    actor FM as Finance Manager 👨‍💼
+    participant GLS as GL Service 📚
+    participant JES as Journal Entry Service 📜
+    participant APS as Accounts Payable 💳
+    participant ARS as Accounts Receivable 💰
+    participant BNS as Banking Service 🏦
+    participant RCS as Reconciliation Service 🔄
+    participant CLS as Closing Service 📅
+    participant RPS as Reporting Service 📊
+    participant TXS as Tax Service 💵
+
+    autonumber
+    
+    %% Daily Accounting Operations
+    alt Journal Entries
+        AC->>+JES: Create Journal Entry
+        JES->>JES: Validate Entry
+        JES-->>-AC: Entry Created
+        
+        AC->>+JES: Post Journal Entry
+        JES->>GLS: Update GL Balances
+        GLS-->>JES: Balances Updated
+        JES-->>-AC: Entry Posted
+    end
+    
+    alt Accounts Payable
+        AC->>+APS: Record Vendor Invoice
+        APS->>APS: Validate Invoice
+        APS->>GLS: Create AP Entry
+        GLS-->>APS: Entry Created
+        APS-->>-AC: Invoice Recorded
+        
+        FM->>+APS: Approve Payments
+        APS->>APS: Select Invoices for Payment
+        APS-->>-FM: Payments Approved
+        
+        AC->>+APS: Process Vendor Payments
+        APS->>BNS: Generate Payment Transactions
+        BNS-->>APS: Transactions Created
+        APS->>GLS: Update GL Balances
+        GLS-->>APS: Balances Updated
+        APS-->>-AC: Payments Processed
+    end
+    
+    alt Accounts Receivable
+        AC->>+ARS: Review Customer Invoices
+        ARS-->>-AC: Invoices Displayed
+        
+        AC->>+ARS: Record Customer Payment
+        ARS->>ARS: Apply Payment to Invoices
+        ARS->>BNS: Record Bank Deposit
+        BNS-->>ARS: Deposit Recorded
+        ARS->>GLS: Update GL Balances
+        GLS-->>ARS: Balances Updated
+        ARS-->>-AC: Payment Recorded
+    end
+    
+    alt Bank Reconciliation
+        AC->>+BNS: Import Bank Statement
+        BNS->>BNS: Process Statement Data
+        BNS-->>-AC: Statement Imported
+        
+        AC->>+RCS: Match Transactions
+        RCS->>BNS: Get Bank Transactions
+        BNS-->>RCS: Bank Transactions
+        RCS->>GLS: Get GL Transactions
+        GLS-->>RCS: GL Transactions
+        RCS->>RCS: Match Transactions
+        RCS-->>-AC: Matching Results
+        
+        AC->>+RCS: Process Unmatched Items
+        RCS->>JES: Create Adjustment Entries
+        JES-->>RCS: Entries Created
+        RCS-->>-AC: Reconciliation Complete
+    end
+    
+    %% Month-End Close
+    alt Period Close
+        FM->>+CLS: Initiate Period Close
+        CLS->>GLS: Get Period Activity
+        GLS-->>CLS: Period Data
+        CLS-->>-FM: Close Process Started
+        
+        AC->>+CLS: Process Accruals
+        CLS->>JES: Create Accrual Entries
+        JES-->>CLS: Entries Created
+        CLS-->>-AC: Accruals Processed
+        
+        AC->>+CLS: Process Depreciation
+        CLS->>JES: Create Depreciation Entries
+        JES-->>CLS: Entries Created
+        CLS-->>-AC: Depreciation Processed
+        
+        AC->>+CLS: Post Adjusting Entries
+        CLS->>JES: Create Adjustment Entries
+        JES-->>CLS: Entries Created
+        CLS-->>-AC: Adjustments Posted
+        
+        FM->>+CLS: Close Accounting Period
+        CLS->>GLS: Lock Period
+        GLS-->>CLS: Period Locked
+        CLS->>CLS: Calculate Period Totals
+        CLS-->>-FM: Period Closed
+    end
+    
+    %% Financial Reporting
+    alt Financial Reporting
+        FM->>+RPS: Generate Financial Statements
+        RPS->>GLS: Get GL Balances
+        GLS-->>RPS: GL Data
+        RPS->>RPS: Process Balance Sheet
+        RPS->>RPS: Process Income Statement
+        RPS->>RPS: Process Cash Flow
+        RPS-->>-FM: Statements Generated
+        
+        FM->>+RPS: Review Financial Metrics
+        RPS->>RPS: Calculate Key Ratios
+        RPS-->>-FM: Metrics Displayed
+    end
+    
+    %% Tax Processing
+    alt Tax Management
+        AC->>+TXS: Process Sales Tax
+        TXS->>GLS: Get Tax Transactions
+        GLS-->>TXS: Tax Data
+        TXS->>TXS: Calculate Tax Liability
+        TXS-->>-AC: Tax Calculated
+        
+        AC->>+TXS: Generate Tax Reports
+        TXS->>TXS: Prepare Tax Return
+        TXS-->>-AC: Reports Generated
+        
+        FM->>+TXS: Approve Tax Payments
+        TXS->>TXS: Finalize Tax Return
+        TXS-->>-FM: Payment Approved
+        
+        AC->>+TXS: Submit Tax Payment
+        TXS->>BNS: Process Tax Payment
+        BNS-->>TXS: Payment Processed
+        TXS->>GLS: Record Tax Payment
+        GLS-->>TXS: Payment Recorded
+        TXS-->>-AC: Tax Filed
+    end

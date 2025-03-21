@@ -1,0 +1,38 @@
+flowchart LR
+    %% Main system
+    TM[Tenant Management System]:::system
+    
+    %% External entities
+    SA([System Administrator]):::external
+    TA([Tenant Administrator]):::external
+    EU([End User]):::external
+    
+    %% Other systems
+    SUB[Subscription Management]:::subscription
+    IAM[Identity & Access Management]:::system
+    DB[Database Services]:::database
+    MAIL[Email Service]:::external_system
+    MON[Monitoring System]:::external_system
+    
+    %% Connections with data flows
+    SA -->|Create/Configure\nTenants| TM
+    TM -->|Admin Access Details| SA
+    
+    TA -->|Configure Tenant\nSettings| TM
+    TM -->|Tenant Dashboard| TA
+    
+    EU -->|Access Request| TM
+    TM -->|Authorization\nStatus| EU
+    
+    TM <-->|Subscription\nInformation| SUB
+    TM <-->|User Authentication\n& Authorization| IAM
+    TM <-->|Tenant Schema\nOperations| DB
+    TM -->|Notifications| MAIL
+    TM -->|Usage Metrics| MON
+    
+    %% Styles
+    classDef system fill:#6495ED,stroke:#4169E1,color:white,rx:10,ry:10
+    classDef external fill:#FFD700,stroke:#DAA520,color:black,rx:5,ry:5,shape:stadium
+    classDef external_system fill:#B0C4DE,stroke:#778899,color:black,rx:5,ry:5
+    classDef subscription fill:#00CED1,stroke:#008B8B,color:white,rx:10,ry:10
+    classDef database fill:#32CD32,stroke:#228B22,color:white,rx:0,ry:0,shape:cylinder

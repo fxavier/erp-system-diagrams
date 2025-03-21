@@ -1,0 +1,72 @@
+flowchart LR
+    %% Main system
+    SM[Sales Management System]:::sales
+    
+    %% External entities
+    SA([Sales Agent]):::external
+    CU([Customer]):::external
+    SM_MGR([Sales Manager]):::external
+    
+    %% Other systems
+    CRM[CRM System]:::sales
+    INV[Inventory Management]:::inventory
+    ACC[Accounting System]:::accounting
+    POS[Point of Sale]:::sales
+    SHIP[Shipping System]:::external_system
+    PAY[Payment Gateway]:::external_system
+    TAX[Tax System]:::accounting
+    REP[Reporting System]:::reporting
+    DOC[Document Management]:::external_system
+    
+    %% Connections with data flows
+    %% Sales Agent interactions
+    SA -->|Create Quotes\n& Orders| SM
+    SA -->|Manage\nCustomers| SM
+    SM -->|Order Status\n& History| SA
+    
+    %% Customer interactions
+    CU -->|Place Orders| SM
+    CU -->|Make Payments| SM
+    CU -->|Return Requests| SM
+    SM -->|Order Confirmations\n& Invoices| CU
+    SM -->|Shipping\nUpdates| CU
+    
+    %% Sales Manager interactions
+    SM_MGR -->|Configure\nPricing Rules| SM
+    SM_MGR -->|Approve\nSpecial Discounts| SM
+    SM -->|Sales\nPerformance| SM_MGR
+    
+    %% System interactions
+    SM <-->|Customer\nInformation| CRM
+    
+    SM -->|Check\nAvailability| INV
+    SM -->|Reserve\nInventory| INV
+    INV -->|Stock\nStatus| SM
+    
+    SM -->|Invoices &\nPayments| ACC
+    ACC -->|Credit\nStatus| SM
+    
+    SM <-->|In-store\nTransactions| POS
+    
+    SM -->|Shipping\nRequests| SHIP
+    SHIP -->|Tracking\nInformation| SM
+    
+    SM -->|Process\nPayments| PAY
+    PAY -->|Payment\nConfirmation| SM
+    
+    SM -->|Tax\nCalculation| TAX
+    TAX -->|Tax\nRates| SM
+    
+    SM -->|Sales\nMetrics| REP
+    REP -->|Sales\nAnalytics| SM
+    
+    SM -->|Store\nDocuments| DOC
+    DOC -->|Document\nRetrieval| SM
+    
+    %% Styles
+    classDef sales fill:#FF9800,stroke:#F57C00,color:black,rx:10,ry:10
+    classDef inventory fill:#66BB6A,stroke:#43A047,color:white,rx:10,ry:10
+    classDef accounting fill:#42A5F5,stroke:#1E88E5,color:white,rx:10,ry:10
+    classDef external fill:#FFD700,stroke:#DAA520,color:black,rx:5,ry:5,shape:stadium
+    classDef external_system fill:#B0C4DE,stroke:#778899,color:black,rx:5,ry:5
+    classDef reporting fill:#9370DB,stroke:#7B68EE,color:white,rx:10,ry:10

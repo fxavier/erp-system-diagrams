@@ -1,0 +1,107 @@
+sequenceDiagram
+    %% Participants
+    actor DM as Department Manager 🎩
+    actor PO as Procurement Officer 📋
+    participant RFB as Request For Buy Service 📑
+    participant RFQ as RFQ Service 📄
+    participant VS as Vendor Service 🏢
+    participant NS as Notification Service 📧
+    actor VE as Vendor 🛠️
+    participant QS as Quotation Service 🏷️
+    participant CS as Comparison Service 📊
+    participant POS as Purchase Order Service 🛍️
+    participant IS as Inventory Service 📦
+
+    autonumber
+    
+    %% Request For Buy Flow
+    DM->>+RFB: Create Purchase Request
+    RFB->>RFB: Validate Request Details
+    RFB-->>-DM: Request Created
+    
+    DM->>+RFB: Submit for Approval
+    RFB->>RFB: Update Status to Submitted
+    RFB-->>-DM: Request Submitted
+    
+    PO->>+RFB: Review Purchase Request
+    RFB-->>-PO: Request Details Displayed
+    
+    PO->>+RFB: Approve Request
+    RFB->>RFB: Update Status to Approved
+    RFB-->>-PO: Request Approved
+    
+    %% RFQ Flow
+    PO->>+RFQ: Generate RFQ from Approved Request
+    RFQ->>RFQ: Create RFQ Record
+    RFQ->>RFB: Link to Request For Buy
+    RFB-->>RFQ: Link Established
+    RFQ-->>-PO: RFQ Created
+    
+    PO->>+VS: Select Potential Vendors
+    VS-->>-PO: Vendor List Displayed
+    
+    PO->>+RFQ: Add Selected Vendors to RFQ
+    RFQ->>RFQ: Link Vendors to RFQ
+    RFQ-->>-PO: Vendors Added
+    
+    PO->>+RFQ: Issue RFQ to Vendors
+    RFQ->>RFQ: Update Status to Issued
+    RFQ->>+NS: Send RFQ to Each Vendor
+    
+    loop For Each Vendor
+        NS-->>VE: Send RFQ Notification
+    end
+    
+    NS-->>-RFQ: Notifications Sent
+    RFQ-->>-PO: RFQ Issued Successfully
+    
+    %% Vendor Response Flow
+    VE->>+QS: Submit Quotation
+    QS->>QS: Validate Quotation
+    QS->>RFQ: Link Quotation to RFQ
+    RFQ-->>QS: Link Established
+    QS-->>-VE: Quotation Submitted Successfully
+    
+    %% Comparison Flow
+    PO->>+RFQ: Check RFQ Response Status
+    RFQ-->>-PO: Display Quotations Received
+    
+    PO->>+CS: Generate Comparison Matrix
+    CS->>QS: Get All Quotations
+    QS-->>CS: Quotation Details
+    CS->>CS: Build Comparison Data
+    CS-->>-PO: Display Comparison Matrix
+    
+    PO->>+CS: Select Winning Quotation
+    CS->>CS: Record Selection Decision
+    CS-->>-PO: Selection Recorded
+    
+    %% Purchase Order Flow
+    PO->>+POS: Generate Purchase Order
+    POS->>RFQ: Get RFQ Details
+    RFQ-->>POS: RFQ Details
+    POS->>QS: Get Selected Quotation
+    QS-->>POS: Quotation Details
+    POS->>POS: Create Purchase Order
+    POS-->>-PO: Purchase Order Created
+    
+    PO->>+POS: Approve Purchase Order
+    POS->>POS: Update Status to Approved
+    POS-->>-PO: Purchase Order Approved
+    
+    PO->>+POS: Send PO to Vendor
+    POS->>+NS: Send PO Notification
+    NS-->>VE: Send PO Document
+    NS-->>-POS: Notification Sent
+    POS-->>-PO: PO Sent Successfully
+    
+    %% Receive Items Flow
+    VE->>PO: Deliver Ordered Items
+    
+    PO->>+IS: Receive Items
+    IS->>POS: Get PO Details
+    POS-->>IS: PO Details
+    IS->>IS: Update Inventory Levels
+    IS->>POS: Update PO Receipt Status
+    POS-->>IS: Status Updated
+    IS-->>-PO: Items Received Successfully

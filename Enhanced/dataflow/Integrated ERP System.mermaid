@@ -1,0 +1,146 @@
+flowchart TD
+    %% External entities
+    SA[System Admin]:::external
+    TA[Tenant Admin]:::external
+    CU[Customer]:::external
+    VE[Vendor]:::external
+    EM[Employee]:::external
+    MG[Management]:::external
+    
+    %% Core modules
+    M1[Tenant\nManagement]:::module_core
+    M2[User Access\nControl]:::module_core
+    M3[Subscription\nManagement]:::module_sub
+    
+    %% Functional modules
+    M4[Inventory\nManagement]:::module_inv
+    M5[Sales\nManagement]:::module_sales
+    M6[Procurement\n& RFQ]:::module_proc
+    M7[Accounting\n& Finance]:::module_acc
+    M8[HR &\nPayroll]:::module_hr
+    M9[Reporting\n& Analytics]:::module_rep
+    
+    %% Shared data stores
+    DS1[(Tenant Registry)]:::datastore
+    DS2[(User Database)]:::datastore
+    DS3[(Master Data)]:::datastore
+    
+    %% Module-specific data stores
+    DS4[(Product Catalog)]:::datastore
+    DS5[(Inventory Records)]:::datastore
+    DS6[(Customer Data)]:::datastore
+    DS7[(Sales Transactions)]:::datastore
+    DS8[(Vendor Data)]:::datastore
+    DS9[(Procurement Records)]:::datastore
+    DS10[(General Ledger)]:::datastore
+    DS11[(Employee Records)]:::datastore
+    DS12[(Payroll Data)]:::datastore
+    
+    %% Core system flows
+    SA -->|Manage tenants| M1
+    TA -->|Configure tenant| M1
+    M1 -->|Tenant information| DS1
+    
+    TA -->|Manage users| M2
+    EM -->|User login| M2
+    M2 -->|User authentication| DS2
+    M2 -->|Access control| DS1
+    
+    TA -->|Select subscription| M3
+    M3 -->|Plan details| DS1
+    M3 -->|Feature access| M1
+    M3 -->|Billing data| M7
+    
+    %% Master data management
+    M1 -->|Tenant context| DS3
+    M2 -->|User context| DS3
+    DS3 -->|Shared reference data| M4
+    DS3 -->|Shared reference data| M5
+    DS3 -->|Shared reference data| M6
+    DS3 -->|Shared reference data| M7
+    DS3 -->|Shared reference data| M8
+    
+    %% Inventory flows
+    TA -->|Configure inventory| M4
+    M4 -->|Product data| DS4
+    M4 -->|Stock levels| DS5
+    M4 -->|Inventory transactions| DS5
+    
+    %% Sales flows
+    CU -->|Place orders| M5
+    M5 -->|Customer information| DS6
+    M5 -->|Sales orders| DS7
+    M5 -->|Check inventory| M4
+    M4 -->|Stock availability| M5
+    M5 -->|Update inventory| M4
+    M5 -->|Invoice data| M7
+    
+    %% Procurement flows
+    EM -->|Purchase requests| M6
+    VE -->|Submit quotations| M6
+    M6 -->|Vendor information| DS8
+    M6 -->|Purchase orders| DS9
+    M6 -->|Check product data| DS4
+    M6 -->|Goods receipt| M4
+    M6 -->|Vendor bills| M7
+    
+    %% Accounting flows
+    M5 -->|Sales invoices| M7
+    M6 -->|Purchase invoices| M7
+    M8 -->|Payroll journal| M7
+    M7 -->|Financial transactions| DS10
+    M7 -->|Payment processing| M5
+    M7 -->|Payment processing| M6
+    M7 -->|Payment processing| M8
+    
+    %% HR & Payroll flows
+    TA -->|Configure HR| M8
+    EM -->|Time entry| M8
+    M8 -->|Employee data| DS11
+    M8 -->|Attendance records| DS11
+    M8 -->|Payroll calculations| DS12
+    
+    %% Reporting flows
+    MG -->|Request reports| M9
+    M9 -->|Query inventory| M4
+    M9 -->|Query sales| M5
+    M9 -->|Query procurement| M6
+    M9 -->|Query financials| M7
+    M9 -->|Query HR data| M8
+    M9 -->|Generate reports| MG
+    
+    %% Integrated business processes
+    
+    %% Order-to-Cash flow
+    CU -.->|Order| M5
+    M5 -.->|Check stock| M4
+    M5 -.->|Fulfill order| M4
+    M5 -.->|Invoice| M7
+    M7 -.->|Payment| M5
+    
+    %% Procure-to-Pay flow
+    EM -.->|Request| M6
+    M6 -.->|RFQ| VE
+    VE -.->|Quote| M6
+    M6 -.->|Order| VE
+    M6 -.->|Receive| M4
+    M6 -.->|Invoice| M7
+    M7 -.->|Payment| VE
+    
+    %% Hire-to-Retire flow
+    TA -.->|Hire| M8
+    EM -.->|Work| M8
+    M8 -.->|Pay| M7
+    M7 -.->|Disburse| EM
+    
+    %% Styles
+    classDef external fill:#FFD700,stroke:#E6C300,color:black
+    classDef module_core fill:#607D8B,stroke:#455A64,color:white
+    classDef module_sub fill:#00BCD4,stroke:#0097A7,color:white
+    classDef module_inv fill:#66BB6A,stroke:#4E9A52,color:white
+    classDef module_sales fill:#FF9800,stroke:#E68A00,color:black
+    classDef module_proc fill:#BA68C8,stroke:#A44CAA,color:white
+    classDef module_acc fill:#42A5F5,stroke:#2886D4,color:white
+    classDef module_hr fill:#EC407A,stroke:#D81B60,color:white
+    classDef module_rep fill:#26A69A,stroke:#00897B,color:white
+    classDef datastore fill:#90EE90,stroke:#7BC96F,color:black

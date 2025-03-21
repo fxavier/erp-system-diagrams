@@ -1,0 +1,103 @@
+flowchart TD
+    %% Styling
+    classDef process fill:#B3E5FC,stroke:#0288D1,color:#01579B
+    classDef sales fill:#FFCCBC,stroke:#E64A19,color:#BF360C
+    classDef inventory fill:#C8E6C9,stroke:#2E7D32,color:#1B5E20
+    classDef procurement fill:#E1BEE7,stroke:#7B1FA2,color:#4A148C
+    classDef accounting fill:#BBDEFB,stroke:#1565C0,color:#0D47A1
+    classDef hr fill:#F8BBD0,stroke:#C2185B,color:#880E4F
+    classDef start fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20
+    classDef endNode fill:#FFEBEE,stroke:#C62828,color:#B71C1C
+    linkStyle default stroke:#616161,stroke-width:2px
+
+    %% Order to Cash Process
+    subgraph OrderToCash[Order to Cash Process]
+        O2C_Start([Start]):::start --> O2C1[Create Sales Quote]:::sales
+        O2C1 --> O2C2[Convert to Sales Order]:::sales
+        O2C2 --> O2C3[Reserve Inventory]:::inventory
+        O2C3 --> O2C4[Fulfill Order]:::inventory
+        O2C4 --> O2C5[Generate Invoice]:::sales
+        O2C5 --> O2C6[Record Payment]:::accounting
+        O2C6 --> O2C7[Update GL]:::accounting
+        O2C7 --> O2C_End([End]):::endNode
+    end
+
+    %% Procure to Pay Process
+    subgraph ProcureToPay[Procure to Pay Process]
+        P2P_Start([Start]):::start --> P2P1[Create Purchase Request]:::procurement
+        P2P1 --> P2P2[Create RFQ]:::procurement
+        P2P2 --> P2P3[Receive & Compare Quotes]:::procurement
+        P2P3 --> P2P4[Generate Purchase Order]:::procurement
+        P2P4 --> P2P5[Receive Goods]:::inventory
+        P2P5 --> P2P6[Record Vendor Invoice]:::accounting
+        P2P6 --> P2P7[Process Payment]:::accounting
+        P2P7 --> P2P8[Update GL]:::accounting
+        P2P8 --> P2P_End([End]):::endNode
+    end
+
+    %% Budget to Report Process
+    subgraph BudgetToReport[Budget to Report Process]
+        B2R_Start([Start]):::start --> B2R1[Create Budget]:::accounting
+        B2R1 --> B2R2[Record Transactions]:::accounting
+        B2R2 --> B2R3[Reconcile Accounts]:::accounting
+        B2R3 --> B2R4[Process Month End]:::accounting
+        B2R4 --> B2R5[Generate Financial Reports]:::accounting
+        B2R5 --> B2R6[Analyze Budget vs Actual]:::accounting
+        B2R6 --> B2R_End([End]):::endNode
+    end
+
+    %% Hire to Retire Process
+    subgraph HireToRetire[Hire to Retire Process]
+        H2R_Start([Start]):::start --> H2R1[Recruit Employee]:::hr
+        H2R1 --> H2R2[Onboard Employee]:::hr
+        H2R2 --> H2R3[Manage Employee Records]:::hr
+        H2R3 --> H2R4[Track Time & Attendance]:::hr
+        H2R4 --> H2R5[Process Payroll]:::hr
+        H2R5 --> H2R6[Manage Performance]:::hr
+        H2R6 --> H2R7[Process Termination/Retirement]:::hr
+        H2R7 --> H2R_End([End]):::endNode
+    end
+
+    %% Return to Refund Process
+    subgraph ReturnToRefund[Return to Refund Process]
+        R2R_Start([Start]):::start --> R2R1[Receive Return Request]:::sales
+        R2R1 --> R2R2[Approve Return]:::sales
+        R2R2 --> R2R3[Receive Returned Items]:::inventory
+        R2R3 --> R2R4[Inspect Items]:::inventory
+        R2R4 --> R2R5[Update Inventory]:::inventory
+        R2R5 --> R2R6[Issue Credit Note]:::accounting
+        R2R6 --> R2R7[Process Refund]:::accounting
+        R2R7 --> R2R8[Update GL]:::accounting
+        R2R8 --> R2R_End([End]):::endNode
+    end
+
+    %% Subscription Management Process
+    subgraph SubscriptionManagement[Subscription Management Process]
+        SM_Start([Start]):::start --> SM1[Create Trial Tenant]:::process
+        SM1 --> SM2[Configure Tenant]:::process
+        SM2 --> SM3[Convert to Paid Subscription]:::process
+        SM3 --> SM4[Generate Invoice]:::accounting
+        SM4 --> SM5[Process Payment]:::accounting
+        SM5 --> SM6[Provision Full Access]:::process
+        SM6 --> SM7[Monitor Usage]:::process
+        SM7 --> SM8[Renew Subscription]:::process
+        SM8 --> SM9[Update Billing]:::accounting
+        SM9 --> SM_End([End]):::endNode
+    end
+
+    %% Assign Nodes to Classes
+    class O2C1,O2C2,O2C5 sales
+    class O2C3,O2C4 inventory
+    class O2C6,O2C7 accounting
+    class P2P1,P2P2,P2P3,P2P4 procurement
+    class P2P5 inventory
+    class P2P6,P2P7,P2P8 accounting
+    class B2R1,B2R2,B2R3,B2R4,B2R5,B2R6 accounting
+    class H2R1,H2R2,H2R3,H2R4,H2R5,H2R6,H2R7 hr
+    class R2R1,R2R2 sales
+    class R2R3,R2R4,R2R5 inventory
+    class R2R6,R2R7,R2R8 accounting
+    class SM1,SM2,SM3,SM6,SM7,SM8 process
+    class SM4,SM5,SM9 accounting
+    class O2C_Start,P2P_Start,B2R_Start,H2R_Start,R2R_Start,SM_Start start
+    class O2C_End,P2P_End,B2R_End,H2R_End,R2R_End,SM_End endNode

@@ -1,0 +1,108 @@
+flowchart TD
+    %% External entities
+    SA[Sales Agent]:::external
+    CU[Customer]:::external
+    WS[Warehouse Staff]:::external
+    AC[Accounting]:::external
+    
+    %% Processes
+    P1[1.0\nCustomer Management]:::process_sales
+    P2[2.0\nQuotation Generation]:::process_sales
+    P3[3.0\nOrder Processing]:::process_sales
+    P4[4.0\nInventory Reservation]:::process_sales
+    P5[5.0\nOrder Fulfillment]:::process_sales
+    P6[6.0\nInvoicing]:::process_sales
+    P7[7.0\nPayment Processing]:::process_sales
+    P8[8.0\nReturns Management]:::process_sales
+    
+    %% Data stores
+    DS1[(Customer Database)]:::datastore
+    DS2[(Quotations)]:::datastore
+    DS3[(Sales Orders)]:::datastore
+    DS4[(Product Catalog)]:::datastore
+    DS5[(Inventory Positions)]:::datastore
+    DS6[(Invoices)]:::datastore
+    DS7[(Payments)]:::datastore
+    DS8[(Price Lists)]:::datastore
+    DS9[(Sales Returns)]:::datastore
+    
+    %% Data flows
+    %% Customer management flow
+    SA -->|Create/update customer| P1
+    CU -->|Provide details| P1
+    P1 -->|Customer information| DS1
+    P1 -->|Customer profile| SA
+    
+    %% Quotation flow
+    CU -->|Request quotation| P2
+    SA -->|Create quote| P2
+    P2 -->|Customer details| DS1
+    P2 -->|Product information| DS4
+    P2 -->|Pricing rules| DS8
+    P2 -->|Inventory check| DS5
+    P2 -->|Quotation record| DS2
+    P2 -->|Quotation document| CU
+    
+    %% Order processing flow
+    CU -->|Place order| P3
+    SA -->|Create sales order| P3
+    P3 -->|Customer information| DS1
+    P3 -->|Quotation details| DS2
+    P3 -->|Product details| DS4
+    P3 -->|Order record| DS3
+    P3 -->|Order confirmation| CU
+    P3 -->|Order for fulfillment| P4
+    
+    %% Inventory reservation flow
+    P4 -->|Check inventory| DS5
+    P4 -->|Reserve stock| DS5
+    P4 -->|Reservation status| P3
+    P4 -->|Picking request| P5
+    
+    %% Order fulfillment flow
+    WS -->|Process order| P5
+    P5 -->|Order details| DS3
+    P5 -->|Update inventory| DS5
+    P5 -->|Fulfillment confirmation| DS3
+    P5 -->|Shipping notice| CU
+    P5 -->|Fulfilled order| P6
+    
+    %% Invoicing flow
+    P6 -->|Order information| DS3
+    P6 -->|Customer details| DS1
+    P6 -->|Create invoice| DS6
+    P6 -->|Send invoice| CU
+    P6 -->|Invoice for payment| P7
+    
+    %% Payment processing flow
+    CU -->|Make payment| P7
+    P7 -->|Invoice details| DS6
+    P7 -->|Record payment| DS7
+    P7 -->|Payment confirmation| CU
+    P7 -->|Payment notification| AC
+    
+    %% Returns management flow
+    CU -->|Request return| P8
+    SA -->|Process return| P8
+    P8 -->|Order history| DS3
+    P8 -->|Invoice details| DS6
+    P8 -->|Create return| DS9
+    P8 -->|Return authorization| CU
+    WS -->|Receive returned items| P8
+    P8 -->|Update inventory| DS5
+    P8 -->|Create credit note| DS6
+    P8 -->|Refund payment| DS7
+    P8 -->|Return confirmation| CU
+    
+    %% Optional connections
+    P1 -.->|Customer credit check| P3
+    P2 -.->|Special pricing| DS8
+    P3 -.->|Backorder processing| P5
+    P6 -.->|Revenue recognition| AC
+    P7 -.->|Credit limit update| DS1
+    P8 -.->|Quality assessment| DS9
+    
+    %% Styles
+    classDef external fill:#FFD700,stroke:#E6C300,color:black
+    classDef process_sales fill:#FF9800,stroke:#E68A00,color:black
+    classDef datastore fill:#90EE90,stroke:#7BC96F,color:black

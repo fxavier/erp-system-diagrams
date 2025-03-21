@@ -1,0 +1,182 @@
+graph TB
+    %% ======================
+    %% Style Definitions
+    %% ======================
+    classDef core fill:#607D8B,stroke:#455A64,color:white
+    classDef subscription fill:#00BCD4,stroke:#0097A7,color:white
+    classDef accounting fill:#2196F3,stroke:#1976D2,color:white
+    classDef sales fill:#FF9800,stroke:#F57C00,color:black
+    classDef inventory fill:#4CAF50,stroke:#388E3C,color:white
+    classDef hr fill:#E91E63,stroke:#C2185B,color:white
+    classDef payroll fill:#EC407A,stroke:#D81B60,color:white
+    classDef procurement fill:#9C27B0,stroke:#7B1FA2,color:white
+    classDef rfq fill:#AB47BC,stroke:#8E24AA,color:white
+    classDef reports fill:#009688,stroke:#00796B,color:white
+    classDef api fill:#795548,stroke:#5D4037,color:white
+    classDef ui fill:#3F51B5,stroke:#303F9F,color:white
+    
+    %% ======================
+    %% Top Level Architecture
+    %% ======================
+    subgraph Architecture["ERP System Architecture"]
+        UI[User Interface Layer]:::ui
+        API[API Layer]:::api
+        BL[Business Logic Layer]
+        DAL[Data Access Layer]
+        DB[(Database Layer)]
+    end
+    
+    UI --> API
+    API --> BL
+    BL --> DAL
+    DAL --> DB
+    
+    %% ======================
+    %% Core System
+    %% ======================
+    subgraph Core["Core System"]
+        TM[Tenant Management]:::core
+        UM[User Management]:::core
+        AC[Access Control]:::core
+        AUDIT[Audit & Logging]:::core
+        SM[Subscription Management]:::subscription
+        BM[Billing Management]:::subscription
+    end
+    
+    BL --- Core
+    
+    %% ======================
+    %% Module Groups
+    %% ======================
+    subgraph Modules["Business Modules"]
+        subgraph Accounting["Accounting Module"]
+            GL[General Ledger]:::accounting
+            AP[Accounts Payable]:::accounting
+            AR[Accounts Receivable]:::accounting
+            FA[Fixed Assets]:::accounting
+            TX[Tax Management]:::accounting
+            BG[Budgeting]:::accounting
+            BK[Banking]:::accounting
+        end
+        
+        subgraph Sales["Sales Module"]
+            CRM[Customer Management]:::sales
+            SO[Sales Orders]:::sales
+            INV[Invoicing]:::sales
+            QT[Quotations]:::sales
+            POS[Point of Sale]:::sales
+        end
+        
+        subgraph Inventory["Inventory Module"]
+            IM[Item Management]:::inventory
+            WM[Warehouse Management]:::inventory
+            STK[Stock Control]:::inventory
+            BOM[Bill of Materials]:::inventory
+        end
+        
+        subgraph Procurement["Procurement Module"]
+            VM[Vendor Management]:::procurement
+            RFB[Request For Buy]:::procurement
+            PO[Purchase Orders]:::procurement
+            GR[Goods Receipt]:::procurement
+        end
+        
+        subgraph RFQ["RFQ Module"]
+            RQ[Request For Quotation]:::rfq
+            VQ[Vendor Quotations]:::rfq
+            QC[Quotation Comparison]:::rfq
+            VS[Vendor Selection]:::rfq
+        end
+        
+        subgraph HR["HR Module"]
+            EM[Employee Management]:::hr
+            DM[Department Management]:::hr
+            LM[Leave Management]:::hr
+            AT[Attendance Tracking]:::hr
+            PM[Performance Management]:::hr
+        end
+        
+        subgraph Payroll["Payroll Module"]
+            PR[Payroll Processing]:::payroll
+            TX2[Tax Calculations]:::payroll
+            BC[Benefits & Compensation]:::payroll
+            TM2[Time Management]:::payroll
+        end
+    end
+    
+    BL --- Modules
+    
+    %% ======================
+    %% Cross-Cutting Concerns
+    %% ======================
+    subgraph CrossCutting["Cross-Cutting Components"]
+        REP[Reporting & Analytics]:::reports
+        WF[Workflow Engine]:::core
+        DOC[Document Management]:::core
+        INT[Integration Services]:::api
+        NOTIF[Notification System]:::core
+        CFG[Configuration Management]:::core
+    end
+    
+    BL --- CrossCutting
+    
+    %% ======================
+    %% Key Module Relationships
+    %% ======================
+    SM ---- BM
+    GL ---- AP
+    GL ---- AR
+    SO ---- INV
+    SO ---- CRM
+    SO ---- STK
+    RFB ---- RQ
+    RQ ---- VQ
+    VQ ---- QC
+    QC ---- VS
+    VS ---- PO
+    PO ---- GR
+    PO ---- VM
+    PO ---- AP
+    INV ---- AR
+    STK ---- WM
+    STK ---- IM
+    PO ---- STK
+    EM ---- PR
+    PR ---- GL
+    SO ---- REP
+    AP ---- REP
+    PR ---- REP
+    
+    %% ======================
+    %% Tenant Integration
+    %% ======================
+    TM --- UM
+    TM --- AC
+    TM --- SM
+    
+    %% ======================
+    %% External Systems
+    %% ======================
+    subgraph External["External Systems"]
+        BS[Banking Systems]
+        TS[Tax Systems]
+        PS[Payment Processors]
+        ES[Email Services]
+        SHIP[Shipping Providers]
+        ERP[Other ERP Systems]
+    end
+    
+    INT ---- External
+    
+    %% ======================
+    %% Clients
+    %% ======================
+    subgraph Clients["Client Applications"]
+        WEB[Web Application]
+        MOB[Mobile Apps]
+        API2[API Clients]
+        INT2[Integration Clients]
+        POS2[POS Terminals]
+    end
+    
+    Clients ---- UI

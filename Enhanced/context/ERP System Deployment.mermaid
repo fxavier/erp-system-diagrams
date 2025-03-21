@@ -1,0 +1,131 @@
+flowchart LR
+    %% User Devices
+    WEB[Web Browser]:::client
+    MOB[Mobile App]:::client
+    POS[POS Terminal]:::client
+    API[API Client]:::client
+    
+    %% Infrastructure
+    subgraph INFRA[Cloud Infrastructure]
+        subgraph APP[Application Layer]
+            WS[Web Servers]:::server
+            AS[Application Servers]:::server
+            API_GW[API Gateway]:::server
+            LB[Load Balancer]:::server
+            CACHE[Cache System]:::server
+        end
+        
+        subgraph DATA[Data Layer]
+            DB[Postgres Database\nCluster]:::database
+            TSCH[Tenant Schemas]:::database
+            ES[Search Engine]:::server
+            CACHE_DB[Cache Database]:::database
+            MQ[Message Queue]:::server
+        end
+        
+        subgraph STORAGE[Storage Layer]
+            OBJ[Object Storage]:::storage
+            FS[File System]:::storage
+            BK[Backup System]:::storage
+        end
+        
+        subgraph SERVICES[Supporting Services]
+            MAIL[Mail Service]:::server
+            NOTIF[Notification Service]:::server
+            REPORT[Reporting Engine]:::server
+            BATCH[Batch Processing]:::server
+            SCHED[Scheduler]:::server
+        end
+        
+        subgraph SEC[Security Layer]
+            AUTH[Authentication\nService]:::security
+            IAM[Identity & Access\nManagement]:::security
+            WAF[Web Application\nFirewall]:::security
+            CRYPT[Encryption\nService]:::security
+        end
+        
+        subgraph MON[Monitoring & Operations]
+            LOG[Logging System]:::monitoring
+            METRIC[Metrics\nCollection]:::monitoring
+            ALERT[Alert System]:::monitoring
+            TRACE[Distributed\nTracing]:::monitoring
+        end
+    end
+    
+    %% External Systems
+    BANK_S[Banking\nSystems]:::external_system
+    PAY_S[Payment\nGateways]:::external_system
+    SHIP_S[Shipping\nProviders]:::external_system
+    AUTH_S[Authentication\nProviders]:::external_system
+    TAX_S[Tax\nSystems]:::external_system
+    INTG[Third-Party\nIntegrations]:::external_system
+    
+    %% Client connections
+    WEB -->|HTTPS| LB
+    MOB -->|HTTPS| LB
+    POS -->|HTTPS| LB
+    API -->|HTTPS| API_GW
+    
+    %% Load balancer connections
+    LB -->|Route requests| WS
+    LB -->|Route API calls| API_GW
+    
+    %% Web server connections
+    WS -->|Process requests| AS
+    
+    %% API gateway connections
+    API_GW -->|Route API calls| AS
+    API_GW -->|Validate access| SEC
+    
+    %% Application server connections
+    AS -->|Store/retrieve data| DB
+    AS -->|Search operations| ES
+    AS -->|Cache operations| CACHE
+    AS -->|Queue operations| MQ
+    AS -->|Use services| SERVICES
+    AS -->|Security checks| SEC
+    
+    %% Data layer interconnections
+    DB -->|Tenant data| TSCH
+    DB <-->|Cache frequently\naccessed data| CACHE_DB
+    MQ -->|Process\nasynchronous tasks| BATCH
+    
+    %% Storage connections
+    AS -->|Store files| OBJ
+    AS -->|Read/write files| FS
+    DB -->|Backup data| BK
+    
+    %% Service connections
+    AS -->|Send emails| MAIL
+    AS -->|Send notifications| NOTIF
+    AS -->|Generate reports| REPORT
+    SCHED -->|Trigger jobs| BATCH
+    
+    %% Security layer connections
+    AUTH -->|Verify identity| AS
+    IAM -->|Authorize actions| AS
+    WAF -->|Filter traffic| LB
+    CRYPT -->|Encrypt/decrypt data| AS
+    
+    %% Monitoring connections
+    AS -->|Send logs| LOG
+    AS -->|Report metrics| METRIC
+    METRIC -->|Trigger alerts| ALERT
+    AS -->|Distributed traces| TRACE
+    
+    %% External system connections
+    AS <-->|Financial transactions| BANK_S
+    AS <-->|Process payments| PAY_S
+    AS <-->|Shipping services| SHIP_S
+    AUTH <-->|Federation| AUTH_S
+    AS <-->|Tax calculations| TAX_S
+    AS <-->|External data| INTG
+    
+    %% Styles
+    classDef client fill:#FF9800,stroke:#E68A00,color:black,rx:5,ry:5
+    classDef server fill:#7986CB,stroke:#3F51B5,color:white,rx:5,ry:5
+    classDef database fill:#66BB6A,stroke:#43A047,color:white,rx:0,ry:0,shape:cylinder
+    classDef storage fill:#26A69A,stroke:#00897B,color:white,rx:5,ry:5
+    classDef security fill:#EF5350,stroke:#E53935,color:white,rx:5,ry:5
+    classDef monitoring fill:#5C6BC0,stroke:#3949AB,color:white,rx:5,ry:5
+    classDef external_system fill:#B0C4DE,stroke:#778899,color:black,rx:10,ry:10

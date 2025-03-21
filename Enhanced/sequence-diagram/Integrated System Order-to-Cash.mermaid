@@ -1,0 +1,75 @@
+sequenceDiagram
+    %% Participants with Emojis
+    actor CU as 👤 Customer
+    actor SA as 👩💼 Sales Agent
+    actor WH as 🚚 Warehouse Staff
+    actor AC as 👨💼 Accountant
+    
+    participant SMS as 🛒 Sales Module
+    participant IMS as 📦 Inventory Module
+    participant ACS as 💰 Accounting Module
+    participant RPS as 📊 Reporting Module
+    
+    autonumber
+
+    %% Order to Cash Process
+    CU->>+SA: 📥 Place Order
+    
+    %% Sales Flow
+    SA->>+SMS: 📝 Create Order
+    SMS-->>-SA: ✔️ Order Created
+    
+    %% Inventory Check
+    SMS->>+IMS: 🔍 Check Stock
+    alt ✔️ Stock Available
+        IMS-->>SMS: 📥 In Stock
+    else ❌ Low Stock
+        IMS-->>SMS: ⚠️ Low Inventory
+        SMS-->>SA: 📧 Notify Delay
+        SA-->>CU: ⏳ Update ETA
+    end
+    
+    %% Reservation
+    SMS->>+IMS: 📌 Reserve Items
+    IMS-->>-SMS: 🔒 Stock Reserved
+    
+    %% Confirmation
+    SMS-->>SA: ✅ Order Ready
+    SA-->>CU: 📧 Order Confirmed
+    
+    %% Warehouse Flow
+    SA->>+WH: 🚚 Fulfill Order
+    WH->>+IMS: 📋 Generate Picks
+    IMS-->>-WH: 📄 Pick List
+    WH->>WH: 🚚 Pick/Pack
+    
+    %% Shipment
+    WH->>+IMS: 🚚 Confirm Shipment
+    IMS-->>-WH: 📉 Stock Updated
+    WH-->>-SA: 📦 Order Shipped
+    
+    %% Invoice
+    SA->>+SMS: 🧾 Create Invoice
+    SMS->>+ACS: 💳 Post to AR
+    ACS-->>-SMS: ✅ AR Updated
+    SMS-->>-SA: 📄 Invoice Ready
+    SA-->>CU: 📧 Send Invoice
+    
+    %% Payment
+    CU->>+SA: 💸 Make Payment
+    SA->>+ACS: 📥 Record Payment
+    ACS-->>-SA: ✅ Payment Posted
+    SA-->>CU: 🧾 Send Receipt
+    
+    %% Reporting
+    AC->>+ACS: 📈 Check AR
+    ACS-->>-AC: 📋 AR Aging
+    
+    AC->>+RPS: 📊 Revenue Report
+    RPS->>SMS: 📉 Get Sales
+    RPS->>ACS: 💰 Get GL Data
+    RPS-->>-AC: 📈 Final Report
+    
+    AC->>+RPS: 📦 Inventory Report
+    RPS->>IMS: 🏷️ Get Stock
+    RPS-->>-AC: 📉 Valuation

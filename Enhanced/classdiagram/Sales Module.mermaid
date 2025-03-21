@@ -1,0 +1,531 @@
+classDiagram
+    %% ======================
+    %% Color Definitions
+    %% ======================
+    classDef core fill:#607D8B,stroke:#455A64,color:white
+    classDef sales fill:#FF9800,stroke:#F57C00,color:black
+    
+    %% ======================
+    %% Parent Class
+    %% ======================
+    class BaseEntity {
+        +Long id
+        +Integer version
+        +LocalDateTime createdDate
+        +String createdBy
+        +LocalDateTime lastModifiedDate
+        +String lastModifiedBy
+        +Boolean isActive
+    }
+    
+    %% ======================
+    %% Customer Management
+    %% ======================
+    class Customer {
+        +Long tenantId
+        +String code
+        +String name
+        +String contactPerson
+        +String email
+        +String phone
+        +String address
+        +String billingAddress
+        +String shippingAddress
+        +String taxId
+        +CustomerType type
+        +String currency
+        +Long priceListId
+        +String paymentTerms
+        +BigDecimal creditLimit
+        +Boolean isTaxExempt
+        +String notes
+        +createCustomer()
+        +updateCustomer()
+        +deactivateCustomer()
+    }
+    
+    class CustomerType {
+        <<enumeration>>
+        INDIVIDUAL
+        BUSINESS
+        RESELLER
+        GOVERNMENT
+        NON_PROFIT
+    }
+    
+    class CustomerGroup {
+        +Long tenantId
+        +String name
+        +String description
+        +Boolean isActive
+        +createGroup()
+        +updateGroup()
+        +deactivateGroup()
+    }
+    
+    class CustomerContact {
+        +Long customerId
+        +String firstName
+        +String lastName
+        +String email
+        +String phone
+        +String position
+        +Boolean isPrimary
+        +String notes
+        +addContact()
+        +updateContact()
+        +removeContact()
+        +setPrimary()
+    }
+    
+    %% ======================
+    %% Quotation Management
+    %% ======================
+    class SalesQuotation {
+        +Long tenantId
+        +Long customerId
+        +String quotationNumber
+        +QuotationStatus status
+        +LocalDateTime issueDate
+        +LocalDateTime expiryDate
+        +String reference
+        +String notes
+        +BigDecimal subtotal
+        +BigDecimal taxTotal
+        +BigDecimal discountTotal
+        +BigDecimal total
+        +String currency
+        +String terms
+        +String createdBy
+        +createQuotation()
+        +updateQuotation()
+        +issueQuotation()
+        +expireQuotation()
+        +convertToOrder()
+    }
+    
+    class QuotationStatus {
+        <<enumeration>>
+        DRAFT
+        ISSUED
+        ACCEPTED
+        REJECTED
+        EXPIRED
+        CONVERTED
+    }
+    
+    class QuotationItem {
+        +Long quotationId
+        +Long productId
+        +Long variantId
+        +String description
+        +Double quantity
+        +String uom
+        +BigDecimal unitPrice
+        +BigDecimal discount
+        +BigDecimal taxRate
+        +BigDecimal amount
+        +String notes
+        +addItem()
+        +updateItem()
+        +removeItem()
+        +calculateAmount()
+    }
+    
+    %% ======================
+    %% Order Management
+    %% ======================
+    class SalesOrder {
+        +Long tenantId
+        +Long customerId
+        +Long quotationId
+        +String orderNumber
+        +OrderStatus status
+        +LocalDateTime orderDate
+        +LocalDateTime expectedShipDate
+        +String reference
+        +String notes
+        +BigDecimal subtotal
+        +BigDecimal taxTotal
+        +BigDecimal discountTotal
+        +BigDecimal shippingCost
+        +BigDecimal total
+        +String currency
+        +String paymentTerms
+        +String shippingMethod
+        +String shippingAddress
+        +String billingAddress
+        +createOrder()
+        +updateOrder()
+        +approveOrder()
+        +cancelOrder()
+        +fulfillOrder()
+    }
+    
+    class OrderStatus {
+        <<enumeration>>
+        DRAFT
+        PENDING
+        APPROVED
+        PROCESSING
+        PARTIAL_SHIPMENT
+        SHIPPED
+        COMPLETED
+        CANCELLED
+    }
+    
+    class OrderItem {
+        +Long orderId
+        +Long productId
+        +Long variantId
+        +String description
+        +Double quantity
+        +Double deliveredQuantity
+        +Double backorderedQuantity
+        +String uom
+        +BigDecimal unitPrice
+        +BigDecimal discount
+        +BigDecimal taxRate
+        +BigDecimal amount
+        +String notes
+        +addItem()
+        +updateItem()
+        +removeItem()
+        +calculateAmount()
+        +deliverItem()
+    }
+    
+    %% ======================
+    %% Invoice Management
+    %% ======================
+    class SalesInvoice {
+        +Long tenantId
+        +Long customerId
+        +Long orderId
+        +String invoiceNumber
+        +InvoiceStatus status
+        +LocalDateTime invoiceDate
+        +LocalDateTime dueDate
+        +String reference
+        +String notes
+        +BigDecimal subtotal
+        +BigDecimal taxTotal
+        +BigDecimal discountTotal
+        +BigDecimal total
+        +BigDecimal amountPaid
+        +BigDecimal amountDue
+        +String currency
+        +String paymentTerms
+        +createInvoice()
+        +updateInvoice()
+        +issueInvoice()
+        +voidInvoice()
+        +markAsPaid()
+    }
+    
+    class InvoiceStatus {
+        <<enumeration>>
+        DRAFT
+        ISSUED
+        PARTIALLY_PAID
+        PAID
+        OVERDUE
+        VOID
+    }
+    
+    class InvoiceItem {
+        +Long invoiceId
+        +Long productId
+        +Long variantId
+        +Long orderItemId
+        +String description
+        +Double quantity
+        +String uom
+        +BigDecimal unitPrice
+        +BigDecimal discount
+        +BigDecimal taxRate
+        +BigDecimal amount
+        +String notes
+        +addItem()
+        +updateItem()
+        +removeItem()
+        +calculateAmount()
+    }
+    
+    %% ======================
+    %% Payment Management
+    %% ======================
+    class SalesPayment {
+        +Long tenantId
+        +Long customerId
+        +Long invoiceId
+        +String paymentNumber
+        +PaymentMethod method
+        +LocalDateTime paymentDate
+        +BigDecimal amount
+        +String currency
+        +String reference
+        +String notes
+        +String receivedBy
+        +recordPayment()
+        +updatePayment()
+        +voidPayment()
+        +allocateToInvoices()
+    }
+    
+    class PaymentMethod {
+        <<enumeration>>
+        CASH
+        CREDIT_CARD
+        DEBIT_CARD
+        BANK_TRANSFER
+        CHECK
+        ONLINE_PAYMENT
+        CREDIT_NOTE
+    }
+    
+    class PaymentAllocation {
+        +Long paymentId
+        +Long invoiceId
+        +BigDecimal allocatedAmount
+        +LocalDateTime allocationDate
+        +String notes
+        +allocatePayment()
+        +updateAllocation()
+        +removeAllocation()
+    }
+    
+    %% ======================
+    %% Credit Note Management
+    %% ======================
+    class CreditNote {
+        +Long tenantId
+        +Long customerId
+        +Long invoiceId
+        +String creditNoteNumber
+        +CreditNoteStatus status
+        +LocalDateTime issueDate
+        +String reason
+        +String notes
+        +BigDecimal subtotal
+        +BigDecimal taxTotal
+        +BigDecimal total
+        +BigDecimal amountUsed
+        +BigDecimal amountRemaining
+        +String currency
+        +createCreditNote()
+        +updateCreditNote()
+        +issueCreditNote()
+        +voidCreditNote()
+    }
+    
+    class CreditNoteStatus {
+        <<enumeration>>
+        DRAFT
+        ISSUED
+        PARTIALLY_USED
+        FULLY_USED
+        VOID
+    }
+    
+    class CreditNoteItem {
+        +Long creditNoteId
+        +Long productId
+        +Long variantId
+        +Long invoiceItemId
+        +String description
+        +Double quantity
+        +String uom
+        +BigDecimal unitPrice
+        +BigDecimal taxRate
+        +BigDecimal amount
+        +String reason
+        +addItem()
+        +updateItem()
+        +removeItem()
+        +calculateAmount()
+    }
+    
+    %% ======================
+    %% Point of Sale
+    %% ======================
+    class POSTerminal {
+        +Long tenantId
+        +Long warehouseId
+        +String code
+        +String name
+        +String location
+        +Boolean isActive
+        +POSStatus status
+        +LocalDateTime lastSync
+        +createTerminal()
+        +updateTerminal()
+        +openTerminal()
+        +closeTerminal()
+        +syncTerminal()
+    }
+    
+    class POSStatus {
+        <<enumeration>>
+        OFFLINE
+        ONLINE
+        OPEN
+        CLOSED
+        MAINTENANCE
+    }
+    
+    class POSSession {
+        +Long terminalId
+        +Long userId
+        +LocalDateTime openedAt
+        +LocalDateTime closedAt
+        +BigDecimal openingBalance
+        +BigDecimal expectedClosingBalance
+        +BigDecimal actualClosingBalance
+        +BigDecimal discrepancy
+        +SessionStatus status
+        +String notes
+        +openSession()
+        +recordSale()
+        +closeSession()
+        +reconcileSession()
+    }
+    
+    class SessionStatus {
+        <<enumeration>>
+        OPEN
+        CLOSED
+        RECONCILED
+    }
+    
+    class POSTransaction {
+        +Long sessionId
+        +Long customerId
+        +String transactionNumber
+        +TransactionType type
+        +LocalDateTime transactionDate
+        +BigDecimal subtotal
+        +BigDecimal taxTotal
+        +BigDecimal discountTotal
+        +BigDecimal total
+        +BigDecimal amountTendered
+        +BigDecimal changeDue
+        +PaymentMethod paymentMethod
+        +String notes
+        +createTransaction()
+        +completeTransaction()
+        +voidTransaction()
+        +printReceipt()
+    }
+    
+    class TransactionType {
+        <<enumeration>>
+        SALE
+        RETURN
+        REFUND
+        VOID
+    }
+    
+    class POSTransactionItem {
+        +Long transactionId
+        +Long productId
+        +Long variantId
+        +String description
+        +Double quantity
+        +String uom
+        +BigDecimal unitPrice
+        +BigDecimal discount
+        +BigDecimal taxRate
+        +BigDecimal amount
+        +addItem()
+        +updateItem()
+        +removeItem()
+        +calculateAmount()
+    }
+    
+    %% ======================
+    %% Class Relationships
+    %% ======================
+    BaseEntity <|-- Customer
+    BaseEntity <|-- CustomerGroup
+    BaseEntity <|-- CustomerContact
+    BaseEntity <|-- SalesQuotation
+    BaseEntity <|-- QuotationItem
+    BaseEntity <|-- SalesOrder
+    BaseEntity <|-- OrderItem
+    BaseEntity <|-- SalesInvoice
+    BaseEntity <|-- InvoiceItem
+    BaseEntity <|-- SalesPayment
+    BaseEntity <|-- PaymentAllocation
+    BaseEntity <|-- CreditNote
+    BaseEntity <|-- CreditNoteItem
+    BaseEntity <|-- POSTerminal
+    BaseEntity <|-- POSSession
+    BaseEntity <|-- POSTransaction
+    BaseEntity <|-- POSTransactionItem
+    
+    Customer -- CustomerType : has
+    SalesQuotation -- QuotationStatus : has
+    SalesOrder -- OrderStatus : has
+    SalesInvoice -- InvoiceStatus : has
+    SalesPayment -- PaymentMethod : uses
+    CreditNote -- CreditNoteStatus : has
+    POSTerminal -- POSStatus : has
+    POSSession -- SessionStatus : has
+    POSTransaction -- TransactionType : has
+    POSTransaction -- PaymentMethod : uses
+    
+    CustomerGroup "1" -- "many" Customer : groups
+    Customer "1" -- "many" CustomerContact : has
+    
+    Customer "1" -- "many" SalesQuotation : requests
+    SalesQuotation "1" -- "many" QuotationItem : contains
+    SalesQuotation "1" -- "0..1" SalesOrder : converts to
+    
+    Customer "1" -- "many" SalesOrder : places
+    SalesOrder "1" -- "many" OrderItem : contains
+    SalesOrder "1" -- "many" SalesInvoice : generates
+    
+    Customer "1" -- "many" SalesInvoice : billedTo
+    SalesInvoice "1" -- "many" InvoiceItem : contains
+    
+    Customer "1" -- "many" SalesPayment : makes
+    SalesInvoice "1" -- "many" PaymentAllocation : allocatedTo
+    SalesPayment "1" -- "many" PaymentAllocation : allocates
+    
+    Customer "1" -- "many" CreditNote : receives
+    SalesInvoice "1" -- "many" CreditNote : refundsFor
+    CreditNote "1" -- "many" CreditNoteItem : contains
+    
+    POSTerminal "1" -- "many" POSSession : hosts
+    POSSession "1" -- "many" POSTransaction : records
+    POSTransaction "1" -- "many" POSTransactionItem : includes
+    
+    %% Apply styling
+    class BaseEntity core
+    class Customer sales
+    class CustomerType sales
+    class CustomerGroup sales
+    class CustomerContact sales
+    class SalesQuotation sales
+    class QuotationStatus sales
+    class QuotationItem sales
+    class SalesOrder sales
+    class OrderStatus sales
+    class OrderItem sales
+    class SalesInvoice sales
+    class InvoiceStatus sales
+    class InvoiceItem sales
+    class SalesPayment sales
+    class PaymentMethod sales
+    class PaymentAllocation sales
+    class CreditNote sales
+    class CreditNoteStatus sales
+    class CreditNoteItem sales
+    class POSTerminal sales
+    class POSStatus sales
+    class POSSession sales
+    class SessionStatus sales
+    class POSTransaction sales
+    class TransactionType sales
+    class POSTransactionItem sales

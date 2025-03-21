@@ -1,0 +1,126 @@
+erDiagram
+    %% Entity Definitions
+    TENANT {
+        int id PK
+        string name
+        string domain
+        datetime creation_date
+        boolean is_active
+        boolean is_trial
+        datetime trial_expiry_date
+        string status
+        string contact_email
+        string contact_phone
+        string timezone
+        string locale
+        string currency_code
+        int max_users
+    }
+    
+    TENANT_CONFIGURATION {
+        int id PK
+        int tenant_id FK
+        string config_key
+        string config_value
+        string data_type
+        string description
+        boolean system_config
+        datetime modified_date
+    }
+    
+    TENANT_SCHEMA {
+        int id PK
+        int tenant_id FK
+        string schema_name
+        string connection_string
+        string status
+        datetime provisioned_date
+        datetime last_updated
+    }
+    
+    USER {
+        int id PK
+        int tenant_id FK
+        string username
+        string email
+        string password_hash
+        string first_name
+        string last_name
+        string status
+        boolean is_active
+        boolean email_verified
+        datetime last_login
+        string phone_number
+        string profile_image_url
+    }
+    
+    ROLE {
+        int id PK
+        int tenant_id FK
+        string name
+        string description
+        boolean is_system_role
+        boolean is_active
+    }
+    
+    PERMISSION {
+        int id PK
+        string resource
+        string action
+        string description
+        boolean is_system_permission
+    }
+    
+    USER_ROLE {
+        int id PK
+        int user_id FK
+        int role_id FK
+        datetime assigned_date
+    }
+    
+    ROLE_PERMISSION {
+        int id PK
+        int role_id FK
+        int permission_id FK
+    }
+    
+    AUDIT_LOG {
+        int id PK
+        int tenant_id FK
+        int user_id FK
+        string entity_type
+        int entity_id
+        string action
+        datetime timestamp
+        string old_values
+        string new_values
+        string ip_address
+        string user_agent
+    }
+    
+    %% Relationships
+    TENANT ||--o{ TENANT_CONFIGURATION : "has"
+    TENANT ||--|| TENANT_SCHEMA : "provisioned as"
+    TENANT ||--o{ USER : "has"
+    TENANT ||--o{ ROLE : "defines"
+    TENANT ||--o{ AUDIT_LOG : "tracks"
+    
+    USER }o--o{ ROLE : "assigned to"
+    USER ||--o{ AUDIT_LOG : "generates"
+    
+    USER ||--o{ USER_ROLE : "has"
+    ROLE ||--o{ USER_ROLE : "assigned to"
+    
+    ROLE ||--o{ ROLE_PERMISSION : "has"
+    PERMISSION ||--o{ ROLE_PERMISSION : "granted to"
+    
+    %% Styling with class definitions
+    classDef tenant_entities fill:#607D8B,stroke:#455A64,color:white
+    classDef user_entities fill:#78909C,stroke:#546E7A,color:white
+    classDef permission_entities fill:#90A4AE,stroke:#62757F,color:white
+    classDef log_entities fill:#B0BEC5,stroke:#808E95,color:black
+    
+    class TENANT,TENANT_CONFIGURATION,TENANT_SCHEMA tenant_entities
+    class USER,USER_ROLE,ROLE user_entities
+    class PERMISSION,ROLE_PERMISSION permission_entities
+    class AUDIT_LOG log_entities
