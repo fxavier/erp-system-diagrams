@@ -1,0 +1,281 @@
+classDiagram
+    %% ======================
+    %% Color Definitions
+    %% ======================
+    classDef core fill:#607D8B,stroke:#455A64,color:white
+    classDef accounting fill:#2196F3,stroke:#1976D2,color:white
+    classDef sales fill:#FF9800,stroke:#F57C00,color:white
+    classDef inventory fill:#4CAF50,stroke:#388E3C,color:white
+    classDef hr fill:#E91E63,stroke:#C2185B,color:white
+    classDef procurement fill:#9C27B0,stroke:#7B1FA2,color:white
+    classDef rfq fill:#AB47BC,stroke:#8E24AA,color:white
+    classDef subscription fill:#00BCD4,stroke:#0097A7,color:white
+    
+    %% ======================
+    %% Core System
+    %% ======================
+    class Tenant:::core {
+        +int id
+        +String name
+        +String domain
+        +LocalDateTime creationDate
+        +boolean isActive
+        +boolean isTrialAccount
+        +LocalDateTime trialExpiryDate
+        +int maxUsers
+        +createTenant()
+        +activateTenant()
+        +deactivateTenant()
+    }
+    
+    class User:::core {
+        +int id
+        +int tenantId
+        +String username
+        +String email
+        +String role
+        +String passwordHash
+        +boolean isActive
+        +LocalDateTime lastLogin
+        +createUser()
+        +updateUser()
+        +deactivateUser()
+        +resetPassword()
+    }
+    
+    class Role:::core {
+        +int id
+        +int tenantId
+        +String name
+        +String description
+        +createRole()
+        +updateRole()
+        +deleteRole()
+    }
+    
+    class Permission:::core {
+        +int id
+        +String resource
+        +String action
+        +createPermission()
+        +updatePermission()
+        +deletePermission()
+    }
+    
+    class RolePermission:::core {
+        +int id
+        +int roleId
+        +int permissionId
+        +assignPermission()
+        +revokePermission()
+    }
+    
+    class TenantConfiguration:::core {
+        +int id
+        +int tenantId
+        +String configKey
+        +String configValue
+        +String dataType
+        +updateConfiguration()
+    }
+    
+    class TenantSubscription:::subscription {
+        +int id
+        +int tenantId
+        +int subscriptionPlanId
+        +String subscriptionStatus
+        +LocalDateTime startDate
+        +LocalDateTime endDate
+        +String billingCycle
+        +boolean autoRenew
+        +createSubscription()
+        +renewSubscription()
+        +cancelSubscription()
+    }
+    
+    class SubscriptionPlan:::subscription {
+        +int id
+        +String name
+        +String description
+        +double monthlyPrice
+        +double annualPrice
+        +int maxUsers
+        +int maxStorage
+        +boolean isActive
+    }
+    
+    class ModuleAccess:::subscription {
+        +int id
+        +int subscriptionPlanId
+        +String moduleName
+        +boolean isEnabled
+        +enableModule()
+        +disableModule()
+    }
+    
+    class FeatureLimit:::subscription {
+        +int id
+        +int subscriptionPlanId
+        +String featureCode
+        +int limit
+        +String limitType
+        +setLimit()
+        +removeLimit()
+    }
+    
+    %% ======================
+    %% Vendor & Product
+    %% ======================
+    class Vendor:::procurement {
+        +int id
+        +int tenantId
+        +String name
+        +String contactPerson
+        +String email
+        +String phone
+        +String address
+        +boolean isActive
+        +createVendor()
+        +updateVendor()
+        +disableVendor()
+    }
+    
+    class Product:::inventory {
+        +int id
+        +int tenantId
+        +String name
+        +String description
+        +String sku
+        +Double price
+        +String uom
+        +int minStockLevel
+        +boolean isActive
+        +createProduct()
+        +updateProduct()
+        +disableProduct()
+    }
+    
+    %% ======================
+    %% RFQ Module
+    %% ======================
+    class RFQ:::rfq {
+        +int id
+        +int tenantId
+        +String rfqNumber
+        +LocalDateTime issueDate
+        +LocalDateTime expiryDate
+        +String status
+        +String notes
+        +createRFQ()
+        +updateRFQ()
+        +cancelRFQ()
+    }
+    
+    class RFQItem:::rfq {
+        +int id
+        +int rfqId
+        +int productId
+        +Double quantity
+        +String uom
+        +LocalDate requiredDate
+        +String specifications
+        +addItem()
+        +updateItem()
+        +removeItem()
+    }
+    
+    class VendorRFQ:::rfq {
+        +int id
+        +int rfqId
+        +int vendorId
+        +String status
+        +LocalDateTime sentDate
+        +LocalDateTime responseDate
+        +addVendor()
+        +updateVendor()
+        +removeVendor()
+    }
+    
+    class VendorQuotation:::rfq {
+        +int id
+        +int vendorRFQId
+        +LocalDateTime quotationDate
+        +String quotationReference
+        +LocalDate validUntil
+        +Double totalAmount
+        +String currency
+        +String status
+        +registerQuotation()
+        +updateQuotation()
+        +acceptQuotation()
+        +rejectQuotation()
+    }
+    
+    class QuotationItem:::rfq {
+        +int id
+        +int vendorQuotationId
+        +int rfqItemId
+        +Double unitPrice
+        +Double quantity
+        +Double amount
+        +Double leadTimeInDays
+        +addItem()
+        +updateItem()
+    }
+    
+    class QuotationComparison:::rfq {
+        +int id
+        +int rfqId
+        +LocalDateTime creationDate
+        +String status
+        +String approvedBy
+        +LocalDateTime approvalDate
+        +createComparison()
+        +updateComparison()
+        +approveComparison()
+    }
+    
+    class PurchaseOrder:::procurement {
+        +int id
+        +int tenantId
+        +int vendorId
+        +int rfqId
+        +LocalDateTime orderDate
+        +Double total
+        +String status
+        +createPurchaseOrder()
+        +updatePurchaseOrder()
+        +cancelPurchaseOrder()
+    }
+    
+    %% ======================
+    %% Relationships
+    %% ======================
+    Tenant "1" -- "many" User : has
+    Tenant "1" -- "many" Role : defines
+    Role "many" -- "many" Permission : has
+    Role "1" -- "many" RolePermission : contains
+    Permission "1" -- "many" RolePermission : assigned to
+    Tenant "1" -- "many" TenantConfiguration : configures
+    
+    Tenant "1" -- "1" TenantSubscription : subscribes with
+    TenantSubscription "1" -- "1" SubscriptionPlan : uses
+    SubscriptionPlan "1" -- "many" ModuleAccess : defines
+    SubscriptionPlan "1" -- "many" FeatureLimit : restricts
+    
+    Tenant "1" -- "many" Vendor : manages
+    Tenant "1" -- "many" Product : catalogs
+    
+    Tenant "1" -- "many" RFQ : initiates
+    RFQ "1" -- "many" RFQItem : contains
+    RFQ "1" -- "many" VendorRFQ : sent to
+    VendorRFQ "1" -- "0..1" VendorQuotation : receives
+    VendorQuotation "1" -- "many" QuotationItem : details
+    RFQ "1" -- "0..1" QuotationComparison : evaluated in
+    
+    VendorRFQ "many" -- "1" Vendor : targeted at
+    RFQItem "many" -- "1" Product : requests
+    QuotationItem "many" -- "1" RFQItem : quotes for
+    
+    QuotationComparison "1" -- "1" PurchaseOrder : generates
+    PurchaseOrder "many" -- "1" Vendor : orders from

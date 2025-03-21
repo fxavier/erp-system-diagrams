@@ -1,277 +1,120 @@
 classDiagram
-    class Tenant {
+    %% ======================
+    %% Color Definitions
+    %% ======================
+    classDef core fill:#607D8B,stroke:#455A64,color:white
+    classDef accounting fill:#2196F3,stroke:#1976D2,color:white
+    classDef sales fill:#FF9800,stroke:#F57C00,color:white
+    classDef inventory fill:#4CAF50,stroke:#388E3C,color:white
+    classDef hr fill:#E91E63,stroke:#C2185B,color:white
+    classDef procurement fill:#9C27B0,stroke:#7B1FA2,color:white
+    classDef rfq fill:#AB47BC,stroke:#8E24AA,color:white
+
+    %% ======================
+    %% Core System
+    %% ======================
+    class Tenant:::core {
         +int id
         +String name
         +String domain
-        +Date subscriptionDate
+        +LocalDateTime subscriptionDate
         +String subscriptionPlan
         +boolean isActive
-        +createTenant()
-        +updateTenant()
-        +deactivateTenant()
     }
-    
-    class User {
+
+    class User:::core {
         +int id
         +int tenantId
         +String username
-        +String password
         +String email
         +String role
-        +boolean isActive
-        +authenticate()
-        +updateProfile()
+        +String passwordHash
     }
-    
-    class Role {
-        +int id
-        +String name
-        +List~Permission~ permissions
-        +assignPermission()
-        +revokePermission()
-    }
-    
-    class Permission {
-        +int id
-        +String name
-        +String resource
-        +String action
-    }
-    
-    class ChartOfAccount {
-        +int id
-        +int tenantId
-        +String code
-        +String name
-        +String type
-        +boolean isActive
-        +createAccount()
-        +updateAccount()
-    }
-    
-    class JournalEntry {
-        +int id
-        +int tenantId
-        +Date entryDate
-        +String reference
-        +String description
-        +List~JournalLine~ lines
-        +Double totalDebit
-        +Double totalCredit
-        +boolean isPosted
-        +post()
-        +unpost()
-    }
-    
-    class JournalLine {
-        +int id
-        +int journalEntryId
-        +int accountId
-        +Double debitAmount
-        +Double creditAmount
-        +String description
-    }
-    
-    class Invoice {
-        +int id
-        +int tenantId
-        +int customerId
-        +Date invoiceDate
-        +Date dueDate
-        +String status
-        +Double total
-        +Double tax
-        +Double grandTotal
-        +List~InvoiceLine~ lines
-        +createInvoice()
-        +updateInvoice()
-        +postInvoice()
-    }
-    
-    class InvoiceLine {
-        +int id
-        +int invoiceId
-        +int itemId
-        +Double quantity
-        +Double unitPrice
-        +Double discount
-        +Double tax
-        +Double amount
-    }
-    
-    class Customer {
+
+    class Vendor:::procurement {
         +int id
         +int tenantId
         +String name
         +String contactPerson
         +String email
-        +String phone
-        +String address
-        +createCustomer()
-        +updateCustomer()
     }
-    
-    class InventoryItem {
+
+    class Product:::inventory {
         +int id
         +int tenantId
-        +String code
         +String name
         +String description
-        +String category
-        +Double costPrice
-        +Double sellingPrice
-        +Double reorderLevel
-        +boolean isActive
-        +createItem()
-        +updateItem()
+        +String sku
+        +Double price
     }
-    
-    class StockMovement {
+
+    %% ======================
+    %% Procurement Expansion
+    %% ======================
+    class RFQ:::rfq {
         +int id
         +int tenantId
-        +int itemId
-        +int warehouseId
-        +Date movementDate
-        +String type
-        +Double quantity
-        +String reference
-        +createMovement()
-    }
-    
-    class Warehouse {
-        +int id
-        +int tenantId
-        +String code
-        +String name
-        +String location
-        +boolean isActive
-        +createWarehouse()
-        +updateWarehouse()
-    }
-    
-    class Employee {
-        +int id
-        +int tenantId
-        +String employeeCode
-        +String firstName
-        +String lastName
-        +Date dateOfBirth
-        +Date hireDate
-        +String position
-        +String department
-        +Double salary
-        +createEmployee()
-        +updateEmployee()
-    }
-    
-    class Payroll {
-        +int id
-        +int tenantId
-        +Date periodStart
-        +Date periodEnd
+        +String rfqNumber
+        +LocalDateTime issueDate
+        +LocalDateTime expiryDate
         +String status
+    }
+
+    class RFQItem:::rfq {
+        +int id
+        +int rfqId
+        +int productId
+        +Double quantity
+    }
+
+    class VendorRFQ:::rfq {
+        +int id
+        +int rfqId
+        +int vendorId
+        +String status
+    }
+
+    class VendorQuotation:::rfq {
+        +int id
+        +int vendorRFQId
+        +LocalDateTime quotationDate
         +Double totalAmount
-        +List~PayrollEntry~ entries
-        +createPayroll()
-        +calculatePayroll()
-        +approvePayroll()
-    }
-    
-    class PayrollEntry {
-        +int id
-        +int payrollId
-        +int employeeId
-        +Double baseSalary
-        +Double allowances
-        +Double deductions
-        +Double netAmount
-    }
-    
-    class PurchaseRequest {
-        +int id
-        +int tenantId
-        +Date requestDate
-        +String requestedBy
+        +String currency
         +String status
-        +List~PurchaseRequestLine~ lines
-        +createRequest()
-        +approveRequest()
     }
-    
-    class PurchaseRequestLine {
+
+    class QuotationComparison:::rfq {
         +int id
-        +int purchaseRequestId
-        +int itemId
-        +Double quantity
-        +String description
+        +int rfqId
+        +LocalDateTime creationDate
+        +String status
     }
-    
-    class PurchaseOrder {
+
+    class PurchaseOrder:::procurement {
         +int id
         +int tenantId
         +int vendorId
-        +Date orderDate
-        +Date expectedDeliveryDate
-        +String status
+        +LocalDateTime orderDate
         +Double total
-        +List~PurchaseOrderLine~ lines
-        +createOrder()
-        +approveOrder()
+        +String status
     }
+
+    %% ======================
+    %% Unified Relationships
+    %% ======================
+    Tenant "1" -- "many" PurchaseOrder : generates
+    Tenant "1" -- "many" RFQ : initiates
+    Tenant "1" -- "many" Product : owns
+
+    RFQ "1" -- "many" RFQItem : contains
+    RFQ "1" -- "many" VendorRFQ : sent-to
+    RFQ "1" -- "1" QuotationComparison : analyzed-in
     
-    class PurchaseOrderLine {
-        +int id
-        +int purchaseOrderId
-        +int itemId
-        +Double quantity
-        +Double unitPrice
-        +Double amount
-    }
-    
-    class Vendor {
-        +int id
-        +int tenantId
-        +String name
-        +String contactPerson
-        +String email
-        +String phone
-        +String address
-        +createVendor()
-        +updateVendor()
-    }
-    
-    Tenant "1" -- "many" User : has
-    User "many" -- "many" Role : has
-    Role "many" -- "many" Permission : contains
-    
-    Tenant "1" -- "many" ChartOfAccount : has
-    Tenant "1" -- "many" JournalEntry : has
-    JournalEntry "1" -- "many" JournalLine : contains
-    JournalLine "many" -- "1" ChartOfAccount : references
-    
-    Tenant "1" -- "many" Invoice : has
-    Invoice "1" -- "many" InvoiceLine : contains
-    Tenant "1" -- "many" Customer : has
-    InvoiceLine "many" -- "1" InventoryItem : references
-    Invoice "many" -- "1" Customer : issued to
-    
-    Tenant "1" -- "many" InventoryItem : has
-    Tenant "1" -- "many" StockMovement : has
-    Tenant "1" -- "many" Warehouse : has
-    StockMovement "many" -- "1" InventoryItem : affects
-    StockMovement "many" -- "1" Warehouse : located in
-    
-    Tenant "1" -- "many" Employee : has
-    Tenant "1" -- "many" Payroll : has
-    Payroll "1" -- "many" PayrollEntry : contains
-    PayrollEntry "many" -- "1" Employee : paid to
-    
-    Tenant "1" -- "many" PurchaseRequest : has
-    PurchaseRequest "1" -- "many" PurchaseRequestLine : contains
-    PurchaseRequestLine "many" -- "1" InventoryItem : requests
-    
-    Tenant "1" -- "many" PurchaseOrder : has
-    PurchaseOrder "1" -- "many" PurchaseOrderLine : contains
-    PurchaseOrderLine "many" -- "1" InventoryItem : orders
-    Tenant "1" -- "many" Vendor : has
-    PurchaseOrder "many" -- "1" Vendor : ordered from
+    VendorQuotation "1" -- "many" RFQItem : quotes-for
+    VendorQuotation "1" -- "1" VendorRFQ : from
+
+    QuotationComparison "1" -- "many" VendorQuotation : compares
+    PurchaseOrder "1" -- "1" QuotationComparison : based-on
+    PurchaseOrder "1" -- "many" Product : includes
+
+    %% ====

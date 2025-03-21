@@ -1,0 +1,65 @@
+flowchart TD
+    subgraph External
+        PO[Procurement Officer]
+        VD[Vendor]
+        AM[Accounting Manager]
+        IM[Inventory Manager]
+    end
+
+    subgraph "Data Stores"
+        DS1[(RFQ System)]
+        DS2[(Purchase Orders)]
+        DS3[(Vendor Database)]
+        DS4[(Accounting System)]
+        DS5[(Inventory System)]
+    end
+
+    subgraph "Processes"
+        P1[1.0\nGenerate PO from RFQ]
+        P2[2.0\nApprove Purchase Order]
+        P3[3.0\nSend PO to Vendor]
+        P4[4.0\nRecord Financial Commitment]
+        P5[5.0\nReceive Order]
+        P6[6.0\nUpdate Inventory]
+        P7[7.0\nProcess Payment]
+    end
+
+    %% External Entity to Process flows
+    PO -->|Initiate PO Generation| P1
+    PO -->|Request Approval| P2
+    AM -->|Authorize PO| P2
+    PO -->|Send to Vendor| P3
+    VD -->|Confirm Order| P3
+    VD -->|Deliver Items| P5
+    IM -->|Verify Receipt| P5
+    AM -->|Approve Payment| P7
+
+    %% Process to Data Store flows
+    P1 -->|Retrieve Winning Quotation| DS1
+    P1 -->|Create PO Record| DS2
+    P2 -->|Update PO Status| DS2
+    P3 -->|Get Vendor Contact| DS3
+    P3 -->|Update PO Status| DS2
+    P4 -->|Record Financial Transaction| DS4
+    P4 -->|Update PO Status| DS2
+    P5 -->|Update PO Status| DS2
+    P6 -->|Update Stock Levels| DS5
+    P7 -->|Record Payment| DS4
+    P7 -->|Update PO Status| DS2
+
+    %% Process to Process flows
+    P1 -->|PO Created| P2
+    P2 -->|PO Approved| P3
+    P3 -->|PO Sent| P4
+    P4 -->|Funds Reserved| P5
+    P5 -->|Order Received| P6
+    P6 -->|Inventory Updated| P7
+
+    %% Data Flow Labels
+    classDef process fill:#9C27B0,stroke:#7B1FA2,color:white
+    classDef datastore fill:#2196F3,stroke:#1976D2,color:white
+    classDef external fill:#FF9800,stroke:#F57C00,color:white
+
+    class P1,P2,P3,P4,P5,P6,P7 process
+    class DS1,DS2,DS3,DS4,DS5 datastore
+    class PO,VD,AM,IM external

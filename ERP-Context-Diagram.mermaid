@@ -1,0 +1,126 @@
+flowchart TD
+    subgraph Enterprise_Resource_Planning_System
+        subgraph Core_System
+            C1[Tenant Management]
+            C2[User Management]
+            C3[Security & Access Control]
+            C4[Reporting & Analytics]
+        end
+        
+        subgraph Modules
+            M1[Accounting]
+            M2[Inventory]
+            M3[Sales]
+            M4[Human Resources]
+            M5[Procurement]
+            
+            subgraph RFQ_Module
+                R1[RFQ Management]
+                R2[Vendor Quotation]
+                R3[Quotation Comparison]
+                R4[Vendor Selection]
+            end
+            
+            subgraph Purchase_Management
+                P1[Purchase Order]
+                P2[Order Tracking]
+                P3[Goods Receipt]
+                P4[Invoice Processing]
+            end
+        end
+    end
+    
+    %% External Entities
+    E1([System Administrators])
+    E2([Procurement Officers])
+    E3([Vendors])
+    E4([Department Managers])
+    E5([Accounting Staff])
+    E6([Inventory Managers])
+    
+    %% Data Stores
+    D1[(Tenant Registry)]
+    D2[(User Database)]
+    D3[(Product Catalog)]
+    D4[(Vendor Database)]
+    D5[(RFQ Records)]
+    D6[(Quotations)]
+    D7[(Purchase Orders)]
+    D8[(Accounting Ledger)]
+    D9[(Inventory Records)]
+    
+    %% Connections to External Entities
+    E1 <--> C1
+    E1 <--> C2
+    E1 <--> C3
+    
+    E2 <--> R1
+    E2 <--> R2
+    E2 <--> R3
+    E2 <--> R4
+    E2 <--> P1
+    E2 <--> P2
+    
+    E3 <--> R2
+    E3 <--> P1
+    E3 <--> P2
+    
+    E4 <--> R4
+    E4 <--> P1
+    E4 <--> C4
+    
+    E5 <--> M1
+    E5 <--> P4
+    
+    E6 <--> M2
+    E6 <--> P3
+    
+    %% Internal Module Connections
+    C1 --- C2
+    C1 --- C3
+    C1 --- C4
+    
+    M5 --- R1
+    R1 --- R2
+    R2 --- R3
+    R3 --- R4
+    R4 --- P1
+    P1 --- P2
+    P2 --- P3
+    P3 --- P4
+    
+    P3 --- M2
+    P4 --- M1
+    
+    %% Connections to Data Stores
+    C1 --- D1
+    C2 --- D2
+    
+    M2 --- D3
+    M5 --- D4
+    
+    R1 --- D3
+    R1 --- D4
+    R1 --- D5
+    R2 --- D6
+    R3 --- D6
+    
+    P1 --- D7
+    P3 --- D9
+    P4 --- D8
+    
+    %% Styling
+    classDef core fill:#607D8B,stroke:#455A64,color:white
+    classDef procurement fill:#9C27B0,stroke:#7B1FA2,color:white
+    classDef rfq fill:#AB47BC,stroke:#8E24AA,color:white
+    classDef purchase fill:#4CAF50,stroke:#388E3C,color:white
+    classDef module fill:#2196F3,stroke:#1976D2,color:white
+    classDef external fill:#FF9800,stroke:#F57C00,color:white
+    classDef datastore fill:#E91E63,stroke:#C2185B,color:white
+    
+    class C1,C2,C3,C4 core
+    class M1,M2,M3,M4,M5 module
+    class R1,R2,R3,R4 rfq
+    class P1,P2,P3,P4 purchase
+    class E1,E2,E3,E4,E5,E6 external
+    class D1,D2,D3,D4,D5,D6,D7,D8,D9 datastore

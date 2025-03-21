@@ -1,0 +1,66 @@
+flowchart TD
+    subgraph External
+        VD[Vendor]
+        PO[Procurement Officer]
+        DM[Department Manager]
+    end
+
+    subgraph "Data Stores"
+        DS1[(RFQ Database)]
+        DS2[(Vendor Database)]
+        DS3[(Product Catalog)]
+        DS4[(Quotation Database)]
+        DS5[(Comparison Results)]
+    end
+
+    subgraph "Processes"
+        P1[1.0\nReceive RFQ]
+        P2[2.0\nPrepare Quotation]
+        P3[3.0\nSubmit Quotation]
+        P4[4.0\nProcess Quotation]
+        P5[5.0\nGenerate Comparison]
+        P6[6.0\nEvaluate Quotations]
+        P7[7.0\nSelect Vendor]
+    end
+
+    %% External Entity to Process flows
+    VD -->|Access RFQ Details| P1
+    VD -->|Create Response| P2
+    VD -->|Send Quote| P3
+    PO -->|Receive & Validate| P4
+    PO -->|Compare Options| P5
+    PO -->|Review Analysis| P6
+    DM -->|Approve Selection| P7
+    PO -->|Make Final Selection| P7
+
+    %% Process to Data Store flows
+    P1 -->|Retrieve RFQ Information| DS1
+    P1 -->|Get Vendor Profile| DS2
+    P2 -->|View Product Specs| DS3
+    P3 -->|Store Quotation| DS4
+    P3 -->|Update RFQ Status| DS1
+    P4 -->|Validate Against RFQ| DS1
+    P4 -->|Save Processed Quote| DS4
+    P5 -->|Read All Quotations| DS4
+    P5 -->|Store Comparison Data| DS5
+    P6 -->|Retrieve Comparison| DS5
+    P7 -->|Update Vendor Status| DS2
+    P7 -->|Update RFQ Status| DS1
+    P7 -->|Mark Selected Quote| DS4
+
+    %% Process to Process flows
+    P1 -->|RFQ Details Available| P2
+    P2 -->|Quotation Prepared| P3
+    P3 -->|Quotation Submitted| P4
+    P4 -->|Quote Processed| P5
+    P5 -->|Comparison Ready| P6
+    P6 -->|Evaluation Complete| P7
+
+    %% Data Flow Labels
+    classDef process fill:#AB47BC,stroke:#8E24AA,color:white
+    classDef datastore fill:#2196F3,stroke:#1976D2,color:white
+    classDef external fill:#FF9800,stroke:#F57C00,color:white
+
+    class P1,P2,P3,P4,P5,P6,P7 process
+    class DS1,DS2,DS3,DS4,DS5 datastore
+    class VD,PO,DM external

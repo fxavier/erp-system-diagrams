@@ -1,0 +1,53 @@
+stateDiagram-v2
+    %% ======================
+    %% State Definitions
+    %% ======================
+    [*] --> TrialCreated : 🎉 Create Tenant
+    
+    state TrialStates {
+        TrialCreated --> TrialActive : ✅ Activate Trial
+        TrialActive --> TrialExpired : ⏳ Trial Period Ends
+        TrialActive --> Subscribed : 💳 Purchase Subscription
+        TrialExpired --> Subscribed : 💳 Purchase Subscription
+        TrialExpired --> Deactivated : ⛔ Grace Period Ends
+    }
+    
+    state SubscriptionStates {
+        Subscribed --> Active : 📌 Subscription Active
+        Active --> PendingRenewal : 🔄 Before Renewal Date
+        PendingRenewal --> Renewed : 🔄 Auto-Renewal Success
+        PendingRenewal --> PaymentFailed : ❌ Payment Failure
+        
+        PaymentFailed --> PaymentRetry : 🔁 Retry Payment
+        PaymentRetry --> Renewed : ✅ Payment Success
+        PaymentRetry --> PaymentFailed : ❌ Payment Failure Again
+        
+        PaymentFailed --> GracePeriod : 🕒 After Multiple Failed Attempts
+        GracePeriod --> Renewed : ✅ Late Payment
+        GracePeriod --> Suspended : ⛔ Grace Period Ends
+        
+        Renewed --> Active : 🔄 Subscription Continues
+    }
+
+    state PlanChanges {
+        Active --> Upgraded : ⬆️ Upgrade Plan
+        Upgraded --> Active : 🎯 New Plan Active
+        
+        Active --> Downgraded : ⬇️ Downgrade Plan
+        Downgraded --> Active : 🎯 New Plan Active
+    }
+    
+    state CancellationStates {
+        Active --> PendingCancellation : ❌ Cancel Subscription
+        PendingCancellation --> Cancelled : 📅 End of Billing Period
+        
+        Suspended --> Renewed : ✅ Late Payment
+        Suspended --> Deactivated : ⛔ After Suspension Period
+        
+        Cancelled --> Reactivated : 🔄 Resubscribe
+        Reactivated --> Active : 🆕 New Subscription
+        
+        Cancelled --> Deactivated : ⛔ After Grace Period
+    }
+
+    Deactivated --> [*]

@@ -1,0 +1,148 @@
+sequenceDiagram
+    participant CA as Customer Admin #4CAF50
+    participant TM as Tenant Management #2196F3
+    participant SM as Subscription Manager #9C27B0
+    participant PM as Payment Manager #FF9800
+    participant AM as Access Manager #E91E63
+    participant PS as Payment System #F44336
+    
+    rect rgb(255,248,220)
+    Note left of CA: Trial Workflow #FFFFCC
+    CA->>TM: Register for Free Trial
+    activate TM #2196F3
+    TM->>SM: Create Trial Subscription
+    activate SM #9C27B0
+    SM-->>TM: Trial Subscription Created
+    TM->>AM: Provision Trial Resources
+    activate AM #E91E63
+    AM-->>TM: Trial Features Enabled
+    deactivate AM
+    TM-->>CA: Trial Account Activated
+    deactivate TM
+    deactivate SM
+    end
+    
+    rect rgb(245,245,245)
+    Note over CA,SM: Trial Period (14 days)
+    SM->>CA: Trial Expiration Reminder (3 days before) #FFEB3B
+    SM->>CA: Trial Expiration Reminder (1 day before) #FFC107
+    end
+    
+    rect rgb(232,245,233)
+    Note left of CA: Subscription Purchase #C8E6C9
+    CA->>SM: Select Subscription Plan
+    activate SM #9C27B0
+    SM->>CA: Display Plan Details & Payment Options
+    CA->>PM: Submit Payment Information
+    activate PM #FF9800
+    PM->>PS: Process Payment
+    activate PS #F44336
+    PS-->>PM: Payment Confirmation
+    deactivate PS
+    PM->>SM: Payment Successful
+    deactivate PM
+    SM->>TM: Upgrade Tenant to Paid Plan
+    activate TM #2196F3
+    TM->>AM: Update Access Rights
+    activate AM #E91E63
+    AM-->>TM: Access Updated
+    deactivate AM
+    TM-->>SM: Tenant Updated
+    deactivate TM
+    SM-->>CA: Subscription Activated
+    deactivate SM
+    end
+    
+    rect rgb(255,243,224)
+    Note left of CA: Seat Management #FFE0B2
+    CA->>SM: Request Additional User Seats
+    activate SM #9C27B0
+    SM->>CA: Display Cost & Confirmation
+    CA->>SM: Confirm Purchase
+    SM->>PM: Charge Additional Amount
+    activate PM #FF9800
+    PM->>PS: Process Payment
+    activate PS #F44336
+    PS-->>PM: Payment Confirmation
+    deactivate PS
+    PM-->>SM: Payment Successful
+    deactivate PM
+    SM->>AM: Update User Limit
+    activate AM #E91E63
+    AM-->>SM: Limit Updated
+    deactivate AM
+    SM-->>CA: User Seats Added
+    deactivate SM
+    end
+    
+    rect rgb(252,228,236)
+    Note over CA,PS: Auto-Renewal #F8BBD0
+    SM->>CA: Renewal Reminder (7 days before)
+    SM->>PM: Initiate Automatic Renewal
+    activate PM #FF9800
+    PM->>PS: Process Renewal Payment
+    activate PS #F44336
+    PS-->>PM: Payment Confirmation
+    deactivate PS
+    PM->>SM: Renewal Successful
+    deactivate PM
+    activate SM #9C27B0
+    SM->>TM: Extend Subscription Period
+    activate TM #2196F3
+    TM-->>SM: Subscription Extended
+    deactivate TM
+    SM-->>CA: Subscription Renewed
+    deactivate SM
+    end
+    
+    rect rgb(224,247,250)
+    Note left of CA: Plan Changes #B2EBF2
+    CA->>SM: Request Plan Upgrade
+    activate SM #9C27B0
+    SM->>CA: Display Upgrade Options & Proration
+    CA->>SM: Confirm Upgrade
+    SM->>PM: Process Upgrade Payment
+    activate PM #FF9800
+    PM->>PS: Charge Prorated Amount
+    activate PS #F44336
+    PS-->>PM: Payment Confirmation
+    deactivate PS
+    PM-->>SM: Payment Successful
+    deactivate PM
+    SM->>TM: Apply New Plan
+    activate TM #2196F3
+    TM->>AM: Update Feature Access
+    activate AM #E91E63
+    AM-->>TM: Features Updated
+    deactivate AM
+    TM-->>SM: Plan Changed
+    deactivate TM
+    SM-->>CA: Upgrade Complete
+    deactivate SM
+    end
+    
+    rect rgb(255,235,238)
+    Note left of CA: Cancellation #FFCDD2
+    CA->>SM: Request Cancellation
+    activate SM #9C27B0
+    SM->>CA: Display Cancellation Options
+    CA->>SM: Confirm Cancellation
+    SM->>TM: Schedule Deactivation
+    activate TM #2196F3
+    TM-->>SM: Deactivation Scheduled
+    deactivate TM
+    SM-->>CA: Cancellation Confirmed
+    deactivate SM
+    
+    Note over CA,TM: End of Billing Period
+    SM->>TM: Deactivate Subscription
+    activate TM #2196F3
+    TM->>AM: Downgrade to Limited Access
+    activate AM #E91E63
+    AM-->>TM: Access Downgraded
+    deactivate AM
+    TM-->>SM: Subscription Deactivated
+    deactivate TM
+    SM->>CA: Account Deactivation Notice
+    end
+    

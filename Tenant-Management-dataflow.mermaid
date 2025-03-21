@@ -1,0 +1,66 @@
+flowchart TD
+    subgraph External
+        SA[System Administrator]
+        TM[Tenant Manager]
+        EU[End User]
+    end
+
+    subgraph "Data Stores"
+        DS1[(Tenant Registry)]
+        DS2[(User Database)]
+        DS3[(Subscription Plans)]
+        DS4[(Configuration Settings)]
+        DS5[(Audit Logs)]
+    end
+
+    subgraph "Processes"
+        P1[1.0\nCreate Tenant]
+        P2[2.0\nProvision Tenant Schema]
+        P3[3.0\nManage Tenant Users]
+        P4[4.0\nConfigure Tenant Settings]
+        P5[5.0\nMonitor Tenant Usage]
+        P6[6.0\nManage Subscriptions]
+        P7[7.0\nAuthenticate User]
+    end
+
+    %% External Entity to Process flows
+    SA -->|Initialize Tenant| P1
+    SA -->|Setup Schema| P2
+    TM -->|Add/Remove Users| P3
+    TM -->|Modify Settings| P4
+    SA -->|Review Usage| P5
+    TM -->|Upgrade/Downgrade| P6
+    EU -->|Login Request| P7
+
+    %% Process to Data Store flows
+    P1 -->|Register Tenant| DS1
+    P1 -->|Select Plan| DS3
+    P2 -->|Store Schema Info| DS1
+    P2 -->|Log Provisioning| DS5
+    P3 -->|Create User Accounts| DS2
+    P3 -->|Link to Tenant| DS1
+    P4 -->|Store Config| DS4
+    P4 -->|Log Changes| DS5
+    P5 -->|Read Usage Data| DS1
+    P5 -->|Record Metrics| DS5
+    P6 -->|Update Plan| DS3
+    P6 -->|Modify Tenant Record| DS1
+    P7 -->|Verify Credentials| DS2
+    P7 -->|Check Tenant Access| DS1
+    P7 -->|Log Authentication| DS5
+
+    %% Process to Process flows
+    P1 -->|Tenant Created| P2
+    P2 -->|Schema Ready| P3
+    P3 -->|Users Added| P4
+    P4 -->|System Configured| P5
+    P6 -->|Plan Changed| P4
+
+    %% Data Flow Labels
+    classDef process fill:#607D8B,stroke:#455A64,color:white
+    classDef datastore fill:#2196F3,stroke:#1976D2,color:white
+    classDef external fill:#FF9800,stroke:#F57C00,color:white
+
+    class P1,P2,P3,P4,P5,P6,P7 process
+    class DS1,DS2,DS3,DS4,DS5 datastore
+    class SA,TM,EU external

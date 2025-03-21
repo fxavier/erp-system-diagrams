@@ -1,0 +1,153 @@
+classDiagram
+    %% ======================
+    %% Color Definitions
+    %% ======================
+    classDef core fill:#607D8B,stroke:#455A64,color:white
+    classDef subscription fill:#00BCD4,stroke:#0097A7,color:white
+    classDef billing fill:#009688,stroke:#00796B,color:white
+    classDef features fill:#8BC34A,stroke:#689F38,color:white
+    
+    %% ======================
+    %% Core System
+    %% ======================
+    class Tenant:::core {
+        +int id
+        +String name
+        +String domain
+        +LocalDateTime creationDate
+        +boolean isActive
+        +boolean isTrialAccount
+        +LocalDateTime trialExpiryDate
+        +int maxUsers
+        +createTenant()
+        +activateTenant()
+        +deactivateTenant()
+    }
+    
+    %% ======================
+    %% Subscription Management
+    %% ======================
+    class SubscriptionPlan:::subscription {
+        +int id
+        +String name
+        +String description
+        +double monthlyPrice
+        +double annualPrice
+        +String currency
+        +int maxUsers
+        +int maxStorage
+        +boolean isActive
+        +LocalDateTime createdDate
+        +LocalDateTime updatedDate
+        +createPlan()
+        +updatePlan()
+        +activatePlan()
+        +deactivatePlan()
+    }
+    
+    class TenantSubscription:::subscription {
+        +int id
+        +int tenantId
+        +int subscriptionPlanId
+        +String subscriptionStatus
+        +LocalDateTime startDate
+        +LocalDateTime endDate
+        +String billingCycle
+        +boolean autoRenew
+        +String paymentMethod
+        +createSubscription()
+        +renewSubscription()
+        +cancelSubscription()
+        +upgradeSubscription()
+        +downgradeSubscription()
+    }
+    
+    class SubscriptionFeature:::features {
+        +int id
+        +String featureCode
+        +String featureName
+        +String description
+        +String featureCategory
+        +boolean isActive
+        +createFeature()
+        +updateFeature()
+        +activateFeature()
+        +deactivateFeature()
+    }
+    
+    class PlanFeature:::features {
+        +int id
+        +int subscriptionPlanId
+        +int subscriptionFeatureId
+        +boolean isEnabled
+        +int usageLimit
+        +String limitPeriod
+        +associateFeature()
+        +removeFeature()
+        +updateLimits()
+    }
+    
+    %% ======================
+    %% Billing
+    %% ======================
+    class Invoice:::billing {
+        +int id
+        +int tenantId
+        +int subscriptionId
+        +String invoiceNumber
+        +LocalDateTime issueDate
+        +LocalDateTime dueDate
+        +double amount
+        +double tax
+        +double total
+        +String currency
+        +String paymentStatus
+        +String paymentMethod
+        +LocalDateTime paidDate
+        +createInvoice()
+        +updateInvoice()
+        +payInvoice()
+        +cancelInvoice()
+    }
+    
+    class PaymentMethod:::billing {
+        +int id
+        +int tenantId
+        +String methodType
+        +String paymentToken
+        +String cardLast4
+        +String expiryMonth
+        +String expiryYear
+        +boolean isDefault
+        +LocalDateTime createdDate
+        +addPaymentMethod()
+        +updatePaymentMethod()
+        +removePaymentMethod()
+        +setAsDefault()
+    }
+    
+    class FeatureUsage:::features {
+        +int id
+        +int tenantId
+        +int featureId
+        +int currentUsage
+        +int allocatedLimit
+        +LocalDateTime resetDate
+        +String usagePeriod
+        +recordUsage()
+        +resetUsage()
+        +checkLimit()
+    }
+    
+    %% ======================
+    %% Relationships
+    %% ======================
+    Tenant "1" -- "1" TenantSubscription : has
+    TenantSubscription "many" -- "1" SubscriptionPlan : subscribes to
+    SubscriptionPlan "1" -- "many" PlanFeature : includes
+    PlanFeature "many" -- "1" SubscriptionFeature : enables
+    Tenant "1" -- "many" Invoice : billed to
+    TenantSubscription "1" -- "many" Invoice : generated for
+    Tenant "1" -- "many" PaymentMethod : has
+    Tenant "1" -- "many" FeatureUsage : tracks
+    FeatureUsage "many" -- "1" SubscriptionFeature : measures

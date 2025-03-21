@@ -1,0 +1,125 @@
+graph TD
+    %% Actors
+    A1([System Administrator])
+    A2([Procurement Officer])
+    A3([Vendor])
+    A4([Department Manager])
+    A5([Accounting Manager])
+    A6([Inventory Manager])
+    
+    %% Use Cases
+    subgraph "Tenant Management"
+        UC1[Create & Configure Tenant]
+        UC2[Manage Users & Roles]
+        UC3[Monitor System Performance]
+    end
+    
+    subgraph "Request For Quotation"
+        UC4[Create New RFQ]
+        UC5[Add Products to RFQ]
+        UC6[Select Vendors]
+        UC7[Issue RFQ]
+        UC8[Track RFQ Status]
+    end
+    
+    subgraph "Vendor Interaction"
+        UC9[View RFQ Details]
+        UC10[Submit Quotation]
+        UC11[Update Quotation]
+        UC12[Track Response Status]
+    end
+    
+    subgraph "Quotation Management"
+        UC13[Process Vendor Responses]
+        UC14[Generate Comparison Matrix]
+        UC15[Evaluate Options]
+        UC16[Select Winning Vendor]
+    end
+    
+    subgraph "Purchase Order"
+        UC17[Generate Purchase Order]
+        UC18[Approve Purchase Order]
+        UC19[Send PO to Vendor]
+        UC20[Track Order Fulfillment]
+        UC21[Receive Goods]
+    end
+    
+    subgraph "Integration Points"
+        UC22[Update Inventory]
+        UC23[Record Financial Transaction]
+        UC24[Generate Reports]
+    end
+    
+    %% Relationships
+    A1 --- UC1
+    A1 --- UC2
+    A1 --- UC3
+    
+    A2 --- UC4
+    A2 --- UC5
+    A2 --- UC6
+    A2 --- UC7
+    A2 --- UC8
+    A2 --- UC13
+    A2 --- UC14
+    A2 --- UC15
+    A2 --- UC16
+    A2 --- UC17
+    A2 --- UC19
+    A2 --- UC20
+    
+    A3 --- UC9
+    A3 --- UC10
+    A3 --- UC11
+    A3 --- UC12
+    
+    A4 --- UC16
+    A4 --- UC18
+    A4 --- UC24
+    
+    A5 --- UC18
+    A5 --- UC23
+    A5 --- UC24
+    
+    A6 --- UC21
+    A6 --- UC22
+    
+    %% Use Case Relationships
+    UC1 -.-> UC2
+    UC4 -.-> UC5
+    UC5 -.-> UC6
+    UC6 -.-> UC7
+    UC7 -.-> UC8
+    UC7 -.-> UC9
+    UC9 -.-> UC10
+    UC10 -.-> UC11
+    UC10 -.-> UC12
+    UC12 -.-> UC13
+    UC13 -.-> UC14
+    UC14 -.-> UC15
+    UC15 -.-> UC16
+    UC16 -.-> UC17
+    UC17 -.-> UC18
+    UC18 -.-> UC19
+    UC19 -.-> UC20
+    UC20 -.-> UC21
+    UC21 -.-> UC22
+    UC21 -.-> UC23
+    UC23 -.-> UC24
+    
+    %% Styling
+    classDef adminUC fill:#607D8B,stroke:#455A64,color:white
+    classDef rfqUC fill:#9C27B0,stroke:#7B1FA2,color:white
+    classDef vendorUC fill:#FF9800,stroke:#F57C00,color:white
+    classDef quoteUC fill:#AB47BC,stroke:#8E24AA,color:white
+    classDef poUC fill:#4CAF50,stroke:#388E3C,color:white
+    classDef integrationUC fill:#2196F3,stroke:#1976D2,color:white
+    classDef actor fill:#E91E63,stroke:#C2185B,color:white
+    
+    class UC1,UC2,UC3 adminUC
+    class UC4,UC5,UC6,UC7,UC8 rfqUC
+    class UC9,UC10,UC11,UC12 vendorUC
+    class UC13,UC14,UC15,UC16 quoteUC
+    class UC17,UC18,UC19,UC20,UC21 poUC
+    class UC22,UC23,UC24 integrationUC
+    class A1,A2,A3,A4,A5,A6 actor

@@ -1,0 +1,95 @@
+graph TB
+    %% Define subscription tiers
+    subgraph FreeTrial["Free Trial (14 days)"]
+        FT1[Basic Features]
+        FT2[5 Users]
+        FT3[Limited Storage]
+        FT4[Standard Support]
+    end
+    
+    subgraph Basic["Basic Plan ($99/month)"]
+        B1[Core Modules]
+        B2["Up to 10 Users"]
+        B3["5GB Storage"]
+        B4[Email Support]
+        B5[Data Export]
+        subgraph BasicModules[Available Modules]
+            BM1[Accounting - Basic]
+            BM2[Inventory - Basic]
+            BM3[Sales - Basic]
+        end
+    end
+    
+    subgraph Professional["Professional Plan ($199/month)"]
+        P1[All Core Modules]
+        P2["Up to 25 Users"]
+        P3["25GB Storage"]
+        P4[Priority Support]
+        P5[Advanced Reporting]
+        P6[API Access]
+        subgraph ProModules[Available Modules]
+            PM1[Accounting - Full]
+            PM2[Inventory - Full]
+            PM3[Sales - Full]
+            PM4[Procurement - Basic]
+            PM5[HR - Basic]
+        end
+    end
+    
+    subgraph Enterprise["Enterprise Plan ($399/month)"]
+        E1[All Modules]
+        E2["Unlimited Users"]
+        E3["100GB Storage"]
+        E4[24/7 Support]
+        E5[Custom Integrations]
+        E6[White Labeling]
+        E7[Dedicated Account Manager]
+        subgraph EnterpriseModules[Available Modules]
+            EM1[Accounting - Advanced]
+            EM2[Inventory - Advanced]
+            EM3[Sales - Advanced]
+            EM4[Procurement - Advanced]
+            EM5[HR - Advanced]
+            EM6[RFQ - Full]
+            EM7[Manufacturing]
+        end
+    end
+    
+    %% Feature limitations
+    subgraph FeatureLimits[Feature Limitations By Tier]
+        FL1["Transactions/Month: 500 / 5,000 / Unlimited"]
+        FL2["Products: 100 / 1,000 / Unlimited"]
+        FL3["Vendors: 20 / 100 / Unlimited"]
+        FL4["Customers: 100 / 1,000 / Unlimited"]
+        FL5["RFQs: 0 / 10 / Unlimited"]
+        FL6["Reports: 5 / 20 / Unlimited"]
+    end
+    
+    %% Add-ons
+    subgraph AddOns[Optional Add-ons]
+        AO1["Additional Users: $15/user/month"]
+        AO2["Extra Storage: $5/GB/month"]
+        AO3["Premium Support: $99/month"]
+        AO4["Advanced Analytics: $49/month"]
+        AO5["Manufacturing Module: $99/month"]
+    end
+    
+    %% Upgrade paths
+    FreeTrial -->|Upgrade| Basic
+    Basic -->|Upgrade| Professional
+    Professional -->|Upgrade| Enterprise
+    
+    %% Styling
+    classDef freetrial fill:#B3E5FC,stroke:#0288D1,color:#01579B
+    classDef basic fill:#C8E6C9,stroke:#388E3C,color:#1B5E20
+    classDef professional fill:#D1C4E9,stroke:#7B1FA2,color:#4A148C
+    classDef enterprise fill:#FFCCBC,stroke:#E64A19,color:#BF360C
+    classDef features fill:#F5F5F5,stroke:#9E9E9E,color:#212121
+    classDef addons fill:#FFE0B2,stroke:#F57C00,color:#E65100
+    
+    class FreeTrial,FT1,FT2,FT3,FT4 freetrial
+    class Basic,B1,B2,B3,B4,B5,BasicModules,BM1,BM2,BM3 basic
+    class Professional,P1,P2,P3,P4,P5,P6,ProModules,PM1,PM2,PM3,PM4,PM5 professional
+    class Enterprise,E1,E2,E3,E4,E5,E6,E7,EnterpriseModules,EM1,EM2,EM3,EM4,EM5,EM6,EM7 enterprise
+    class FeatureLimits,FL1,FL2,FL3,FL4,FL5,FL6 features
+    class AddOns,AO1,AO2,AO3,AO4,AO5 addons

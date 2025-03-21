@@ -1,0 +1,62 @@
+sequenceDiagram
+    %% ======================
+    %% Participant Definitions
+    %% ======================
+    participant PO as 🟠 Procurement Officer
+    participant RFQ as 🔵 RFQ System
+    participant VD as 🟢 Vendor
+    participant QC as 🟣 Quotation Comparison
+    participant DM as 🟡 Department Manager
+    participant PUR as 🔴 Purchase Order
+
+    %% ======================
+    %% RFQ Creation Phase
+    %% ======================
+    PO->>+RFQ: 📝 Create new RFQ
+    RFQ-->>-PO: ✅ RFQ created with draft status
+    PO->>RFQ: ➕ Add products to RFQ
+    PO->>RFQ: 📌 Select vendors
+    PO->>+RFQ: 🚀 Issue RFQ
+    RFQ->>-VD: 📩 Send RFQ notification
+    
+    %% ======================
+    %% Vendor Response Phase
+    %% ======================
+    VD->>+RFQ: 🔍 Access RFQ details
+    VD->>+RFQ: 💰 Submit quotation
+    RFQ-->>-PO: 📢 Notification of vendor response
+    
+    %% ======================
+    %% Quotation Processing Phase
+    %% ======================
+    PO->>+QC: 📊 Generate comparison matrix
+    QC-->>-PO: 📈 Display comparison results
+    PO->>QC: 📑 Evaluate vendor responses
+    PO->>QC: 🏆 Select preferred vendor
+    QC->>+DM: 🔎 Request approval
+    DM->>+QC: ✅ Approve vendor selection
+    QC-->>-PO: 🎯 Vendor selection approved
+    
+    %% ======================
+    %% Purchase Order Creation Phase
+    %% ======================
+    PO->>+PUR: 🛒 Generate purchase order
+    PUR-->>-PO: 📄 Create PO with draft status
+    PO->>+DM: 🏦 Request PO approval
+    DM->>+PUR: ✅ Approve purchase order
+    PUR-->>-PO: 🎯 PO approved
+    PO->>+PUR: 📤 Send PO to vendor
+    PUR->>-VD: 📜 Deliver purchase order
+    
+    %% ======================
+    %% Order Fulfillment Phase
+    %% ======================
+    VD->>+PO: ✅ Confirm PO receipt
+    VD->>+PO: 🚚 Process and fulfill order
+    
+    %% ======================
+    %% System Update Phase
+    %% ======================
+    PO->>PUR: 📌 Update PO status to completed
+    
+    note over PO,VD: 🔄 **Complete procurement cycle** from RFQ to PO

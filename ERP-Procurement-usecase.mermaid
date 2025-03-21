@@ -1,0 +1,100 @@
+graph TD
+    %% ======================
+    %% Style Definitions
+    %% ======================
+    classDef actor fill:#FF9800,stroke:#E65100,color:white,font-weight:bold;
+    classDef system fill:#3F51B5,stroke:#303F9F,color:white,font-weight:bold;
+    classDef process fill:#4CAF50,stroke:#2E7D32,color:white,font-weight:bold;
+    classDef approval fill:#9C27B0,stroke:#7B1FA2,color:white,font-weight:bold;
+
+    %% ======================
+    %% Actors
+    %% ======================
+    subgraph Actors
+        A1[Procurement Officer]:::actor
+        A2[Vendor]:::actor
+        A3[Department Manager]:::actor
+        A4[System Administrator]:::actor
+    end
+    
+    %% ======================
+    %% Tenant Management
+    %% ======================
+    subgraph Tenant Management
+        UC1[Create Tenant]:::system
+        UC2[Manage Users]:::system
+        UC3[Configure System]:::system
+    end
+    
+    %% ======================
+    %% RFQ Management
+    %% ======================
+    subgraph RFQ Management
+        UC4[Create RFQ]:::process
+        UC5[Add Products to RFQ]:::process
+        UC6[Select Vendors for RFQ]:::process
+        UC7[Issue RFQ to Vendors]:::process
+        UC8[Track RFQ Status]:::process
+    end
+    
+    %% ======================
+    %% Vendor Quotation
+    %% ======================
+    subgraph Vendor Quotation
+        UC9[Submit Quotation]:::process
+        UC10[Process Vendor Response]:::process
+        UC11[Compare Quotations]:::process
+        UC12[Select Winning Vendor]:::approval
+    end
+    
+    %% ======================
+    %% Purchase Order
+    %% ======================
+    subgraph Purchase Order
+        UC13[Generate Purchase Order]:::process
+        UC14[Approve Purchase Order]:::approval
+        UC15[Send PO to Vendor]:::process
+        UC16[Track PO Status]:::process
+    end
+    
+    %% ======================
+    %% Actor-Use Case Interactions
+    %% ======================
+    A4 -->|Manages| UC1
+    A4 -->|Configures| UC2
+    A4 -->|Sets up| UC3
+    
+    A1 -->|Creates| UC4
+    A1 -->|Selects| UC5
+    A1 -->|Chooses| UC6
+    A1 -->|Sends| UC7
+    A1 -->|Monitors| UC8
+    
+    A2 -->|Provides| UC9
+    A1 -->|Reviews| UC10
+    A1 -->|Analyzes| UC11
+    A1 -->|Decides| UC12
+    A3 -->|Approves| UC12
+    
+    A1 -->|Creates| UC13
+    A3 -->|Authorizes| UC14
+    A1 -->|Distributes| UC15
+    A1 -->|Monitors| UC16
+    
+    %% ======================
+    %% Process Flow Connections
+    %% ======================
+    UC4 -->|Leads to| UC5
+    UC5 -->|Enables| UC6
+    UC6 -->|Required for| UC7
+    UC7 -->|Initiates| UC8
+    
+    UC8 -->|Precedes| UC10
+    UC9 -->|Triggers| UC10
+    UC10 -->|Enables| UC11
+    UC11 -->|Supports| UC12
+    
+    UC12 -->|Results in| UC13
+    UC13 -->|Requires| UC14
+    UC14 -->|Allows| UC15
+    UC15 -->|Initiates| UC16
